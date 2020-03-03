@@ -1,0 +1,17 @@
+{
+  "name": "jord",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "./compil.js > dist/app.js; sass --watch src/sass:dist/",
+    "compil": "./compil.js | uglifyjs -c -o dist/app.js"
+  },
+  "author": "Andre LECLERCQ",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.26.2"
+  },
+  "dependencies": {}
+}
