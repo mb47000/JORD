@@ -1,6 +1,20 @@
-@import "bases";
-@import "variables";
-@import "padding";
-@import "margin";
-@import "border";
-@import "text";
+//@import "bases";
+//@import "variables";
+//@import "padding";
+//@import "margin";
+//@import "border";
+//@import "text";
+
+@import "minicss/core";
+@import "minicss/contextual";
+@import "minicss/contextual_mixins";
+@import "minicss/icon";
+@import "minicss/input_control";
+@import "minicss/input_control_mixins";
+@import "minicss/layout";
+@import "minicss/layout_mixins";
+@import "minicss/navigation";
+@import "minicss/progress";
+@import "minicss/progress_mixins";
+@import "minicss/table";
+@import "minicss/utility";

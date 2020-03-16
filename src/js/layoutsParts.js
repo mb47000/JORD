@@ -8,4 +8,3 @@ fetch('../views/parts/navbar.html', {mode: 'no-cors'})
 
 console.log('cool');
 // console.log(navbar);
-console.log('script2');
