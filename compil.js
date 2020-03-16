@@ -6,7 +6,7 @@ const fs = require('fs');
 const root = 'src/js/';
 const scripts = [
     'layoutsParts.js',
-    'script2.js'
+    'router.js'
 ];
 let destFile = process.argv.pop();
 
