@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// const process = require('process')
 const Terser = require('terser');
 const fs = require('fs');
 const root = 'src/js/';
