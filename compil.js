@@ -4,8 +4,10 @@ const Terser = require('terser');
 const fs = require('fs');
 const root = 'src/js/';
 const scripts = [
+    'import.js',
+    'database.js',
+    'router.js',
     'layoutsParts.js',
-    'router.js'
 ];
 let destFile = process.argv.pop();
 

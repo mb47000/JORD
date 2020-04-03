@@ -1,13 +1,16 @@
-let http = require('http');
-let fs = require('fs');
-let path = require('path');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
 
 http.createServer(function (req, res) {
 
+    console.log(req.url);
+
     let filePath = '.' + req.url;
-    if (filePath == './') {
+    if (filePath == './')
         filePath = './index.html';
-    } else if( String(path.extname(req.url)) === '' ){
+    else if( String(path.extname(req.url)) === '' ){
         res.writeHead(302, { 'Location': '/#' + req.url.replace('/', '') });
         res.end();
     }
