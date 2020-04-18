@@ -26,9 +26,8 @@ http.createServer(function (req, res) {
         res.end(JSON.stringify(productsList), 'utf-8')
     } else if ( req.url.startsWith('/api/login')){
         const queryObject = url.parse(req.url,true).query
-        dbQuery.dbGet('jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject)
+        dbQuery.dbLogin('jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject)
             .then((resp) => {
-                console.log(resp)
                 res.statusCode = 200
                 res.writeHead(200, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify(resp), 'utf-8')

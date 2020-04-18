@@ -1,4 +1,5 @@
 const mongoClient = require('mongodb').MongoClient
+const argon2 = require('argon2')
 let client
 
 function dbConnect(dbUser, dbPwd, dbName){
@@ -29,22 +30,30 @@ async function dbLoad(dbUser, dbPwd, dbName, dbCollection) {
 
 }
 
-async function dbGet(dbUser, dbPwd, dbName, dbCollection, dbElem) {
+async function dbLogin(dbUser, dbPwd, dbName, dbCollection, dbElem) {
 
     dbConnect(dbUser, dbPwd, dbName)
-
-    /*
-    TODO: récupérer les informations via post, traiter et renvoyer les données nécessaires.
-     */
-    console.log(dbElem.username)
 
     try {
         await client.connect();
         console.log("Connected successfully to mongodb server");
         const db = client.db(dbName);
         const document = await db.collection(dbCollection).find({ username: dbElem.username}).toArray()
+        if ( document.length != 0 ){
+            try {
+                if (await argon2.verify(document[0].password, dbElem.password)) {
+                    return document
+                } else {
+                    return 'incorrect password'
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            return 'user not found'
+        }
         console.log(`Get ${dbCollection} in ${dbName}`)
-        return document
+
     } catch (e) {
         console.error(e);
     } finally {
@@ -56,5 +65,5 @@ async function dbGet(dbUser, dbPwd, dbName, dbCollection, dbElem) {
 
 module.exports = {
     dbLoad,
-    dbGet
+    dbLogin
 }
