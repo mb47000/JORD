@@ -1,4 +1,10 @@
-import * as POUCHDB from '../node_modules/pouchdb/dist/pouchdb.min.js';
+// Create event 'dbReady'
+let dbReady = document.createEvent('Event')
+dbReady.initEvent('dbReady', true, true)
 
-let dbReady = new Event('dbReady');
-dbReady.initEvent('dbReady', true, true);
+// Create event 'pageReady'
+let pageReady = document.createEvent('Event')
+pageReady.initEvent('pageReady', true, true)
+
+let initWebsite = document.createEvent('Event')
+initWebsite.initEvent('initWebsite', true, true)

@@ -5,9 +5,10 @@ const fs = require('fs');
 const root = 'src/js/';
 const scripts = [
     'import.js',
-    'database.js',
     'router.js',
+    'products.js',
     'layoutsParts.js',
+    'login.js',
 ];
 let destFile = process.argv.pop();
 
@@ -35,3 +36,4 @@ if( process.argv.includes('--watch') ){
 } else {
     compil();
 }
+

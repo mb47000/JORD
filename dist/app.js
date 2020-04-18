@@ -1,8 +1,13 @@
-import * as POUCHDB from '../node_modules/pouchdb/dist/pouchdb.min.js';
+// Create event 'dbReady'
+let dbReady = document.createEvent('Event')
+dbReady.initEvent('dbReady', true, true)
 
-let dbReady = new Event('dbReady');
-dbReady.initEvent('dbReady', true, true);
-let db = new PouchDB('http://127.0.0.1:5984/jord');
+// Create event 'pageReady'
+let pageReady = document.createEvent('Event')
+pageReady.initEvent('pageReady', true, true)
+
+let initWebsite = document.createEvent('Event')
+initWebsite.initEvent('initWebsite', true, true)
 /*
  * ROUTER FOR PAGES
  */
@@ -25,9 +30,11 @@ class Router {
             let res = await fetch(this.routes[route]);
             this.cache[route] = await res.text();
         }
-        document.getElementById('content').innerHTML = this.cache[route];
+        document.getElementById('content').innerHTML = this.cache[route]
+        document.dispatchEvent(pageReady)
     }
 }
+
 
 
 let routes = {}
@@ -46,22 +53,36 @@ let pagesList = {
 }
 createRoutesObject('../views/pages/', pagesList);
 
-
-db.query('product', {
-    include_docs: true
-}).then(function (res){
-    let productList = {};
-    res.rows.forEach(e => {
-        productList['#' + e.doc.slug] = e.doc.file;
-    })
-    createRoutesObject('../views/products/', productList)
-    document.dispatchEvent(dbReady);
-}).catch(function (err) {
-    console.log(err);
-    document.dispatchEvent(dbReady);
-});
-
 let pagesRoutes = new Router(routes);
+// Get product list and set in local storage
+(() => { fetch('/api/productsList')
+    .then(res => { return res.json() })
+    .then(data => {
+        localStorage.setItem('products', JSON.stringify(data))
+        let productRoutes = {}
+        data.forEach(e => {
+            productRoutes['#' + e.slug] = 'product'
+        })
+        createRoutesObject('../views/templates/', productRoutes)
+        document.dispatchEvent(dbReady)
+    })
+})()
+
+window.addEventListener('pageReady', e => buildProduct() )
+
+function buildProduct(){
+    let target = location.pathname.split('/').pop()
+    let productList = localStorage.getItem('products')
+
+    JSON.parse(productList).forEach(elt => {
+        if(elt.slug === target){
+            console.log(elt)
+            document.querySelector('h1').innerHTML = elt.name
+        }
+    })
+
+    document.dispatchEvent(initWebsite)
+}
 /**
  * FETCH NAVBAR FILES
  */
@@ -79,4 +100,27 @@ fetch('../views/parts/footer.html', {mode: 'no-cors'})
     .then(data=> document.getElementById('footer').innerHTML = data )
     .catch(error => console.error(error));
 
+
+
+window.addEventListener( 'initWebsite', function() {
+    const loginForm = document.getElementById('loginForm')
+    if ( loginForm ){
+        loginForm.addEventListener('submit', async(e) => {
+            e.preventDefault()
+            let param = '?'
+            let data = new FormData(e.target)
+            for (var [key, value] of data.entries()) {
+                param = param.concat(`${key}=${value}&`)
+            }
+            param = param.slice(0, -1)
+
+            // Get product list and set in local storage
+            fetch(`/api/login${param}`)
+                .then((res) => { return res.json() })
+                .then((data) => {
+                    console.log(data)
+                })
+        })
+    }
+} )
 

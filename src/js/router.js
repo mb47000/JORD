@@ -20,9 +20,11 @@ class Router {
             let res = await fetch(this.routes[route]);
             this.cache[route] = await res.text();
         }
-        document.getElementById('content').innerHTML = this.cache[route];
+        document.getElementById('content').innerHTML = this.cache[route]
+        document.dispatchEvent(pageReady)
     }
 }
+
 
 
 let routes = {}
@@ -40,20 +42,5 @@ let pagesList = {
     '#about-me': 'about'
 }
 createRoutesObject('../views/pages/', pagesList);
-
-
-db.query('product', {
-    include_docs: true
-}).then(function (res){
-    let productList = {};
-    res.rows.forEach(e => {
-        productList['#' + e.doc.slug] = e.doc.file;
-    })
-    createRoutesObject('../views/products/', productList)
-    document.dispatchEvent(dbReady);
-}).catch(function (err) {
-    console.log(err);
-    document.dispatchEvent(dbReady);
-});
 
 let pagesRoutes = new Router(routes);
