@@ -1,6 +1,3 @@
-/*
- * ROUTER FOR PAGES
- */
 class Router {
 
     constructor( routes ) {

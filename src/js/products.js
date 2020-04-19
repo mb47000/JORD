@@ -1,4 +1,3 @@
-// Get product list and set in local storage
 (() => { fetch( '/api/productsList' )
 
     .then( res => { return res.json() } )
