@@ -1,47 +1,56 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const http = require('http')
+const fs = require('fs')
+const path = require('path')
 const url = require('url')
 const mongoClient = require('mongodb').MongoClient
 const dbQuery = require('./api/database.js')
 
-let productsList
-let login
+let productsList,
+    login
 
-dbQuery.dbLoad('jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'products')
-    .then((res) => productsList = res)
+dbQuery.dbLoad( 'jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'products' )
+    .then( ( res ) => productsList = res )
 
-
-
-http.createServer(function (req, res) {
+http.createServer( function ( req, res ) {
 
     let filePath = '.' + req.url
 
-    if (filePath == './'){
+    if ( filePath == './' ){
+
         filePath = './index.html'
         readFile()
+
     } else if ( req.url === '/api/productsList' ){
+
         res.statusCode = 200
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify(productsList), 'utf-8')
-    } else if ( req.url.startsWith('/api/login')){
-        const queryObject = url.parse(req.url,true).query
-        dbQuery.dbLogin('jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject)
-            .then((resp) => {
+        res.writeHead( 200, { 'Content-Type': 'application/json' } )
+        res.end( JSON.stringify( productsList ), 'utf-8' )
+
+    } else if ( req.url.startsWith( '/api/login' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        dbQuery.dbLogin( 'jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject )
+            .then( ( resp ) => {
                 res.statusCode = 200
-                res.writeHead(200, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify(resp), 'utf-8')
+                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                res.end( JSON.stringify( resp ), 'utf-8' )
             })
-    } else if( String(path.extname(req.url)) === '' ){
-        res.writeHead(302, { 'Location': '/#' + req.url.replace('/', '') });
-        res.end();
+
+    } else if( String( path.extname( req.url ) ) === '' ){
+
+        res.writeHead( 302, { 'Location': '/#' + req.url.replace( '/', '' ) } )
+        res.end()
+
     } else {
+
         readFile()
+
     }
 
 
     function readFile(){
-        let extname = String(path.extname(filePath)).toLowerCase();
+
+        let extname = String( path.extname( filePath ) ).toLowerCase()
 
         let mimeTypes = {
             '.html': 'text/html',
@@ -61,15 +70,16 @@ http.createServer(function (req, res) {
             '.wasm': 'application/wasm'
         };
 
-        let contentType = mimeTypes[extname] || 'application/octet-stream';
+        let contentType = mimeTypes[extname] || 'application/octet-stream'
 
-        fs.readFile(filePath, function(error, content) {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        });
+        fs.readFile( filePath, function( error, content ) {
+            res.writeHead( 200, { 'Content-Type': contentType } )
+            res.end( content, 'utf-8' )
+        })
     }
 
-}).listen(8125);
-console.log('Server running at http://127.0.0.1:8125/');
+}).listen( 8125 )
+
+console.log( 'Server running at http://127.0.0.1:8125/' )
 
 

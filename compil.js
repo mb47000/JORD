@@ -9,31 +9,39 @@ const scripts = [
     'products.js',
     'layoutsParts.js',
     'login.js',
-];
+]
 let destFile = process.argv.pop();
 
+let compil = ( curr, prev ) => {
 
-let compil = (curr, prev) => {
-    console.error('Compiling...')
+    console.error( 'Compiling...' )
+
     try {
 
-        let dist = scripts.map(script => fs.readFileSync(root + script, {encoding: 'utf8'})).join('\n')
+        let dist = scripts.map( script => fs.readFileSync( root + script, { encoding: 'utf8' } ) ).join( '\n' )
 
-        if( process.argv.includes('--compress') )
-            dist = Terser.minify(dist).code
+        if ( process.argv.includes( '--compress' ) )
+            dist = Terser.minify( dist ).code
 
-        fs.writeFileSync(destFile,dist);
+        fs.writeFileSync( destFile, dist )
 
-    } catch (e) {
-        console.error(e)
+    } catch ( e ) {
+
+        console.error( e )
+
     }
-    console.error('Compil Done!')
+
+    console.error( 'Compil Done!' )
 }
 
-if( process.argv.includes('--watch') ){
-    console.error('JS is watching for Change');
-    scripts.forEach(e => fs.watchFile(root + e, compil) );
+if ( process.argv.includes( '--watch' ) ){
+
+    console.error( 'JS is watching for Change' )
+    scripts.forEach( e => fs.watchFile( root + e, compil ) )
+
 } else {
-    compil();
+
+    compil()
+
 }
 
