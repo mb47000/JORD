@@ -17,7 +17,6 @@ function showPushNotification(type, msg){
 
     const pushNotif = document.getElementById('pushNotification')
     const notice = pushNotif.firstElementChild
-    const clodeBtn = notice.firstElementChild
 
     notice.classList.remove('show')
     notice.classList.add('hide')

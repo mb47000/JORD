@@ -2020,6 +2020,7 @@ body .m-1 {
 }
 #pushNotification .notif .msg {
   display: inline-block;
+  transition: all 0.5s ease-in-out;
 }
 #pushNotification .notif .close {
   padding: 0 0 0 0.5rem;
@@ -2044,6 +2045,10 @@ body .m-1 {
   opacity: 0;
   transition: all 0.5s ease-in-out;
   pointer-events: none;
+}
+#pushNotification .hide .msg {
+  color: var(--secondary-back-color);
+  transition: all 0.5s ease-in-out;
 }
 #pushNotification .show {
   opacity: 1;

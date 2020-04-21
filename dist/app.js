@@ -124,7 +124,6 @@ function showPushNotification(type, msg){
 
     const pushNotif = document.getElementById('pushNotification')
     const notice = pushNotif.firstElementChild
-    const clodeBtn = notice.firstElementChild
 
     notice.classList.remove('show')
     notice.classList.add('hide')
@@ -246,7 +245,13 @@ document.addEventListener( 'initWebsite', function() {
                                 .then( res => {
                                     return res.json()
                                 }).then( data => {
-                                    console.log( JSON.stringify( data ) )
+                                    if ( data === 'username already exist' ){
+                                        showPushNotification('error', "Nom d'utilisateur déjà utilisé")
+                                    } else if ( data === 'email already use' ){
+                                        showPushNotification('error', "Adresse email déjà utilisée")
+                                    } else {
+                                        showPushNotification('success', "Compte créé, vous pouvez vous connecter")
+                                    }
                             })
                         }
                     }
