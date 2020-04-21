@@ -93,13 +93,72 @@ function buildProduct(){
 
 fetch( '../views/parts/navbar.html', { mode: 'no-cors' } )
     .then( response => response.text() )
-    .then( data=> document.getElementById( 'navbar' ).innerHTML = data )
+    .then( data => document.getElementById( 'navbar' ).innerHTML = data )
     .catch( error => console.error( error ) )
 
 fetch( '../views/parts/footer.html', { mode: 'no-cors' } )
     .then( response => response.text() )
-    .then( data=> document.getElementById( 'footer' ).innerHTML = data )
+    .then( data => document.getElementById( 'footer' ).innerHTML = data )
     .catch( error => console.error( error ) )
+
+fetch( '../views/parts/pushNotification.html', { mode: 'no-cors' } )
+    .then( response => response.text() )
+    .then( data => document.getElementById( 'pushNotification' ).innerHTML = data )
+    .catch( error => console.error( error ) )
+
+document.addEventListener( 'initWebsite', function() {
+    const pushNotif = document.getElementById('pushNotification')
+    const notice = pushNotif.firstElementChild
+    const clodeBtn = notice.lastElementChild
+
+    console.log(notice)
+
+    clodeBtn.addEventListener('click', e => {
+        notice.classList.toggle('show')
+        notice.classList.toggle('hide')
+    })
+
+})
+
+function showPushNotification(type, msg){
+
+    const pushNotif = document.getElementById('pushNotification')
+    const notice = pushNotif.firstElementChild
+    const clodeBtn = notice.firstElementChild
+
+    notice.classList.remove('show')
+    notice.classList.add('hide')
+    notice.classList.remove('info')
+    notice.classList.remove('success')
+    notice.classList.remove('error')
+
+    switch (type) {
+        case 'success':
+            notice.classList.add('success')
+            break
+        case 'error':
+            notice.classList.add('error')
+            break
+        case 'info':
+            notice.classList.add('info')
+            break
+    }
+
+    console.log(notice.querySelector('.msg'))
+    notice.querySelector('.msg').innerText = ''
+    notice.querySelector('.msg').innerText = msg
+
+    notice.classList.toggle('hide')
+    notice.classList.toggle('show')
+
+    setTimeout(function(){
+        if ( notice.classList.contains('show') ){
+            notice.classList.toggle('show')
+            notice.classList.toggle('hide')
+        }
+    }, 5000);
+
+}
 let userLocal = localStorage.getItem('userLocal')
 
 document.addEventListener( 'initWebsite', function() {
@@ -161,11 +220,13 @@ document.addEventListener( 'initWebsite', function() {
                             })
                             .then(data => {
                                 if ( data === 'user not found' ) {
-                                    console.log( 'user not found' )
+                                    showPushNotification('error', "Nom d'utilisateur incorrect")
                                 } else if ( data === 'incorrect password' ) {
-                                    console.log( 'incorrect password' )
+                                    showPushNotification('error', "Mauvais mot de passe")
                                 } else {
                                     localStorage.setItem( 'userLocal', data )
+                                    showPushNotification('success', "Connexion réussi ! Bonjour " + data[0])
+                                    console.log(data)
                                     userIsLog()
                                 }
                             })

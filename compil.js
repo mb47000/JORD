@@ -8,6 +8,7 @@ const scripts = [
     'router.js',
     'products.js',
     'layoutsParts.js',
+    'pushNotification.js',
     'account.js',
 ]
 let destFile = process.argv.pop();

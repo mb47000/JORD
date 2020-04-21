@@ -59,11 +59,13 @@ document.addEventListener( 'initWebsite', function() {
                             })
                             .then(data => {
                                 if ( data === 'user not found' ) {
-                                    console.log( 'user not found' )
+                                    showPushNotification('error', "Nom d'utilisateur incorrect")
                                 } else if ( data === 'incorrect password' ) {
-                                    console.log( 'incorrect password' )
+                                    showPushNotification('error', "Mauvais mot de passe")
                                 } else {
                                     localStorage.setItem( 'userLocal', data )
+                                    showPushNotification('success', "Connexion réussi ! Bonjour " + data[0])
+                                    console.log(data)
                                     userIsLog()
                                 }
                             })

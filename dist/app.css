@@ -2006,4 +2006,48 @@ body .m-1 {
   z-index: -1;
 }
 
+#pushNotification .notif {
+  position: fixed;
+  top: calc(var(--universal-margin) * 5);
+  right: 0;
+  transform: translate(-10%, -50%);
+  z-index: 1111;
+  color: var(--toast-fore-color);
+  background: var(--secondary-back-color);
+  border: 1px solid var(--header-border-color);
+  border-radius: calc(var(--universal-border-radius) * 16);
+  padding: var(--universal-padding) calc(var(--universal-padding) * 3);
+}
+#pushNotification .notif .msg {
+  display: inline-block;
+}
+#pushNotification .notif .close {
+  padding: 0 0 0 0.5rem;
+  font-size: 1.15em;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+}
+#pushNotification .success {
+  color: #4CC355;
+  border: 1px solid #4CC355;
+}
+#pushNotification .error {
+  color: #D11D05;
+  border: 1px solid #D11D05;
+}
+#pushNotification .info {
+  color: #5AD;
+  border: 1px solid #5AD;
+}
+#pushNotification .hide {
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+  pointer-events: none;
+}
+#pushNotification .show {
+  opacity: 1;
+  transition: all 0.5s ease-in-out;
+}
+
 /*# sourceMappingURL=app.css.map */
