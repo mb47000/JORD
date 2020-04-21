@@ -1,8 +1,3 @@
-let dbReady = document.createEvent( 'Event' )
-dbReady.initEvent( 'dbReady', true, true )
-
-let pageReady = document.createEvent( 'Event' )
-pageReady.initEvent( 'pageReady', true, true )
-
-let initWebsite = document.createEvent( 'Event' )
-initWebsite.initEvent( 'initWebsite', true, true )
+let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
+let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
+let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )

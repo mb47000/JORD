@@ -1,5 +1,8 @@
 .modal {
   position:absolute;
+  z-index: 9;
+  transition: max-height .3s ease-in-out;
+  max-height: 600px;
   &.modal-right {
     right:0;
   }

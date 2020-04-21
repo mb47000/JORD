@@ -1988,9 +1988,22 @@ body .m-1 {
 
 .modal {
   position: absolute;
+  z-index: 9;
+  transition: max-height 0.3s ease-in-out;
+  max-height: 600px;
 }
 .modal.modal-right {
   right: 0;
+}
+
+.important-field {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  z-index: -1;
 }
 
 /*# sourceMappingURL=app.css.map */

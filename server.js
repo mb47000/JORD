@@ -36,6 +36,16 @@ http.createServer( function ( req, res ) {
                 res.end( JSON.stringify( resp ), 'utf-8' )
             })
 
+    } else if ( req.url.startsWith( '/api/register' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        dbQuery.dbRegister( 'jordwrite', 'Pf01vVZ6QeEt9UzayAWg3Fkt7VT6z2VrdP', 'jord', 'users', queryObject )
+            .then( ( resp ) => {
+                res.statusCode = 200
+                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                res.end( JSON.stringify( resp ), 'utf-8' )
+            } )
+
     } else if( String( path.extname( req.url ) ) === '' ){
 
         res.writeHead( 302, { 'Location': '/#' + req.url.replace( '/', '' ) } )
