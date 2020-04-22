@@ -91,108 +91,131 @@ function buildProduct(){
     document.dispatchEvent( initWebsite )
 }
 
+let userMenuHTML,
+    loginLogoutFormHTML
+
 fetch( '../views/parts/navbar.html', { mode: 'no-cors' } )
-    .then( response => response.text() )
+    .then( response => response.text( ) )
     .then( data => document.getElementById( 'navbar' ).innerHTML = data )
     .catch( error => console.error( error ) )
 
 fetch( '../views/parts/footer.html', { mode: 'no-cors' } )
-    .then( response => response.text() )
+    .then( response => response.text( ) )
     .then( data => document.getElementById( 'footer' ).innerHTML = data )
     .catch( error => console.error( error ) )
 
 fetch( '../views/parts/pushNotification.html', { mode: 'no-cors' } )
-    .then( response => response.text() )
+    .then( response => response.text( ) )
     .then( data => document.getElementById( 'pushNotification' ).innerHTML = data )
     .catch( error => console.error( error ) )
 
-document.addEventListener( 'initWebsite', function() {
-    const pushNotif = document.getElementById('pushNotification')
+fetch( '../views/parts/userMenu.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => userMenuHTML = data )
+    .catch( error => console.error( error ) )
+
+fetch( '../views/parts/loginLogoutForm.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => loginLogoutFormHTML = data )
+    .catch( error => console.error( error ) )
+
+document.addEventListener( 'initWebsite', function( ) {
+    const pushNotif = document.getElementById( 'pushNotification' )
     const notice = pushNotif.firstElementChild
     const clodeBtn = notice.lastElementChild
 
-    console.log(notice)
-
-    clodeBtn.addEventListener('click', e => {
-        notice.classList.toggle('show')
-        notice.classList.toggle('hide')
+    clodeBtn.addEventListener( 'click', e => {
+        notice.classList.toggle( 'show' )
+        notice.classList.toggle( 'hide' )
     })
 
 })
 
-function showPushNotification(type, msg){
+function showPushNotification( type, msg ){
 
-    const pushNotif = document.getElementById('pushNotification')
+    const pushNotif = document.getElementById( 'pushNotification' )
     const notice = pushNotif.firstElementChild
 
-    notice.classList.remove('show')
-    notice.classList.add('hide')
-    notice.classList.remove('info')
-    notice.classList.remove('success')
-    notice.classList.remove('error')
+    notice.classList.remove( 'show' )
+    notice.classList.add( 'hide' )
+    notice.classList.remove( 'info' )
+    notice.classList.remove( 'success' )
+    notice.classList.remove( 'error' )
 
-    switch (type) {
+    switch ( type ) {
         case 'success':
-            notice.classList.add('success')
+            notice.classList.add( 'success' )
             break
         case 'error':
-            notice.classList.add('error')
+            notice.classList.add( 'error' )
             break
         case 'info':
-            notice.classList.add('info')
+            notice.classList.add( 'info' )
             break
     }
 
-    console.log(notice.querySelector('.msg'))
-    notice.querySelector('.msg').innerText = ''
-    notice.querySelector('.msg').innerText = msg
+    notice.querySelector( '.msg' ).innerText = ''
+    notice.querySelector( '.msg' ).innerText = msg
 
-    notice.classList.toggle('hide')
-    notice.classList.toggle('show')
+    notice.classList.toggle( 'hide' )
+    notice.classList.toggle( 'show' )
 
-    setTimeout(function(){
-        if ( notice.classList.contains('show') ){
-            notice.classList.toggle('show')
-            notice.classList.toggle('hide')
+    setTimeout( function( ) {
+        if ( notice.classList.contains( 'show' ) ) {
+            notice.classList.toggle( 'show' )
+            notice.classList.toggle( 'hide' )
         }
-    }, 5000);
+    }, 5000 )
 
 }
-let userLocal = localStorage.getItem('userLocal')
+document.body.addEventListener( 'click', e => {
+    e.target.dataset.modaltarget != null ? showModal( e.target.dataset.modaltarget ) : e.target.closest( '.modal' ) === null ? hideModal() : null
+})
+
+function showModal( e ){
+    document.querySelector( `[data-modal=${e}]` ).hidden = false
+}
+
+function hideModal(){
+    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.hidden = true )
+}
+let userLocal = localStorage.getItem( 'userLocal' )
 
 document.addEventListener( 'initWebsite', function() {
 
     if ( userLocal ) {
 
-        console.log( userLocal )
-        userIsLog()
+        userIsLog( )
 
     } else {
+
+        document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+
         const loginForm = document.getElementById( 'loginRegisterForm' )
         const switchForm = document.getElementById( 'switchForm' )
         const buttonSubmit = document.getElementById( 'buttonSend' )
 
-        switchForm.addEventListener('click', (e) => {
-            e.preventDefault()
+        switchForm.addEventListener( 'click', ( e ) => {
+            e.preventDefault( )
 
-            buttonSubmit.classList.contains('loginSubmit') ? switchToRegister() : switchToLogin()
+            buttonSubmit.classList.contains( 'loginSubmit' ) ? switchToRegister( ) : switchToLogin( )
 
-            function switchToLogin(){
+            function switchToLogin( ) {
                 switchForm.innerHTML = "Pas encore enregistré"
-                loginForm.querySelector('legend').innerHTML = "S'identifier"
+                loginForm.querySelector( 'legend' ).innerHTML = "S'identifier"
                 loginForm.confirmPassword.hidden = true
                 loginForm.email.hidden = true
                 buttonSubmit.value = "Connexion"
-                buttonSubmit.classList.toggle('loginSubmit')
+                buttonSubmit.classList.toggle( 'loginSubmit' )
             }
 
-            function switchToRegister(){
+            function switchToRegister( ) {
                 switchForm.innerHTML = "J'ai déjà un compte"
-                loginForm.querySelector('legend').innerHTML = "S'enregistrer"
+                loginForm.querySelector( 'legend' ).innerHTML = "S'enregistrer"
                 loginForm.confirmPassword.hidden = false
                 loginForm.email.hidden = false
                 buttonSubmit.value = "Inscription"
-                buttonSubmit.classList.toggle('loginSubmit')
+                buttonSubmit.classList.toggle( 'loginSubmit' )
             }
         })
 
@@ -200,40 +223,40 @@ document.addEventListener( 'initWebsite', function() {
 
             loginForm.addEventListener( 'submit', async( e ) => {
 
-                e.preventDefault()
+                e.preventDefault( )
                 let param = '?'
 
                 if( e.target.monprenom.value === '' & e.target.monadresse.value === 'ceci est mon adresse' ) {
                     let data = new FormData(e.target)
 
-                    if (buttonSubmit.classList.contains('loginSubmit')) {
-                        for ( var [key, value] of data.entries() ) {
+                    if ( buttonSubmit.classList.contains( 'loginSubmit' ) ) {
+                        for ( var [key, value] of data.entries( ) ) {
                             param = param.concat( `${key}=${value}&` )
                         }
 
                         param = param.slice( 0, -1 )
 
                         fetch( `/api/login${param}` )
-                            .then(res => {
-                                return res.json()
+                            .then( res => {
+                                return res.json( )
                             })
-                            .then(data => {
+                            .then( data => {
                                 if ( data === 'user not found' ) {
-                                    showPushNotification('error', "Nom d'utilisateur incorrect")
+                                    showPushNotification( 'error', "Nom d'utilisateur incorrect" )
                                 } else if ( data === 'incorrect password' ) {
-                                    showPushNotification('error', "Mauvais mot de passe")
+                                    showPushNotification( 'error', "Mauvais mot de passe" )
                                 } else {
                                     localStorage.setItem( 'userLocal', data )
-                                    showPushNotification('success', "Connexion réussi ! Bonjour " + data[0])
-                                    console.log(data)
-                                    userIsLog()
+                                    showPushNotification( 'success', "Connexion réussi ! Bonjour " + data[0] )
+                                    hideModal( )
+                                    userIsLog( )
                                 }
                             })
                     } else {
 
-                        let dataSend = {}
+                        let dataSend = { }
 
-                        for ( var [key, value] of data.entries() ) {
+                        for ( var [key, value] of data.entries( ) ) {
                             dataSend[key] = value
                             param = param.concat( `${key}=${value}&` )
                         }
@@ -243,14 +266,15 @@ document.addEventListener( 'initWebsite', function() {
 
                             fetch( `/api/register${param}` )
                                 .then( res => {
-                                    return res.json()
+                                    return res.json( )
                                 }).then( data => {
                                     if ( data === 'username already exist' ){
-                                        showPushNotification('error', "Nom d'utilisateur déjà utilisé")
+                                        showPushNotification( 'error', "Nom d'utilisateur déjà utilisé" )
                                     } else if ( data === 'email already use' ){
-                                        showPushNotification('error', "Adresse email déjà utilisée")
+                                        showPushNotification( 'error', "Adresse email déjà utilisée" )
                                     } else {
-                                        showPushNotification('success', "Compte créé, vous pouvez vous connecter")
+                                        showPushNotification( 'success', "Compte créé, vous pouvez vous connecter" )
+                                        hideModal( )
                                     }
                             })
                         }
@@ -259,10 +283,23 @@ document.addEventListener( 'initWebsite', function() {
             })
         }
     }
+
 })
 
-function userIsLog(){
+function userIsLog( ) {
 
-    document.getElementById( 'loginRegister' ).hidden = true
+    document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
+    document.getElementById( 'logoutMenu' ).addEventListener( 'click', e => {
+        e.preventDefault( )
+        localStorage.removeItem( 'userLocal' )
+        userIsNotLog( )
+        showPushNotification( 'success', "Déconnection réussi !" )
+    })
+
+}
+
+function userIsNotLog( ) {
+
+    document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
 
 }

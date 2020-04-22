@@ -7,3 +7,9 @@
     right:0;
   }
 }
+
+.buttonModal {
+  > span, > div {
+    pointer-events: none;
+  }
+}

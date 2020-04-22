@@ -1,9 +1,9 @@
-const http = require('http')
-const fs = require('fs')
-const path = require('path')
-const url = require('url')
-const mongoClient = require('mongodb').MongoClient
-const dbQuery = require('./api/database.js')
+const http          = require( 'http' )
+const fs            = require( 'fs' )
+const path          = require( 'path' )
+const url           = require( 'url' )
+const mongoClient   = require( 'mongodb' ).MongoClient
+const dbQuery       = require( './api/database.js' )
 
 let productsList,
     login
@@ -15,12 +15,12 @@ http.createServer( function ( req, res ) {
 
     let filePath = '.' + req.url
 
-    if ( filePath == './' ){
+    if ( filePath == './' ) {
 
         filePath = './index.html'
-        readFile()
+        readFile( )
 
-    } else if ( req.url === '/api/productsList' ){
+    } else if ( req.url === '/api/productsList' ) {
 
         res.statusCode = 200
         res.writeHead( 200, { 'Content-Type': 'application/json' } )
@@ -30,7 +30,7 @@ http.createServer( function ( req, res ) {
 
         const queryObject = url.parse( req.url, true ).query
         dbQuery.dbLogin( 'jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject )
-            .then( ( resp ) => {
+            .then( resp => {
                 res.statusCode = 200
                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
                 res.end( JSON.stringify( resp ), 'utf-8' )
@@ -40,13 +40,13 @@ http.createServer( function ( req, res ) {
 
         const queryObject = url.parse( req.url, true ).query
         dbQuery.dbRegister( 'jordwrite', 'Pf01vVZ6QeEt9UzayAWg3Fkt7VT6z2VrdP', 'jord', 'users', queryObject )
-            .then( ( resp ) => {
+            .then( resp => {
                 res.statusCode = 200
                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
                 res.end( JSON.stringify( resp ), 'utf-8' )
             } )
 
-    } else if( String( path.extname( req.url ) ) === '' ){
+    } else if ( String( path.extname( req.url ) ) === '' ) {
 
         res.writeHead( 302, { 'Location': '/#' + req.url.replace( '/', '' ) } )
         res.end()
@@ -58,26 +58,26 @@ http.createServer( function ( req, res ) {
     }
 
 
-    function readFile(){
+    function readFile( ){
 
-        let extname = String( path.extname( filePath ) ).toLowerCase()
+        let extname = String( path.extname( filePath ) ).toLowerCase( )
 
         let mimeTypes = {
-            '.html': 'text/html',
-            '.js': 'text/javascript',
-            '.css': 'text/css',
-            '.json': 'application/json',
-            '.png': 'image/png',
-            '.jpg': 'image/jpg',
-            '.gif': 'image/gif',
-            '.svg': 'image/svg+xml',
-            '.wav': 'audio/wav',
-            '.mp4': 'video/mp4',
-            '.woff': 'application/font-woff',
-            '.ttf': 'application/font-ttf',
-            '.eot': 'application/vnd.ms-fontobject',
-            '.otf': 'application/font-otf',
-            '.wasm': 'application/wasm'
+            '.html' : 'text/html',
+            '.js'   : 'text/javascript',
+            '.css'  : 'text/css',
+            '.json' : 'application/json',
+            '.png'  : 'image/png',
+            '.jpg'  : 'image/jpg',
+            '.gif'  : 'image/gif',
+            '.svg'  : 'image/svg+xml',
+            '.wav'  : 'audio/wav',
+            '.mp4'  : 'video/mp4',
+            '.woff' : 'application/font-woff',
+            '.ttf'  : 'application/font-ttf',
+            '.eot'  : 'application/vnd.ms-fontobject',
+            '.otf'  : 'application/font-otf',
+            '.wasm' : 'application/wasm'
         };
 
         let contentType = mimeTypes[extname] || 'application/octet-stream'

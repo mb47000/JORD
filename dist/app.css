@@ -1996,6 +1996,10 @@ body .m-1 {
   right: 0;
 }
 
+.buttonModal > span, .buttonModal > div {
+  pointer-events: none;
+}
+
 .important-field {
   opacity: 0;
   position: absolute;
