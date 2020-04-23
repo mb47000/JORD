@@ -101,7 +101,7 @@ db.products.insertOne(
 
 # Edit Templates and Parts
 **Parts**
-Pages element's like header, footer... => /views/parts/
+Pages element's like header, footer... into folder /views/parts/
 
 **Templates**
-Use for same "type" of pages, like products, blog... => /views/parts/
+Use for same "type" of pages, like products, blog... into folder /views/parts/
