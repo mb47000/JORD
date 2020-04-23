@@ -1,11 +1,84 @@
 # JORD
-Minimal website system without framework
+Minimal website SPA system without framework
 
-# Launch Server
-npm run server
+# Commands
+Launch server : npm run server
+Launch watch : npm run watch
+Launche compil : npm run compil
 
-# Launch Watch
-npm run watch
+# Install
+**Prerequisite**
+* NodeJS (v.12.16.2 and more)
+* MongoDB server (4.2.5 and more)
 
-# Launch Compil
-npm run compil
+**Dépendencies**
+* Argon2 (password-hashing function)
+* MongoDB (MongoDB driver for Node.js)
+* SASS (CSS extension and preprocessor)
+* Terser(JavaScript parser and mangler/compressor)
+
+**Database**
+Create mongoDB database with 2 users, one for read and one for readWrite.
+
+```
+use databaseName
+db.createUser(
+  {
+    user: "dbNameRead",
+    pwd: useVeryStrongPassword,
+    roles: [
+       { role: "read", db: "databaseName" }
+    ]
+  }
+)
+```
+
+```
+use databaseName
+db.createUser(
+  {
+    user: "dbNameReadWrite",
+    pwd: useVeryStrongPassword,
+    roles: [
+       { role: "readWrite", db: "databaseName" }
+    ]
+  }
+)
+```
+
+Create 2 collections :
+* users
+* products
+
+```
+use databaseName
+db.createCollection('users')
+db.createCollection('products')
+```
+
+Add users info in *server.js* file, edit the "dbInfo" object.
+
+```
+const dbInfo = {
+    dbName: 'databaseName',
+    userR: 'userRead',
+    pwdR: 'passwordUserRead',
+    userRW: 'userReadWrite',
+    pwdRW: 'passwordReadWrite'
+}
+```
+
+**New pages**
+1. Go into folder /views/pages
+2. Create HTML file
+3. Go into file /src/js/router.js
+4. Add element into "pagesList" object like this
+
+```
+let pagesList = {
+    '#': 'home',
+    '#404': '404',
+    '#slug': 'htmlfilename'
+}
+```
+The key is the slug use to create the http address and the value is the HTML file in /views/pages (don't write extension ".html").
