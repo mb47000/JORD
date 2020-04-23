@@ -84,3 +84,24 @@ let pagesList = {
 }
 ```
 The key is the slug use to create the http address and the value is the HTML file in /views/pages (don't write extension ".html").
+
+**New Product**
+Add document in collection "products", the field "slug" is required.
+
+```
+use databaseName
+db.products.insertOne(
+   { 
+   slug: "my-product-slug", 
+   name: "Product Name, 
+   price: "89.98",
+   }
+)
+```
+
+# Edit Templates and Parts
+**Parts**
+Pages element's like header, footer... => /views/parts/
+
+**Templates**
+Use for same "type" of pages, like products, blog... => /views/parts/
