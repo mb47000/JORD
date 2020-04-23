@@ -2,9 +2,9 @@
 Minimal website SPA system without framework
 
 # Commands
-* Launch server : npm run server
-* Launch watch : npm run watch
-* Launche compil : npm run compil
+* Launch server : `npm run server`
+* Launch watch : `npm run watch`
+* Launch compil : `npm run compil`
 
 # Install
 **Prerequisite**
@@ -12,10 +12,10 @@ Minimal website SPA system without framework
 * MongoDB server (4.2.5 and more)
 
 **Dépendencies**
-* Argon2 (password-hashing function)
-* MongoDB (MongoDB driver for Node.js)
-* SASS (CSS extension and preprocessor)
-* Terser(JavaScript parser and mangler/compressor)
+* Argon2 ( password-hashing function )
+* MongoDB ( MongoDB driver for Node.js )
+* SASS ( CSS extension and preprocessor )
+* Terser ( JavaScript parser and mangler/compressor )
 
 **Database**
 
