@@ -2,9 +2,9 @@
 Minimal website SPA system without framework
 
 # Commands
-Launch server : npm run server
-Launch watch : npm run watch
-Launche compil : npm run compil
+* Launch server : npm run server
+* Launch watch : npm run watch
+* Launche compil : npm run compil
 
 # Install
 **Prerequisite**
