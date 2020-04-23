@@ -18,6 +18,7 @@ Launche compil : npm run compil
 * Terser(JavaScript parser and mangler/compressor)
 
 **Database**
+
 Create mongoDB database with 2 users, one for read and one for readWrite.
 
 ```
@@ -68,6 +69,7 @@ const dbInfo = {
 }
 ```
 
+# Add Content
 **New pages**
 1. Go into folder /views/pages
 2. Create HTML file
