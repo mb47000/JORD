@@ -14,6 +14,7 @@ Minimal website SPA system without framework
 **Dépendencies**
 * Argon2 ( password-hashing function )
 * MongoDB ( MongoDB driver for Node.js )
+* Nodemailer ( Allow easy as cake email sending )
 * SASS ( CSS extension and preprocessor )
 * Terser ( JavaScript parser and mangler/compressor )
 
