@@ -1,7 +1,8 @@
 let pagesList = {
     '#': 'home',
     '#404': '404',
-    '#about-me': 'about'
+    '#about-me': 'about',
+    '#mon-compte': 'useraccount'
 }
 
 class Router {

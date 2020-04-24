@@ -1,5 +1,7 @@
-const mongoClient = require('mongodb').MongoClient
-const argon2 = require('argon2')
+const mongoClient   = require('mongodb').MongoClient
+const argon2        = require('argon2')
+const email         = require( './email.js' )
+
 let client
 
 function dbConnect ( dbUser, dbPwd, dbName ) {
@@ -48,10 +50,13 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
         if ( document.length != 0 ){
             try {
                 if ( await argon2.verify( document[0].password, dbElem.password ) ) {
+
                     let userInfo = []
                     let userToken = await argon2.hash( `aiNI§AUNF76EaefAZN687çau"bçéub0${document[0].email}86980biiy757§V7VYU` )
                     userInfo.push( userToken )
+
                     return userInfo
+
                 } else {
                     return 'incorrect password'
                 }
@@ -104,6 +109,12 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
                 }
                 console.log( `${dbElem.username} add to users` )
             })
+
+            email.send( {
+                email: dbElem.email,
+                subject: 'Votre inscription sur notre site',
+                textFile: 'confirmRegister',
+            } )
 
             return 'register ok'
 

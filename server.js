@@ -11,11 +11,10 @@ const http          = require( 'http' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
 const url           = require( 'url' )
-const mongoClient   = require( 'mongodb' ).MongoClient
 const dbQuery       = require( './api/database.js' )
+const email         = require( './api/email.js' )
 
-let productsList,
-    login
+let productsList
 
 
 dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'products' )
@@ -33,8 +32,14 @@ http.createServer( function ( req, res ) {
     } else if ( req.url === '/api/productsList' ) {
 
         res.statusCode = 200
-        res.writeHead( 200, { 'Content-Type': 'application/json' } )
-        res.end( JSON.stringify( productsList ), 'utf-8' )
+        res.writeHead(200, {'Content-Type': 'application/json'})
+        res.end(JSON.stringify(productsList), 'utf-8')
+
+    } else if ( req.url.startsWith( '/api/sendEmail' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        email.send( queryObject )
+
 
     } else if ( req.url.startsWith( '/api/login' ) ) {
 
