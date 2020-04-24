@@ -1,3 +1,12 @@
+const dbInfo = {
+    dbName: 'jord',
+    userR: 'jordread',
+    pwdR: '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1',
+    userRW: 'jordwrite',
+    pwdRW: 'Pf01vVZ6QeEt9UzayAWg3Fkt7VT6z2VrdP'
+}
+const serverPort = '8125'
+
 const http          = require( 'http' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
@@ -8,7 +17,8 @@ const dbQuery       = require( './api/database.js' )
 let productsList,
     login
 
-dbQuery.dbLoad( 'jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'products' )
+
+dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'products' )
     .then( ( res ) => productsList = res )
 
 http.createServer( function ( req, res ) {
@@ -29,7 +39,7 @@ http.createServer( function ( req, res ) {
     } else if ( req.url.startsWith( '/api/login' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
-        dbQuery.dbLogin( 'jordread', '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1', 'jord', 'users', queryObject )
+        dbQuery.dbLogin( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'users', queryObject )
             .then( resp => {
                 res.statusCode = 200
                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
@@ -39,7 +49,7 @@ http.createServer( function ( req, res ) {
     } else if ( req.url.startsWith( '/api/register' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
-        dbQuery.dbRegister( 'jordwrite', 'Pf01vVZ6QeEt9UzayAWg3Fkt7VT6z2VrdP', 'jord', 'users', queryObject )
+        dbQuery.dbRegister( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
             .then( resp => {
                 res.statusCode = 200
                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
@@ -88,8 +98,8 @@ http.createServer( function ( req, res ) {
         })
     }
 
-}).listen( 8125 )
+}).listen( serverPort )
 
-console.log( 'Server running at http://127.0.0.1:8125/' )
+console.log( `Server running at http://127.0.0.1:${serverPort}/`)
 
 

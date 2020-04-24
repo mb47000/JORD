@@ -7,14 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "./compil.js --watch dist/app.js & sass --watch src/sass:dist/",
     "compil": "./compil.js --compress dist/app.js; sass src/sass:dist/ --style=compressed",
-    "server": "node ./server.js"
+    "server": "node ./server.js",
+    "cloc": "cloc ./ --exclude-dir=.idea,node_modules"
   },
   "author": "Andre LECLERCQ",
   "license": "ISC",
   "devDependencies": {
     "argon2": "^0.26.2",
     "mongodb": "^3.5.6",
-    "pouchdb": "^7.2.1",
     "sass": "^1.26.3",
     "terser": "^4.6.11"
   },

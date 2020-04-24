@@ -1,3 +1,9 @@
+let pagesList = {
+    '#': 'home',
+    '#404': '404',
+    '#about-me': 'about'
+}
+
 class Router {
 
     constructor( routes ) {
@@ -39,12 +45,6 @@ function createRoutesObject( rootFolder, routeList ){
         routeList[key] = rootFolder + value + '.html'
     }
     Object.assign( routes, routeList )
-}
-
-let pagesList = {
-    '#': 'home',
-    '#404': '404',
-    '#about-me': 'about'
 }
 
 createRoutesObject( '../views/pages/', pagesList )

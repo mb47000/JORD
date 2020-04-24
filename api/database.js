@@ -43,13 +43,14 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
         await client.connect();
         console.log( 'Connected successfully to mongodb server' )
         const db = client.db( dbName )
-        const document = await db.collection( dbCollection ).find( { username: dbElem.username } ).toArray()
+        const document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
 
         if ( document.length != 0 ){
             try {
                 if ( await argon2.verify( document[0].password, dbElem.password ) ) {
                     let userInfo = []
-                    userInfo.push(document[0].username, document[0].email)
+                    let userToken = await argon2.hash( `aiNI§AUNF76EaefAZN687çau"bçéub0${document[0].email}86980biiy757§V7VYU` )
+                    userInfo.push( userToken )
                     return userInfo
                 } else {
                     return 'incorrect password'
@@ -82,39 +83,30 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
         console.log( 'Connected successfully to mongodb server' )
 
         const db = client.db( dbName )
-        let document = await db.collection( dbCollection ).find( { username: dbElem.username } ).toArray()
+        let document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
 
         console.log(`Get ${dbCollection} in ${dbName}`)
 
         if ( document.length != 0 ){
 
-            return 'username already exist'
+            return 'email already use'
 
         } else {
 
-            document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
+            let sendData = {}
+            let passwordHash = await argon2.hash( dbElem.password )
+            sendData['password'] = passwordHash
+            sendData['email'] = dbElem.email
 
-            if ( document.length != 0 ){
+            db.collection( dbCollection ).insertOne( sendData, ( err, res ) => {
+                if ( err ) {
+                    console.error(err)
+                }
+                console.log( `${dbElem.username} add to users` )
+            })
 
-                return 'email already use'
+            return 'register ok'
 
-            } else {
-
-                let sendData = {}
-                let passwordHash = await argon2.hash( dbElem.password )
-                sendData['username'] = dbElem.username
-                sendData['password'] = passwordHash
-                sendData['email'] = dbElem.email
-
-                db.collection( dbCollection ).insertOne( sendData, ( err, res ) => {
-                    if ( err ) {
-                        console.error(err)
-                    }
-                    console.log( `${dbElem.username} add to users` )
-                })
-
-                return 'register ok'
-            }
         }
 
     } catch ( e ) {

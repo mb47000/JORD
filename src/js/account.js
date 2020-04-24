@@ -23,7 +23,6 @@ document.addEventListener( 'initWebsite', function() {
                 switchForm.innerHTML = "Pas encore enregistré"
                 loginForm.querySelector( 'legend' ).innerHTML = "S'identifier"
                 loginForm.confirmPassword.hidden = true
-                loginForm.email.hidden = true
                 buttonSubmit.value = "Connexion"
                 buttonSubmit.classList.toggle( 'loginSubmit' )
             }
@@ -32,7 +31,6 @@ document.addEventListener( 'initWebsite', function() {
                 switchForm.innerHTML = "J'ai déjà un compte"
                 loginForm.querySelector( 'legend' ).innerHTML = "S'enregistrer"
                 loginForm.confirmPassword.hidden = false
-                loginForm.email.hidden = false
                 buttonSubmit.value = "Inscription"
                 buttonSubmit.classList.toggle( 'loginSubmit' )
             }
@@ -61,12 +59,12 @@ document.addEventListener( 'initWebsite', function() {
                             })
                             .then( data => {
                                 if ( data === 'user not found' ) {
-                                    showPushNotification( 'error', "Nom d'utilisateur incorrect" )
+                                    showPushNotification( 'error', "Email incorrect" )
                                 } else if ( data === 'incorrect password' ) {
                                     showPushNotification( 'error', "Mauvais mot de passe" )
                                 } else {
                                     localStorage.setItem( 'userLocal', data )
-                                    showPushNotification( 'success', "Connexion réussi ! Bonjour " + data[0] )
+                                    showPushNotification( 'success', "Connexion réussi !" )
                                     hideModal( )
                                     userIsLog( )
                                 }
@@ -80,16 +78,18 @@ document.addEventListener( 'initWebsite', function() {
                             param = param.concat( `${key}=${value}&` )
                         }
 
-                        if( dataSend.password === dataSend.confirmPassword ){
+                        const regexPatPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*()_+\-=]*.{8,25}$/
+                        const pwdCheck = regexPatPwd.test( dataSend.password )
+                        pwdCheck ? null : showPushNotification( 'error', "Le mot de passe doit contenir 8 à 25 caractères et au moins 1 majuscule, 1 minuscule et 1 chiffre." )
+
+                        if ( pwdCheck && dataSend.password === dataSend.confirmPassword ){
                             param = param.slice( 0, -1 )
 
                             fetch( `/api/register${param}` )
                                 .then( res => {
                                     return res.json( )
                                 }).then( data => {
-                                    if ( data === 'username already exist' ){
-                                        showPushNotification( 'error', "Nom d'utilisateur déjà utilisé" )
-                                    } else if ( data === 'email already use' ){
+                                    if ( data === 'email already use' ){
                                         showPushNotification( 'error', "Adresse email déjà utilisée" )
                                     } else {
                                         showPushNotification( 'success', "Compte créé, vous pouvez vous connecter" )
