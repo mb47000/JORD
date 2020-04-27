@@ -18,6 +18,9 @@ Minimal website SPA system without framework
 * SASS ( CSS extension and preprocessor )
 * Terser ( JavaScript parser and mangler/compressor )
 
+**Other**
+* Feather Icons set v.4.24.1 (https://feathericons.com/)
+
 **Database**
 
 Create mongoDB database with 2 users, one for read and one for readWrite.
@@ -106,3 +109,21 @@ Pages element's like header, footer... into folder /views/parts/
 
 **Templates**
 Use for same "type" of pages, like products, blog... into folder /views/parts/
+
+
+# Use Feather Icon set
+List of icons (v4.24.1) : https://feathericons.com/
+Github docs : https://github.com/feathericons/feather#feather
+```
+<svg
+  width="24"
+  height="24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <use xlink:href="/src/svg/feather-sprite.svg#iconName"/>
+</svg>
+```
