@@ -6,12 +6,12 @@ function send( data ) {
 
     console.log( 'Create transporter' )
     const transporter = nodemailer.createTransport( {
-        host: "ssl0.ovh.net",
-        port: 587,
-        secure: false, // upgrade later with STARTTLS
+        host: "in-v3.mailjet.com",
+        port: 465,
+        secure: true, // upgrade later with STARTTLS
         auth: {
-            user: "a.leclercq@coprometal.com",
-            pass: "aeB8iW4Ya"
+            user: "611c3a2c35eb931d71055c8fa8846c46",
+            pass: "dd6e18ed9a3a53d5136427a71a89f433"
         }
     } )
 
