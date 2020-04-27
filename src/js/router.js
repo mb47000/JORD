@@ -6,6 +6,8 @@ let pagesList = {
     '#mon-panier': 'cart'
 }
 
+
+
 class Router {
 
     constructor( routes ) {
@@ -24,14 +26,15 @@ class Router {
         if( !this.routes.hasOwnProperty( route ) )
             route = '#404'
 
-        history.pushState( '', '', route.replace( '#', '/' ) )
-
         if( !this.cache.hasOwnProperty( route ) ) {
 
             let res = await fetch( this.routes[route] )
             this.cache[route] = await res.text()
 
         }
+
+        let newRoute = route.replace( '#', '/' )
+        history.replaceState( this.cache[route], null, newRoute )
 
         document.getElementById( 'content' ).innerHTML = this.cache[route]
 
@@ -52,3 +55,9 @@ function createRoutesObject( rootFolder, routeList ){
 createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
+
+window.onpopstate = e => {
+    console.log(pagesRoutes.cache[document.location.pathname])
+    document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[document.location.pathname.replace('/', '#')]
+    document.dispatchEvent( pageReady )
+}

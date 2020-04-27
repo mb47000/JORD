@@ -1,6 +1,7 @@
 let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
 let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
 let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
+
 let pagesList = {
     '#': 'home',
     '#404': '404',
@@ -8,6 +9,8 @@ let pagesList = {
     '#mon-compte': 'useraccount',
     '#mon-panier': 'cart'
 }
+
+
 
 class Router {
 
@@ -27,14 +30,15 @@ class Router {
         if( !this.routes.hasOwnProperty( route ) )
             route = '#404'
 
-        history.pushState( '', '', route.replace( '#', '/' ) )
-
         if( !this.cache.hasOwnProperty( route ) ) {
 
             let res = await fetch( this.routes[route] )
             this.cache[route] = await res.text()
 
         }
+
+        let newRoute = route.replace( '#', '/' )
+        history.replaceState( this.cache[route], null, newRoute )
 
         document.getElementById( 'content' ).innerHTML = this.cache[route]
 
@@ -55,6 +59,12 @@ function createRoutesObject( rootFolder, routeList ){
 createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
+
+window.onpopstate = e => {
+    console.log(pagesRoutes.cache[document.location.pathname])
+    document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[document.location.pathname.replace('/', '#')]
+    document.dispatchEvent( pageReady )
+}
 ( ( ) => { fetch( '/api/productsList' )
 
     .then( res => { return res.json( ) } )
@@ -93,7 +103,6 @@ function buildProduct( ){
 
     document.dispatchEvent( initWebsite )
 }
-
 let cartLocal
 
 document.addEventListener( 'initWebsite', ( ) => {
