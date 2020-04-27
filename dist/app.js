@@ -5,7 +5,7 @@ let pagesList = {
     '#': 'home',
     '#404': '404',
     '#about-me': 'about',
-    '#mon-compte': 'useraccount'
+    '#mon-compte': 'useraccount',
     '#mon-panier': 'cart'
 }
 

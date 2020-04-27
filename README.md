@@ -115,15 +115,7 @@ Use for same "type" of pages, like products, blog... into folder /views/parts/
 List of icons (v4.24.1) : https://feathericons.com/
 Github docs : https://github.com/feathericons/feather#feather
 ```
-<svg
-  width="24"
-  height="24"
-  fill="none"
-  stroke="currentColor"
-  stroke-width="2"
-  stroke-linecap="round"
-  stroke-linejoin="round"
->
+<svg class="feather">
   <use xlink:href="/src/svg/feather-sprite.svg#iconName"/>
 </svg>
 ```
