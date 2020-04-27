@@ -3,6 +3,7 @@ document.body.addEventListener( 'click', e => {
 })
 
 function showModal( e ){
+    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.hidden = true )
     document.querySelector( `[data-modal=${e}]` ).hidden = false
 }
 

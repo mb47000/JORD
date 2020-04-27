@@ -29,6 +29,8 @@ function buildProduct(){
         if( elt.slug === target ){
             console.log( elt )
             document.querySelector( 'h1' ).innerHTML = elt.name
+            document.getElementById( 'ref' ).innerHTML = elt.ref
+            document.getElementById( 'price' ).innerHTML = elt.price
         }
 
     })

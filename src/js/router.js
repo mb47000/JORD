@@ -3,6 +3,7 @@ let pagesList = {
     '#404': '404',
     '#about-me': 'about',
     '#mon-compte': 'useraccount'
+    '#mon-panier': 'cart'
 }
 
 class Router {

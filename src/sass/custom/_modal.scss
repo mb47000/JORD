@@ -6,6 +6,10 @@
   &.modal-right {
     right:0;
   }
+  > div {
+    margin: var(--universal-margin);
+    padding: calc(2 * var(--universal-padding)) var(--universal-padding);
+  }
 }
 
 .buttonModal {

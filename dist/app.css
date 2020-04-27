@@ -1995,6 +1995,10 @@ body .m-1 {
 .modal.modal-right {
   right: 0;
 }
+.modal > div {
+  margin: var(--universal-margin);
+  padding: calc(2 * var(--universal-padding)) var(--universal-padding);
+}
 
 .buttonModal > span, .buttonModal > div {
   pointer-events: none;
@@ -2061,6 +2065,24 @@ body .m-1 {
 #pushNotification .show {
   opacity: 1;
   transition: all 0.5s ease-in-out;
+}
+
+#navbar header {
+  height: auto;
+  overflow: visible;
+}
+
+.feather {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+.feather > use {
+  pointer-events: none;
 }
 
 /*# sourceMappingURL=app.css.map */

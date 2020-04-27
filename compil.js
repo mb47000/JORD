@@ -10,6 +10,7 @@ const scripts = [
     'layoutsParts.js',
     'pushNotification.js',
     'modal.js',
+    'cart.js',
     'account.js',
 ]
 let destFile = process.argv.pop();
