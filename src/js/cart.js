@@ -3,16 +3,14 @@ let cartLocal
 document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
-
     document.getElementById( 'cartModal' ).innerHTML = cartHTML
-
     refreshCart( )
 
 })
 
 document.body.addEventListener( 'click', e => {
 
-    e.target.closest('.removeCart') ? removeCart(e.target.closest('.removeCart').parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML): null
+    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ): null
 
 })
 
@@ -88,12 +86,8 @@ function addCart( e ) {
 
 function removeCart( ref ) {
 
-    console.log( ref )
     let newData = []
-    JSON.parse(cartLocal).forEach(e => {
-        e.ref === ref ? null : newData.push( e )
-    })
-    console.log(newData)
+    JSON.parse(cartLocal).forEach(e => e.ref === ref ? null : newData.push( e ) )
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 

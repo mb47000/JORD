@@ -55,39 +55,38 @@ function createRoutesObject( rootFolder, routeList ){
 createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
-(() => { fetch( '/api/productsList' )
+( ( ) => { fetch( '/api/productsList' )
 
-    .then( res => { return res.json() } )
+    .then( res => { return res.json( ) } )
 
     .then( data => {
 
         localStorage.setItem( 'products', JSON.stringify( data ) )
         let productRoutes = {}
 
-        data.forEach( e => {
-            productRoutes['#' + e.slug] = 'product'
-        })
+        data.forEach( e => productRoutes['#' + e.slug] = 'product' )
 
         createRoutesObject( '../views/templates/', productRoutes )
         document.dispatchEvent( dbReady )
     })
 
-})()
+} )( )
 
-window.addEventListener( 'pageReady', e => buildProduct() )
+window.addEventListener( 'pageReady', e => buildProduct( ) )
 
-function buildProduct(){
+function buildProduct( ){
 
-    let target = location.pathname.split( '/' ).pop()
+    let target = location.pathname.split( '/' ).pop( )
     let productList = localStorage.getItem( 'products' )
 
     JSON.parse( productList ).forEach( elt => {
 
         if( elt.slug === target ){
-            console.log( elt )
+
             document.querySelector( 'h1' ).innerHTML = elt.name
             document.getElementById( 'ref' ).innerHTML = elt.ref
             document.getElementById( 'price' ).innerHTML = elt.price
+
         }
 
     })
@@ -100,16 +99,14 @@ let cartLocal
 document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
-
     document.getElementById( 'cartModal' ).innerHTML = cartHTML
-
     refreshCart( )
 
 })
 
 document.body.addEventListener( 'click', e => {
 
-    e.target.closest('.removeCart') ? removeCart(e.target.closest('.removeCart').parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML): null
+    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ): null
 
 })
 
@@ -185,12 +182,8 @@ function addCart( e ) {
 
 function removeCart( ref ) {
 
-    console.log( ref )
     let newData = []
-    JSON.parse(cartLocal).forEach(e => {
-        e.ref === ref ? null : newData.push( e )
-    })
-    console.log(newData)
+    JSON.parse(cartLocal).forEach(e => e.ref === ref ? null : newData.push( e ) )
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 
