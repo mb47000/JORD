@@ -1,6 +1,7 @@
-let userLocal = localStorage.getItem( 'userLocal' )
 
 document.addEventListener( 'initWebsite', function() {
+
+    let userLocal = localStorage.getItem( 'userLocal' )
 
     if ( userLocal ) {
 

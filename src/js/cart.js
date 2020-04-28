@@ -18,7 +18,6 @@ document.body.addEventListener( 'click', e => {
 function refreshCart( ) {
 
     cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
-    console.log(cartLocal)
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const tbody = document.getElementById( 'cart' ).getElementsByTagName( 'tbody' )[0]

@@ -225,7 +225,6 @@ document.body.addEventListener( 'click', e => {
 function refreshCart( ) {
 
     cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
-    console.log(cartLocal)
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const tbody = document.getElementById( 'cart' ).getElementsByTagName( 'tbody' )[0]
@@ -304,9 +303,10 @@ function removeCart( ref ) {
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 }
-let userLocal = localStorage.getItem( 'userLocal' )
 
 document.addEventListener( 'initWebsite', function() {
+
+    let userLocal = localStorage.getItem( 'userLocal' )
 
     if ( userLocal ) {
 
