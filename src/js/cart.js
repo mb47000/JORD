@@ -6,30 +6,36 @@ document.addEventListener( 'initWebsite', ( ) => {
     document.getElementById( 'cartModal' ).innerHTML = cartHTML
     refreshCart( )
 
-})
+} )
 
 document.body.addEventListener( 'click', e => {
 
     e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ): null
 
-})
+} )
 
 
 function refreshCart( ) {
 
-    cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : null
+    cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
+    console.log(cartLocal)
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const tbody = document.getElementById( 'cart' ).getElementsByTagName( 'tbody' )[0]
     tbody.innerHTML = ''
     let totalPrice = 0
+    buttonCart.classList.add( 'tooltip' )
+    buttonCart.classList.remove( 'buttonModal' )
+    buttonCart.removeAttribute('data-modaltarget')
 
-    if ( cartLocal ) {
+    if ( cartLocal != null ) {
 
         buttonCart.classList.remove( 'tooltip' )
         buttonCart.classList.add( 'buttonModal' )
+        buttonCart.dataset.modaltarget = 'cart'
 
         JSON.parse( cartLocal ).forEach( e => {
+
             tbody.innerHTML += cartRowHTML
             tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
             tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
@@ -37,6 +43,7 @@ function refreshCart( ) {
             tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
             tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
             totalPrice += e.price * e.qty
+
         })
 
         tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice
@@ -44,8 +51,7 @@ function refreshCart( ) {
 
     } else {
 
-        buttonCart.classList.add( 'tooltip' )
-        buttonCart.classList.remove( 'buttonModal' )
+
 
     }
 
@@ -86,9 +92,8 @@ function addCart( e ) {
 
 function removeCart( ref ) {
 
-    let newData = []
-    JSON.parse(cartLocal).forEach(e => e.ref === ref ? null : newData.push( e ) )
-    newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
-
+    let newData = [ ]
+    JSON.parse( cartLocal ).forEach( e => e.ref === ref ? null : newData.push( e ) )
+    newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 }

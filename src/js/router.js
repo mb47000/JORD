@@ -57,7 +57,8 @@ createRoutesObject( '../views/pages/', pagesList )
 let pagesRoutes = new Router( routes );
 
 window.onpopstate = e => {
-    console.log(pagesRoutes.cache[document.location.pathname])
-    document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[document.location.pathname.replace('/', '#')]
+
+    document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[ document.location.pathname.replace( '/', '#' ) ]
     document.dispatchEvent( pageReady )
+
 }
