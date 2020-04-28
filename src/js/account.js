@@ -1,6 +1,8 @@
 
 document.addEventListener( 'initWebsite', function() {
 
+
+
     let userLocal = localStorage.getItem( 'userLocal' )
 
     if ( userLocal ) {
@@ -121,5 +123,6 @@ function userIsLog( ) {
 function userIsNotLog( ) {
 
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+
 
 }

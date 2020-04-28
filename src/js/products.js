@@ -1,4 +1,4 @@
-( ( ) => { fetch( '/api/productsList' )
+( ( ) => { fetch( '/api/get?name=products' )
 
     .then( res => { return res.json( ) } )
 

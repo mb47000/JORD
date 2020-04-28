@@ -2,13 +2,13 @@ let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
 let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
 let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
 
-let pagesList = {
-    '#': 'home',
-    '#404': '404',
-    '#about-me': 'about',
-    '#mon-compte': 'useraccount',
-    '#mon-panier': 'cart'
-}
+// let pagesList = {
+//     '#': 'home',
+//     '#404': '404',
+//     '#about-me': 'about',
+//     '#mon-compte': 'useraccount',
+//     '#mon-panier': 'cart'
+// }
 
 
 
@@ -50,13 +50,31 @@ class Router {
 let routes = {}
 
 function createRoutesObject( rootFolder, routeList ){
+
     for ( let [ key, value ] of Object.entries( routeList ) ) {
         routeList[key] = rootFolder + value + '.html'
     }
     Object.assign( routes, routeList )
+
 }
 
-createRoutesObject( '../views/pages/', pagesList )
+( ( ) => { fetch( '/api/get?name=pages' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let pagesList = {}
+
+        data.forEach( e => pagesList['#' + e.slug] = e.fileName )
+
+        createRoutesObject( '../views/pages/', pagesList )
+
+    } )
+
+} )( )
+
+// createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
 
@@ -66,7 +84,7 @@ window.onpopstate = e => {
     document.dispatchEvent( pageReady )
 
 }
-( ( ) => { fetch( '/api/productsList' )
+( ( ) => { fetch( '/api/get?name=products' )
 
     .then( res => { return res.json( ) } )
 
@@ -306,6 +324,8 @@ function removeCart( ref ) {
 
 document.addEventListener( 'initWebsite', function() {
 
+
+
     let userLocal = localStorage.getItem( 'userLocal' )
 
     if ( userLocal ) {
@@ -426,5 +446,6 @@ function userIsLog( ) {
 function userIsNotLog( ) {
 
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+
 
 }

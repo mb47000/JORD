@@ -77,17 +77,23 @@ const dbInfo = {
 **New pages**
 1. Go into folder /views/pages
 2. Create HTML file
-3. Go into file /src/js/router.js
-4. Add element into "pagesList" object like this
+3. Add new document in "pages" collection
 
 ```
-let pagesList = {
-    '#': 'home',
-    '#404': '404',
-    '#slug': 'htmlfilename'
-}
+use databaseName
+db.pages.insertOne(
+   { 
+   slug: "my-page-slug", 
+   fileName: "myFileName", 
+   title: "My page Title",
+   access: "0" 
+   }
+)
 ```
-The key is the slug use to create the http address and the value is the HTML file in /views/pages (don't write extension ".html").
+* Slug : Link use to show page
+* File Name : File Name in /views/pages (without .html)
+* Title : Use for history
+* Access : Access level (0: all | 1 : user login)
 
 **New Product**
 Add document in collection "products", the field "slug" is required.

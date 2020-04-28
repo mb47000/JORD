@@ -1,10 +1,10 @@
-let pagesList = {
-    '#': 'home',
-    '#404': '404',
-    '#about-me': 'about',
-    '#mon-compte': 'useraccount',
-    '#mon-panier': 'cart'
-}
+// let pagesList = {
+//     '#': 'home',
+//     '#404': '404',
+//     '#about-me': 'about',
+//     '#mon-compte': 'useraccount',
+//     '#mon-panier': 'cart'
+// }
 
 
 
@@ -46,13 +46,31 @@ class Router {
 let routes = {}
 
 function createRoutesObject( rootFolder, routeList ){
+
     for ( let [ key, value ] of Object.entries( routeList ) ) {
         routeList[key] = rootFolder + value + '.html'
     }
     Object.assign( routes, routeList )
+
 }
 
-createRoutesObject( '../views/pages/', pagesList )
+( ( ) => { fetch( '/api/get?name=pages' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let pagesList = {}
+
+        data.forEach( e => pagesList['#' + e.slug] = e.fileName )
+
+        createRoutesObject( '../views/pages/', pagesList )
+
+    } )
+
+} )( )
+
+// createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
 

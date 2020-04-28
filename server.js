@@ -14,11 +14,6 @@ const url           = require( 'url' )
 const dbQuery       = require( './api/database.js' )
 const email         = require( './api/email.js' )
 
-let productsList
-
-
-dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'products' )
-    .then( ( res ) => productsList = res )
 
 http.createServer( function ( req, res ) {
 
@@ -29,11 +24,21 @@ http.createServer( function ( req, res ) {
         filePath = './index.html'
         readFile( )
 
-    } else if ( req.url === '/api/productsList' ) {
+    } else if ( req.url.startsWith( '/api/get' ) ) {
 
-        res.statusCode = 200
-        res.writeHead(200, {'Content-Type': 'application/json'})
-        res.end(JSON.stringify(productsList), 'utf-8')
+        const queryObject = url.parse( req.url, true ).query
+
+        if ( queryObject.name === 'products' || queryObject.name === 'pages' ){
+
+            dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, queryObject )
+                .then( resp  => {
+                    res.statusCode = 200
+                    res.writeHead( 200, { 'Content-Type': 'application/json' } )
+                    res.end( JSON.stringify( resp ), 'utf-8')
+                } )
+
+        }
+
 
     } else if ( req.url.startsWith( '/api/sendEmail' ) ) {
 

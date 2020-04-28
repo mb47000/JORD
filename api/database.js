@@ -20,11 +20,11 @@ async function dbLoad ( dbUser, dbPwd, dbName, dbCollection ) {
    dbConnect( dbUser, dbPwd, dbName )
 
     try {
-        await client.connect()
+        await client.connect( )
         console.log( 'Connected successfully to mongodb server' )
         const db = client.db( dbName )
-        const collection = await db.collection( dbCollection ).find().toArray()
-        console.log(`Get ${dbCollection} in ${dbName}`)
+        const collection = await db.collection( dbCollection.name ).find( ).toArray( )
+        console.log( `Get ${ dbCollection.name } in ${ dbName }` )
 
         return collection
 
