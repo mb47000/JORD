@@ -4,16 +4,25 @@
 
     .then( data => {
 
-        localStorage.setItem( 'products', JSON.stringify( data ) )
-        let productRoutes = {}
+        let folder = '../views/templates/'
 
-        data.forEach( e => productRoutes['#' + e.slug] = 'product' )
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + 'product.html',
+                'title': e.name,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
 
-        createRoutesObject( '../views/templates/', productRoutes )
+        Object.assign( routes, routeList )
+
         document.dispatchEvent( dbReady )
-    })
+    } )
 
 } )( )
+
 
 window.addEventListener( 'pageReady', e => buildProduct( ) )
 

@@ -2,22 +2,16 @@ let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
 let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
 let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
 
-// let pagesList = {
-//     '#': 'home',
-//     '#404': '404',
-//     '#about-me': 'about',
-//     '#mon-compte': 'useraccount',
-//     '#mon-panier': 'cart'
-// }
-
-
+let routeList = [ ]
+let route
+let currentPage
 
 class Router {
 
     constructor( routes ) {
 
         this.routes = routes
-        this.cache = {}
+        this.cache = { }
 
         window.addEventListener( 'hashchange', this.loadPage.bind( this ) )
         document.addEventListener( 'dbReady', this.loadPage.bind( this ) )
@@ -25,38 +19,77 @@ class Router {
 
     async loadPage( e ){
 
-        let route = location.hash || '#'
+        route = location.hash || '#'
 
-        if( !this.routes.hasOwnProperty( route ) )
+        currentPage = Object.values(this.routes).find( elt => route === `#${elt.slug}` )
+
+        if( currentPage === undefined ){
+
+            currentPage = Object.values(this.routes).find( elt => `#${elt.slug}` === '#404' )
             route = '#404'
 
-        if( !this.cache.hasOwnProperty( route ) ) {
+        } else {
 
-            let res = await fetch( this.routes[route] )
-            this.cache[route] = await res.text()
+            if( currentPage.access === '1' ){
+
+                let userLocal = localStorage.getItem('userLocal')
+                if( userLocal ) {
+
+                    ( ( ) => { fetch(`/api/token?token=${userLocal}&action=verify`)
+                        .then( res => {
+                            return res.json()
+                        })
+                        .then( data => {
+                            if ( data != true ) {
+                                currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
+                                route = '#401'
+                                showPage.bind( this )( )
+                                localStorage.removeItem( 'userLocal' )
+                            } else {
+                                showPage.bind( this )( )
+                            }
+                        } )
+                    } )( )
+
+                } else {
+                    route = '#401'
+                    currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
+                    showPage.bind( this )( )
+                }
+            } else {
+
+                showPage.bind( this )( )
+
+            }
+
 
         }
 
-        let newRoute = route.replace( '#', '/' )
-        history.replaceState( this.cache[route], null, newRoute )
+        async function showPage(  ) {
 
-        document.getElementById( 'content' ).innerHTML = this.cache[route]
+            if( !this.cache.hasOwnProperty( route ) ) {
 
-        document.dispatchEvent( pageReady )
+                let res = await fetch( currentPage.fileName )
+                this.cache[route] = await res.text()
 
+            }
+
+            let newRoute = route.replace( '#', '/' )
+
+            history.replaceState( this.cache[route], null, newRoute )
+
+            document.getElementById( 'content' ).innerHTML = this.cache[route]
+
+            document.querySelector('title').innerHTML = currentPage.title
+
+            document.dispatchEvent( pageReady )
+
+        }
     }
 }
 
-let routes = {}
+let routes = { };
 
-function createRoutesObject( rootFolder, routeList ){
-
-    for ( let [ key, value ] of Object.entries( routeList ) ) {
-        routeList[key] = rootFolder + value + '.html'
-    }
-    Object.assign( routes, routeList )
-
-}
 
 ( ( ) => { fetch( '/api/get?name=pages' )
 
@@ -64,17 +97,23 @@ function createRoutesObject( rootFolder, routeList ){
 
     .then( data => {
 
-        let pagesList = {}
+        let folder = '../views/pages/'
 
-        data.forEach( e => pagesList['#' + e.slug] = e.fileName )
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + e.fileName + '.html',
+                'title': e.title,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
 
-        createRoutesObject( '../views/pages/', pagesList )
+        Object.assign( routes, routeList )
 
     } )
 
 } )( )
-
-// createRoutesObject( '../views/pages/', pagesList )
 
 let pagesRoutes = new Router( routes );
 
@@ -90,16 +129,25 @@ window.onpopstate = e => {
 
     .then( data => {
 
-        localStorage.setItem( 'products', JSON.stringify( data ) )
-        let productRoutes = {}
+        let folder = '../views/templates/'
 
-        data.forEach( e => productRoutes['#' + e.slug] = 'product' )
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + 'product.html',
+                'title': e.name,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
 
-        createRoutesObject( '../views/templates/', productRoutes )
+        Object.assign( routes, routeList )
+
         document.dispatchEvent( dbReady )
-    })
+    } )
 
 } )( )
+
 
 window.addEventListener( 'pageReady', e => buildProduct( ) )
 

@@ -1,6 +1,7 @@
 const mongoClient   = require('mongodb').MongoClient
 const argon2        = require('argon2')
 const email         = require( './email.js' )
+const token         = require( './token.js' )
 
 let client
 
@@ -51,11 +52,10 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
             try {
                 if ( await argon2.verify( document[0].password, dbElem.password ) ) {
 
-                    let userInfo = []
-                    let userToken = await argon2.hash( `aiNI§AUNF76EaefAZN687çau"bçéub0${document[0].email}86980biiy757§V7VYU` )
-                    userInfo.push( userToken )
+                    let tokenUser = token.addUser(  )
+                    console.log( tokenUser )
 
-                    return userInfo
+                    return tokenUser
 
                 } else {
                     return 'incorrect password'
@@ -132,5 +132,5 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
 module.exports = {
     dbLoad,
     dbLogin,
-    dbRegister
+    dbRegister,
 }

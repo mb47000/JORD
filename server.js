@@ -13,7 +13,7 @@ const path          = require( 'path' )
 const url           = require( 'url' )
 const dbQuery       = require( './api/database.js' )
 const email         = require( './api/email.js' )
-
+const token         = require( './api/token.js' )
 
 http.createServer( function ( req, res ) {
 
@@ -56,6 +56,7 @@ http.createServer( function ( req, res ) {
                 res.end( JSON.stringify( resp ), 'utf-8' )
             })
 
+
     } else if ( req.url.startsWith( '/api/register' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
@@ -65,6 +66,26 @@ http.createServer( function ( req, res ) {
                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
                 res.end( JSON.stringify( resp ), 'utf-8' )
             } )
+
+    } else if ( req.url.startsWith( '/api/token' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        console.log(queryObject)
+        if( queryObject.action === 'verify' ){
+
+            token.verifyUser(queryObject.token)
+                .then( resp => {
+                    console.log('resp : ' + resp)
+                    res.statusCode = 200
+                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                    res.end( JSON.stringify( resp ), 'utf-8' )
+                } )
+
+        } else if ( queryObject.action === 'remove' ){
+
+            token.delUser(queryObject.token)
+
+        }
 
     } else if ( String( path.extname( req.url ) ) === '' ) {
 
