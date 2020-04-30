@@ -20,29 +20,31 @@ class Router {
     async loadPage( e ){
 
         route = location.hash || '#'
-
-        currentPage = Object.values(this.routes).find( elt => route === `#${elt.slug}` )
+        currentPage = Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
 
         if( currentPage === undefined ){
 
-            currentPage = Object.values(this.routes).find( elt => `#${elt.slug}` === '#404' )
             route = '#404'
+            currentPage = Object.values( this.routes ).find( elt => `#${elt.slug}` === '#404' )
 
         } else {
 
             if( currentPage.access === '1' ){
 
                 let userLocal = localStorage.getItem('userLocal')
+                userLocal = JSON.parse(userLocal)
+                let userToken = userLocal.token
+
                 if( userLocal ) {
 
-                    ( ( ) => { fetch(`/api/token?token=${userLocal}&action=verify`)
+                    ( ( ) => { fetch(`/api/token?token=${userToken}&action=verify` )
                         .then( res => {
-                            return res.json()
-                        })
+                            return res.json( )
+                        } )
                         .then( data => {
                             if ( data != true ) {
-                                currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
                                 route = '#401'
+                                currentPage = Object.values( this.routes ).find(elt => `#${elt.slug}` === '#401' )
                                 showPage.bind( this )( )
                                 localStorage.removeItem( 'userLocal' )
                             } else {
@@ -53,13 +55,11 @@ class Router {
 
                 } else {
                     route = '#401'
-                    currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
+                    currentPage = Object.values( this.routes ).find(elt => `#${elt.slug}` === '#401' )
                     showPage.bind( this )( )
                 }
             } else {
-
                 showPage.bind( this )( )
-
             }
 
 
@@ -263,6 +263,8 @@ document.body.addEventListener( 'click', e => {
     e.target.dataset.modaltarget != null ? showModal( e.target.dataset.modaltarget ) : e.target.closest( '.modal' ) === null ? hideModal() : null
 } )
 
+window.addEventListener( 'hashchange', hideModal )
+
 function showModal( e ){
     document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.hidden = true )
     document.querySelector( `[data-modal=${e}]` ).hidden = false
@@ -372,8 +374,6 @@ function removeCart( ref ) {
 
 document.addEventListener( 'initWebsite', function() {
 
-
-
     let userLocal = localStorage.getItem( 'userLocal' )
 
     if ( userLocal ) {
@@ -437,7 +437,7 @@ document.addEventListener( 'initWebsite', function() {
                                 } else if ( data === 'incorrect password' ) {
                                     showPushNotification( 'error', "Mauvais mot de passe" )
                                 } else {
-                                    localStorage.setItem( 'userLocal', data )
+                                    localStorage.setItem( 'userLocal', JSON.stringify( data ) )
                                     showPushNotification( 'success', "Connexion réussi !" )
                                     hideModal( )
                                     userIsLog( )
@@ -477,6 +477,109 @@ document.addEventListener( 'initWebsite', function() {
         }
     }
 
+    let userAccountElement = document.getElementById('accountUserPage' )
+    if( userAccountElement ){
+
+        writeData( )
+
+        userAccountElement.addEventListener('click', e => {
+
+            if( e.target.classList.contains('editProfil' ) ){
+
+                let section = e.target.closest( '.section' ).nextElementSibling
+                let inputs = section.querySelectorAll('input')
+                let labelsSpan = section.querySelectorAll('.labelSpan')
+                let button = section.querySelector('.buttonSection')
+
+                inputs.forEach(elt => {
+                    elt.hidden = false
+                })
+                labelsSpan.forEach(elt => {
+                    elt.hidden = true
+                })
+                button.hidden = false
+            }
+
+            if( e.target.closest('.saveProfil') ){
+
+                // let section = e.target.closest( '.section' ).nextElementSibling
+                let dataSend = {
+                    'email':                userLocal.email,
+                    'firstname':            document.getElementById('firstnameField').nextElementSibling.value,
+                    'lastname':             document.getElementById('lastnameField').nextElementSibling.value,
+                    'address':              document.getElementById('addressField').nextElementSibling.value,
+                    'postalCode':           document.getElementById('postalcodeField').nextElementSibling.value,
+                    'town':                 document.getElementById('townField').nextElementSibling.value,
+                    'shipping_address':     document.getElementById('addressShippingField').nextElementSibling.value,
+                    'shipping_postalCode':  document.getElementById('postalcodeShippingField').nextElementSibling.value,
+                    'shipping_town':        document.getElementById('townShippingField').nextElementSibling.value,
+                }
+
+                fetch( `/api/updateUser?token=${userLocal.token}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(dataSend),
+                } )
+                    .then( res => {
+                        return res.json( )
+                    }).then( data => {
+                        if ( data === false ){
+                            showPushNotification( 'error', "Session expirée" )
+                        } else {
+                            localStorage.setItem( 'userLocal', JSON.stringify(data) )
+                            showPushNotification( 'success', "Informations sauvegardées" )
+                            writeData( )
+                            cancelEdit( )
+                        }
+                })
+            }
+
+            if( e.target.classList.contains('cancelSave' ) ){
+
+                cancelEdit( )
+
+            }
+
+        })
+
+        function cancelEdit( ){
+            let inputs = document.querySelectorAll('input')
+            let labelsSpan = document.querySelectorAll('.labelSpan')
+            let button = document.querySelectorAll('.buttonSection')
+            inputs.forEach(elt => {
+                elt.hidden = true
+            })
+            labelsSpan.forEach(elt => {
+                elt.hidden = false
+            })
+            button.forEach(elt => {
+                elt.hidden = true
+            })
+        }
+
+        function writeData( ){
+
+            userLocal = localStorage.getItem( 'userLocal' )
+            console.log(userLocal)
+            userLocal = JSON.parse(userLocal)
+
+            document.getElementById('emailField').innerHTML                 = userLocal.email
+            document.getElementById('firstnameField').innerHTML             = document.getElementById('firstnameField').nextElementSibling.value            = userLocal.firstname
+            document.getElementById('lastnameField').innerHTML              = document.getElementById('lastnameField').nextElementSibling.value             = userLocal.lastname
+            document.getElementById('addressField').innerHTML               = document.getElementById('addressField').nextElementSibling.value              = userLocal.address
+            document.getElementById('postalcodeField').innerHTML            = document.getElementById('postalcodeField').nextElementSibling.value           = userLocal.postalCode
+            document.getElementById('townField').innerHTML                  = document.getElementById('townField').nextElementSibling.value                 = userLocal.town
+            document.getElementById('addressShippingField').innerHTML       = document.getElementById('addressShippingField').nextElementSibling.value      = userLocal.shipping_address
+            document.getElementById('postalcodeShippingField').innerHTML    = document.getElementById('postalcodeShippingField').nextElementSibling.value   = userLocal.shipping_postalCode
+            document.getElementById('townShippingField').innerHTML          = document.getElementById('townShippingField').nextElementSibling.value         = userLocal.shipping_town
+
+        }
+
+    }
+
+
 })
 
 function userIsLog( ) {
@@ -497,3 +600,4 @@ function userIsNotLog( ) {
 
 
 }
+

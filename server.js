@@ -11,6 +11,7 @@ const http          = require( 'http' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
 const url           = require( 'url' )
+const qs            = require( 'querystring' )
 const dbQuery       = require( './api/database.js' )
 const email         = require( './api/email.js' )
 const token         = require( './api/token.js' )
@@ -67,6 +68,50 @@ http.createServer( function ( req, res ) {
                 res.end( JSON.stringify( resp ), 'utf-8' )
             } )
 
+    } else if ( req.url.startsWith( '/api/updateUser' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        console.log(queryObject)
+
+        token.verifyUser(queryObject.token)
+            .then( resp => {
+                console.log( resp )
+                if( resp === true ){
+                    if ( req.method == 'POST' ) {
+
+                        let body = ''
+
+                        req.on( 'data', function ( data ) {
+                            body += data
+                            if ( body.length > 1e6 )
+                                req.connection.destroy(  );
+                        } )
+
+                        req.on( 'end', ( ) => {
+                            let post = qs.parse( body )
+                            let postData = Object.keys( post )
+                            postData = JSON.parse( postData )
+
+                            dbQuery.dbUpdateUser( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', postData )
+                                .then( resp => {
+                                    resp.token = queryObject.token
+                                    res.statusCode = 200
+                                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                                    res.end( JSON.stringify( resp ), 'utf-8' )
+                                } )
+                        } )
+                    } else {
+                        res.statusCode = 200
+                        res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                        res.end( false, 'utf-8' )
+                    }
+                } else {
+                    res.statusCode = 200
+                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                    res.end( false, 'utf-8' )
+                }
+            } )
+
     } else if ( req.url.startsWith( '/api/token' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
@@ -75,7 +120,6 @@ http.createServer( function ( req, res ) {
 
             token.verifyUser(queryObject.token)
                 .then( resp => {
-                    console.log('resp : ' + resp)
                     res.statusCode = 200
                     res.writeHead( 200, { 'Content-Type' : 'application/json' } )
                     res.end( JSON.stringify( resp ), 'utf-8' )

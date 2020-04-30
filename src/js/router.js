@@ -16,29 +16,31 @@ class Router {
     async loadPage( e ){
 
         route = location.hash || '#'
-
-        currentPage = Object.values(this.routes).find( elt => route === `#${elt.slug}` )
+        currentPage = Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
 
         if( currentPage === undefined ){
 
-            currentPage = Object.values(this.routes).find( elt => `#${elt.slug}` === '#404' )
             route = '#404'
+            currentPage = Object.values( this.routes ).find( elt => `#${elt.slug}` === '#404' )
 
         } else {
 
             if( currentPage.access === '1' ){
 
                 let userLocal = localStorage.getItem('userLocal')
+                userLocal = JSON.parse(userLocal)
+                let userToken = userLocal.token
+
                 if( userLocal ) {
 
-                    ( ( ) => { fetch(`/api/token?token=${userLocal}&action=verify`)
+                    ( ( ) => { fetch(`/api/token?token=${userToken}&action=verify` )
                         .then( res => {
-                            return res.json()
-                        })
+                            return res.json( )
+                        } )
                         .then( data => {
                             if ( data != true ) {
-                                currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
                                 route = '#401'
+                                currentPage = Object.values( this.routes ).find(elt => `#${elt.slug}` === '#401' )
                                 showPage.bind( this )( )
                                 localStorage.removeItem( 'userLocal' )
                             } else {
@@ -49,13 +51,11 @@ class Router {
 
                 } else {
                     route = '#401'
-                    currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401')
+                    currentPage = Object.values( this.routes ).find(elt => `#${elt.slug}` === '#401' )
                     showPage.bind( this )( )
                 }
             } else {
-
                 showPage.bind( this )( )
-
             }
 
 

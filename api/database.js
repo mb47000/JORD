@@ -52,10 +52,23 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
             try {
                 if ( await argon2.verify( document[0].password, dbElem.password ) ) {
 
-                    let tokenUser = token.addUser(  )
-                    console.log( tokenUser )
-
-                    return tokenUser
+                    let userData = token.addUser(  )
+                        .then(e => {
+                            let data = {
+                                'email': document[0].email,
+                                'firstname': document[0].firstname,
+                                'lastname': document[0].lastname,
+                                'address': document[0].address,
+                                'postalCode': document[0].postalCode,
+                                'town': document[0].town,
+                                'shipping_address': document[0].shipping_address,
+                                'shipping_postalCode': document[0].shipping_postalCode,
+                                'shipping_town': document[0].shipping_town,
+                                'token': e
+                            }
+                            return data
+                        })
+                    return userData
 
                 } else {
                     return 'incorrect password'
@@ -81,10 +94,8 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
 
     dbConnect( dbUser, dbPwd, dbName )
 
-    console.log(dbElem)
-
     try {
-        await client.connect()
+        await client.connect(  )
         console.log( 'Connected successfully to mongodb server' )
 
         const db = client.db( dbName )
@@ -102,6 +113,14 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
             let passwordHash = await argon2.hash( dbElem.password )
             sendData['password'] = passwordHash
             sendData['email'] = dbElem.email
+            sendData['firstname'] = ''
+            sendData['lastname'] = ''
+            sendData['address'] = ''
+            sendData['postalCode'] = ''
+            sendData['town'] = ''
+            sendData['shipping_address'] = ''
+            sendData['shipping_postalCode'] = ''
+            sendData['shipping_town'] = ''
 
             db.collection( dbCollection ).insertOne( sendData, ( err, res ) => {
                 if ( err ) {
@@ -129,8 +148,44 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
 
 }
 
+async function dbUpdateUser( dbUser, dbPwd, dbName, dbCollection, dbElem ){
+
+    dbConnect( dbUser, dbPwd, dbName )
+
+    try {
+        await client.connect(  )
+        console.log( 'Connected successfully to mongodb server' )
+
+        const db = client.db( dbName )
+        let dataUser = {
+            'email': dbElem.email,
+            'firstname': dbElem.firstname,
+            'lastname': dbElem.lastname,
+            'address': dbElem.address,
+            'postalCode': dbElem.postalCode,
+            'town': dbElem.town,
+            'shipping_address': dbElem.shipping_address,
+            'shipping_postalCode': dbElem.shipping_postalCode,
+            'shipping_town': dbElem.shipping_town,
+        }
+        let document = await db.collection( dbCollection ).findOneAndUpdate(
+        { email: dbElem.email },
+        { $set: dataUser }
+        )
+        return dataUser
+        console.log(`Get ${dbCollection} in ${dbName}`)
+    } catch ( e ) {
+        console.error( e )
+    } finally {
+        await client.close()
+        console.log( 'Disconnected successfully to mongodb server' )
+    }
+
+}
+
 module.exports = {
     dbLoad,
     dbLogin,
     dbRegister,
+    dbUpdateUser,
 }
