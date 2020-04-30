@@ -76,6 +76,40 @@ const dbInfo = {
 }
 ```
 
+## Add account
+### Create user from db
+```
+use databaseName
+db.users.insertOne(
+   { 
+   "password": "",
+   "email": "",
+   "firstname": "",
+   "lastname": "",
+   "address": "",
+   "postalCode": "",
+   "town": "",
+   "shipping_address": "",
+   "shipping_postalCode": "",
+   "shipping_town": ""
+   }
+)
+```
+#### Fields imposed and never empty :
+* Password (hash with argon2)
+* Email
+
+#### Fields imposed and can be empty :
+* Firstname
+* Lastname
+* Address
+* Postal Code
+* Town
+* Shipping Address
+* Shipping Postal Code
+* Shipping Town
+
+
 ## Add Content
 ### New pages
 1. Go into folder /views/pages
