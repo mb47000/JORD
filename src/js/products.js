@@ -1,29 +1,3 @@
-( ( ) => { fetch( '/api/get?name=products' )
-
-    .then( res => { return res.json( ) } )
-
-    .then( data => {
-
-        let folder = '../views/templates/'
-
-        data.forEach( e => {
-            let newPage = {
-                'slug': e.slug,
-                'fileName': folder + 'product.html',
-                'title': e.name,
-                'access': e.access,
-            }
-            routeList.push( newPage )
-        })
-
-        Object.assign( routes, routeList )
-
-        document.dispatchEvent( dbReady )
-    } )
-
-} )( )
-
-
 window.addEventListener( 'pageReady', e => buildProduct( ) )
 
 function buildProduct( ){

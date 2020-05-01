@@ -1,6 +1,58 @@
 let routeList = [ ]
 let route
 let currentPage
+let routes = { };
+
+( ( ) => { fetch( '/api/get?name=pages' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let folder = '../views/pages/'
+
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + e.fileName + '.html',
+                'title': e.title,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
+
+        Object.assign( routes, routeList )
+
+        loadProducts( )
+
+    } )
+
+} )( );
+
+function loadProducts( ) { fetch( '/api/get?name=products' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let folder = '../views/templates/'
+
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + 'product.html',
+                'title': e.name,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
+
+        Object.assign( routes, routeList )
+
+        document.dispatchEvent( dbReady )
+    } )
+
+};
 
 class Router {
 
@@ -16,18 +68,19 @@ class Router {
     async loadPage( e ){
 
         route = location.hash || '#'
-        currentPage = Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
+        currentPage = await Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
 
         if( currentPage === undefined ){
 
             route = '#404'
             currentPage = Object.values( this.routes ).find( elt => `#${elt.slug}` === '#404' )
+            showPage.bind( this )( )
 
         } else {
 
             if( currentPage.access === '1' ){
 
-                let userLocal = localStorage.getItem('userLocal')
+                let userLocal = localStorage.getItem('userLocal' )
                 userLocal = JSON.parse(userLocal)
                 let userToken = userLocal.token
 
@@ -63,6 +116,7 @@ class Router {
 
         async function showPage(  ) {
 
+
             if( !this.cache.hasOwnProperty( route ) ) {
 
                 let res = await fetch( currentPage.fileName )
@@ -80,38 +134,13 @@ class Router {
 
             document.dispatchEvent( pageReady )
 
+
         }
     }
 }
 
-let routes = { };
+let pagesRoutes = new Router( routes )
 
-
-( ( ) => { fetch( '/api/get?name=pages' )
-
-    .then( res => { return res.json( ) } )
-
-    .then( data => {
-
-        let folder = '../views/pages/'
-
-        data.forEach( e => {
-            let newPage = {
-                'slug': e.slug,
-                'fileName': folder + e.fileName + '.html',
-                'title': e.title,
-                'access': e.access,
-            }
-            routeList.push( newPage )
-        })
-
-        Object.assign( routes, routeList )
-
-    } )
-
-} )( )
-
-let pagesRoutes = new Router( routes );
 
 window.onpopstate = e => {
 
