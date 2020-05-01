@@ -5,7 +5,7 @@ async function addUser(  ) {
     let randomstring = ( ) =>  Math.random().toString(36).substr(2)
     let token = randomstring() + randomstring() + randomstring()
     tokenUserList.push(token)
-    console.log( token )
+
     return token
 
 

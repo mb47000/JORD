@@ -81,15 +81,14 @@ class Router {
             if( currentPage.access === '1' ){
 
                 let userLocal = localStorage.getItem('userLocal' )
-                userLocal = JSON.parse(userLocal)
-                let userToken = userLocal.token
 
-                if( userLocal ) {
+                if( userLocal != null ) {
+
+                    userLocal = JSON.parse(userLocal)
+                    let userToken = userLocal.token;
 
                     ( ( ) => { fetch(`/api/token?token=${userToken}&action=verify` )
-                        .then( res => {
-                            return res.json( )
-                        } )
+                        .then( res => { return res.json( ) } )
                         .then( data => {
                             if ( data != true ) {
                                 route = '#401'

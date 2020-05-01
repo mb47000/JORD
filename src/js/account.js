@@ -129,7 +129,6 @@ document.addEventListener( 'initWebsite', function() {
 
             if( e.target.closest('.saveProfil') ){
 
-                // let section = e.target.closest( '.section' ).nextElementSibling
                 let dataSend = {
                     'email':                userLocal.email,
                     'firstname':            document.getElementById('firstnameField').nextElementSibling.value,
@@ -163,18 +162,52 @@ document.addEventListener( 'initWebsite', function() {
                 })
             }
 
+            if( e.target.classList.contains('editPassword' ) ){
+
+                let newPass         = document.getElementById('newPassword' ).value
+                let confirmPass     = document.getElementById('confirmPassword' ).value
+                let oldPass         = document.getElementById('oldPassword' ).value
+                let email           = document.getElementById('emailField').innerHTML
+
+                if( newPass === confirmPass ){
+
+                    fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
+                        .then( res => {
+                            return res.json( )
+                        })
+                        .then( data => {
+                            if ( data === 'user not found' ) {
+                                showPushNotification( 'error', "Email incorrect" )
+                            } else if ( data === 'incorrect password' ) {
+                                showPushNotification( 'error', "Mauvais mot de passe" )
+                            } else if ( data === 'password updated') {
+                                showPushNotification( 'success', "Modification du mot de passe réussi" )
+                                document.getElementById('newPassword' ).value = ''
+                                document.getElementById('confirmPassword' ).value = ''
+                                document.getElementById('oldPassword' ).value = ''
+                                cancelEdit( )
+                            }
+                        })
+                } else {
+                    showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
+                }
+
+
+            }
+
             if( e.target.classList.contains('cancelSave' ) ){
 
                 cancelEdit( )
 
             }
 
+
         })
 
         function cancelEdit( ){
-            let inputs = document.querySelectorAll('input')
-            let labelsSpan = document.querySelectorAll('.labelSpan')
-            let button = document.querySelectorAll('.buttonSection')
+            let inputs = document.querySelectorAll('input' )
+            let labelsSpan = document.querySelectorAll('.labelSpan' )
+            let button = document.querySelectorAll('.buttonSection' )
             inputs.forEach(elt => {
                 elt.hidden = true
             })
@@ -189,18 +222,17 @@ document.addEventListener( 'initWebsite', function() {
         function writeData( ){
 
             userLocal = localStorage.getItem( 'userLocal' )
-            console.log(userLocal)
-            userLocal = JSON.parse(userLocal)
+            userLocal = JSON.parse( userLocal )
 
-            document.getElementById('emailField').innerHTML                 = userLocal.email
-            document.getElementById('firstnameField').innerHTML             = document.getElementById('firstnameField').nextElementSibling.value            = userLocal.firstname
-            document.getElementById('lastnameField').innerHTML              = document.getElementById('lastnameField').nextElementSibling.value             = userLocal.lastname
-            document.getElementById('addressField').innerHTML               = document.getElementById('addressField').nextElementSibling.value              = userLocal.address
-            document.getElementById('postalcodeField').innerHTML            = document.getElementById('postalcodeField').nextElementSibling.value           = userLocal.postalCode
-            document.getElementById('townField').innerHTML                  = document.getElementById('townField').nextElementSibling.value                 = userLocal.town
-            document.getElementById('addressShippingField').innerHTML       = document.getElementById('addressShippingField').nextElementSibling.value      = userLocal.shipping_address
-            document.getElementById('postalcodeShippingField').innerHTML    = document.getElementById('postalcodeShippingField').nextElementSibling.value   = userLocal.shipping_postalCode
-            document.getElementById('townShippingField').innerHTML          = document.getElementById('townShippingField').nextElementSibling.value         = userLocal.shipping_town
+            document.getElementById('emailField' ).innerHTML                 = userLocal.email
+            document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
+            document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
+            document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
+            document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
+            document.getElementById('townField' ).innerHTML                  = document.getElementById('townField' ).nextElementSibling.value                 = userLocal.town
+            document.getElementById('addressShippingField' ).innerHTML       = document.getElementById('addressShippingField' ).nextElementSibling.value      = userLocal.shipping_address
+            document.getElementById('postalcodeShippingField' ).innerHTML    = document.getElementById('postalcodeShippingField' ).nextElementSibling.value   = userLocal.shipping_postalCode
+            document.getElementById('townShippingField' ).innerHTML          = document.getElementById('townShippingField' ).nextElementSibling.value         = userLocal.shipping_town
 
         }
 
@@ -223,6 +255,7 @@ function userIsLog( ) {
 
 function userIsNotLog( ) {
 
+    document.dispatchEvent( dbReady )
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
 
 

@@ -183,9 +183,51 @@ async function dbUpdateUser( dbUser, dbPwd, dbName, dbCollection, dbElem ){
 
 }
 
+async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
+
+    dbConnect( dbUser, dbPwd, dbName )
+
+    try {
+        await client.connect();
+        console.log( 'Connected successfully to mongodb server' )
+        const db = client.db( dbName )
+        const document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
+
+        if ( document.length != 0 ){
+            try {
+                if ( await argon2.verify( document[0].password, dbElem.password ) ) {
+
+                    let passwordHash = await argon2.hash( dbElem.newPassword )
+                    let updateDocument = await db.collection( dbCollection ).findOneAndUpdate(
+                        { email: dbElem.email },
+                        { $set: { 'password': passwordHash } }
+                    )
+                    return 'password updated'
+
+                } else {
+                    return 'incorrect password'
+                }
+            } catch ( err ) {
+                console.log( err )
+            }
+        } else {
+            return 'user not found'
+        }
+        console.log(`Get ${dbCollection} in ${dbName}`)
+
+    } catch ( e ) {
+        console.error( e );
+    } finally {
+        await client.close();
+        console.log( 'Disconnected successfully to mongodb server' )
+    }
+
+}
+
 module.exports = {
     dbLoad,
     dbLogin,
     dbRegister,
     dbUpdateUser,
+    dbUpdatePassword,
 }

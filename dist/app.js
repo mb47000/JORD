@@ -5,6 +5,58 @@ let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
 let routeList = [ ]
 let route
 let currentPage
+let routes = { };
+
+( ( ) => { fetch( '/api/get?name=pages' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let folder = '../views/pages/'
+
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + e.fileName + '.html',
+                'title': e.title,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
+
+        Object.assign( routes, routeList )
+
+        loadProducts( )
+
+    } )
+
+} )( );
+
+function loadProducts( ) { fetch( '/api/get?name=products' )
+
+    .then( res => { return res.json( ) } )
+
+    .then( data => {
+
+        let folder = '../views/templates/'
+
+        data.forEach( e => {
+            let newPage = {
+                'slug': e.slug,
+                'fileName': folder + 'product.html',
+                'title': e.name,
+                'access': e.access,
+            }
+            routeList.push( newPage )
+        })
+
+        Object.assign( routes, routeList )
+
+        document.dispatchEvent( dbReady )
+    } )
+
+};
 
 class Router {
 
@@ -20,27 +72,27 @@ class Router {
     async loadPage( e ){
 
         route = location.hash || '#'
-        currentPage = Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
+        currentPage = await Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
 
         if( currentPage === undefined ){
 
             route = '#404'
             currentPage = Object.values( this.routes ).find( elt => `#${elt.slug}` === '#404' )
+            showPage.bind( this )( )
 
         } else {
 
             if( currentPage.access === '1' ){
 
-                let userLocal = localStorage.getItem('userLocal')
-                userLocal = JSON.parse(userLocal)
-                let userToken = userLocal.token
+                let userLocal = localStorage.getItem('userLocal' )
 
-                if( userLocal ) {
+                if( userLocal != null ) {
+
+                    userLocal = JSON.parse(userLocal)
+                    let userToken = userLocal.token;
 
                     ( ( ) => { fetch(`/api/token?token=${userToken}&action=verify` )
-                        .then( res => {
-                            return res.json( )
-                        } )
+                        .then( res => { return res.json( ) } )
                         .then( data => {
                             if ( data != true ) {
                                 route = '#401'
@@ -67,6 +119,7 @@ class Router {
 
         async function showPage(  ) {
 
+
             if( !this.cache.hasOwnProperty( route ) ) {
 
                 let res = await fetch( currentPage.fileName )
@@ -84,38 +137,13 @@ class Router {
 
             document.dispatchEvent( pageReady )
 
+
         }
     }
 }
 
-let routes = { };
+let pagesRoutes = new Router( routes )
 
-
-( ( ) => { fetch( '/api/get?name=pages' )
-
-    .then( res => { return res.json( ) } )
-
-    .then( data => {
-
-        let folder = '../views/pages/'
-
-        data.forEach( e => {
-            let newPage = {
-                'slug': e.slug,
-                'fileName': folder + e.fileName + '.html',
-                'title': e.title,
-                'access': e.access,
-            }
-            routeList.push( newPage )
-        })
-
-        Object.assign( routes, routeList )
-
-    } )
-
-} )( )
-
-let pagesRoutes = new Router( routes );
 
 window.onpopstate = e => {
 
@@ -123,32 +151,6 @@ window.onpopstate = e => {
     document.dispatchEvent( pageReady )
 
 }
-( ( ) => { fetch( '/api/get?name=products' )
-
-    .then( res => { return res.json( ) } )
-
-    .then( data => {
-
-        let folder = '../views/templates/'
-
-        data.forEach( e => {
-            let newPage = {
-                'slug': e.slug,
-                'fileName': folder + 'product.html',
-                'title': e.name,
-                'access': e.access,
-            }
-            routeList.push( newPage )
-        })
-
-        Object.assign( routes, routeList )
-
-        document.dispatchEvent( dbReady )
-    } )
-
-} )( )
-
-
 window.addEventListener( 'pageReady', e => buildProduct( ) )
 
 function buildProduct( ){
@@ -502,7 +504,6 @@ document.addEventListener( 'initWebsite', function() {
 
             if( e.target.closest('.saveProfil') ){
 
-                // let section = e.target.closest( '.section' ).nextElementSibling
                 let dataSend = {
                     'email':                userLocal.email,
                     'firstname':            document.getElementById('firstnameField').nextElementSibling.value,
@@ -536,18 +537,52 @@ document.addEventListener( 'initWebsite', function() {
                 })
             }
 
+            if( e.target.classList.contains('editPassword' ) ){
+
+                let newPass         = document.getElementById('newPassword' ).value
+                let confirmPass     = document.getElementById('confirmPassword' ).value
+                let oldPass         = document.getElementById('oldPassword' ).value
+                let email           = document.getElementById('emailField').innerHTML
+
+                if( newPass === confirmPass ){
+
+                    fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
+                        .then( res => {
+                            return res.json( )
+                        })
+                        .then( data => {
+                            if ( data === 'user not found' ) {
+                                showPushNotification( 'error', "Email incorrect" )
+                            } else if ( data === 'incorrect password' ) {
+                                showPushNotification( 'error', "Mauvais mot de passe" )
+                            } else if ( data === 'password updated') {
+                                showPushNotification( 'success', "Modification du mot de passe réussi" )
+                                document.getElementById('newPassword' ).value = ''
+                                document.getElementById('confirmPassword' ).value = ''
+                                document.getElementById('oldPassword' ).value = ''
+                                cancelEdit( )
+                            }
+                        })
+                } else {
+                    showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
+                }
+
+
+            }
+
             if( e.target.classList.contains('cancelSave' ) ){
 
                 cancelEdit( )
 
             }
 
+
         })
 
         function cancelEdit( ){
-            let inputs = document.querySelectorAll('input')
-            let labelsSpan = document.querySelectorAll('.labelSpan')
-            let button = document.querySelectorAll('.buttonSection')
+            let inputs = document.querySelectorAll('input' )
+            let labelsSpan = document.querySelectorAll('.labelSpan' )
+            let button = document.querySelectorAll('.buttonSection' )
             inputs.forEach(elt => {
                 elt.hidden = true
             })
@@ -562,18 +597,17 @@ document.addEventListener( 'initWebsite', function() {
         function writeData( ){
 
             userLocal = localStorage.getItem( 'userLocal' )
-            console.log(userLocal)
-            userLocal = JSON.parse(userLocal)
+            userLocal = JSON.parse( userLocal )
 
-            document.getElementById('emailField').innerHTML                 = userLocal.email
-            document.getElementById('firstnameField').innerHTML             = document.getElementById('firstnameField').nextElementSibling.value            = userLocal.firstname
-            document.getElementById('lastnameField').innerHTML              = document.getElementById('lastnameField').nextElementSibling.value             = userLocal.lastname
-            document.getElementById('addressField').innerHTML               = document.getElementById('addressField').nextElementSibling.value              = userLocal.address
-            document.getElementById('postalcodeField').innerHTML            = document.getElementById('postalcodeField').nextElementSibling.value           = userLocal.postalCode
-            document.getElementById('townField').innerHTML                  = document.getElementById('townField').nextElementSibling.value                 = userLocal.town
-            document.getElementById('addressShippingField').innerHTML       = document.getElementById('addressShippingField').nextElementSibling.value      = userLocal.shipping_address
-            document.getElementById('postalcodeShippingField').innerHTML    = document.getElementById('postalcodeShippingField').nextElementSibling.value   = userLocal.shipping_postalCode
-            document.getElementById('townShippingField').innerHTML          = document.getElementById('townShippingField').nextElementSibling.value         = userLocal.shipping_town
+            document.getElementById('emailField' ).innerHTML                 = userLocal.email
+            document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
+            document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
+            document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
+            document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
+            document.getElementById('townField' ).innerHTML                  = document.getElementById('townField' ).nextElementSibling.value                 = userLocal.town
+            document.getElementById('addressShippingField' ).innerHTML       = document.getElementById('addressShippingField' ).nextElementSibling.value      = userLocal.shipping_address
+            document.getElementById('postalcodeShippingField' ).innerHTML    = document.getElementById('postalcodeShippingField' ).nextElementSibling.value   = userLocal.shipping_postalCode
+            document.getElementById('townShippingField' ).innerHTML          = document.getElementById('townShippingField' ).nextElementSibling.value         = userLocal.shipping_town
 
         }
 
@@ -596,6 +630,7 @@ function userIsLog( ) {
 
 function userIsNotLog( ) {
 
+    document.dispatchEvent( dbReady )
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
 
 

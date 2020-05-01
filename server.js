@@ -57,6 +57,15 @@ http.createServer( function ( req, res ) {
                 res.end( JSON.stringify( resp ), 'utf-8' )
             })
 
+    } else if ( req.url.startsWith( '/api/updatePwd' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        dbQuery.dbUpdatePassword( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
+            .then( resp => {
+                res.statusCode = 200
+                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                res.end( JSON.stringify( resp ), 'utf-8' )
+            })
 
     } else if ( req.url.startsWith( '/api/register' ) ) {
 
@@ -115,7 +124,7 @@ http.createServer( function ( req, res ) {
     } else if ( req.url.startsWith( '/api/token' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
-        console.log(queryObject)
+
         if( queryObject.action === 'verify' ){
 
             token.verifyUser(queryObject.token)
@@ -134,11 +143,11 @@ http.createServer( function ( req, res ) {
     } else if ( String( path.extname( req.url ) ) === '' ) {
 
         res.writeHead( 302, { 'Location': '/#' + req.url.replace( '/', '' ) } )
-        res.end()
+        res.end( )
 
     } else {
 
-        readFile()
+        readFile( )
 
     }
 
