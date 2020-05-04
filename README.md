@@ -56,12 +56,14 @@ Create 3 collections :
 * users
 * products
 * pages
+* orders
 
 ```
 use databaseName
 db.createCollection('users')
 db.createCollection('products')
 db.createCollection('pages')
+db.createCollection('orders')
 ```
 
 Add users info in *server.js* file, edit the "dbInfo" object.
@@ -150,6 +152,27 @@ db.products.insertOne(
 * Access : Access level (0: all | 1 : user login)
 * Name : Use for H1 and Title tag
 * Price : The product price
+
+### New Order
+Add document in collection "orders".
+
+```
+use databaseName
+db.orders.insertOne(
+   { 
+   cart: Array[], 
+   infos: Array[],
+   userID: "thisisuseridindbusers", 
+   dateCreate: "01-01-2020-10:30",
+   datePurchase: "01-01-2020-10:35",
+   }
+)
+```
+* Cart : An array with the cart
+* Infos : An array with user informations (address, firstname, lastname)
+* UserID : The user ID in users collection
+* dateCreate : Date when the document was create
+* datePurchase : Date when payment was proceed
 
 ## Edit Templates and Parts
 ### Parts
