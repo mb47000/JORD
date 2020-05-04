@@ -10,7 +10,11 @@ document.addEventListener( 'initWebsite', ( ) => {
 
 document.body.addEventListener( 'click', e => {
 
-    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ): null
+    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ) : null
+
+    e.target.closest( '.plusProduct' ) ? plusMinusProduct( e.target.closest( '.plusProduct' ).closest('.qtyLabel' ), 'plus' ) : null
+
+    e.target.closest( '.minusProduct' ) ? plusMinusProduct( e.target.closest( '.minusProduct' ).closest('.qtyLabel' ), 'minus' ) : null
 
 } )
 
@@ -52,7 +56,10 @@ function refreshCart( ) {
 
 
 
-    }
+    };
+
+    localStorage.getItem( 'userLocal' ) ? saveCart(  ) : null
+    refreshCounter( )
 
 }
 
@@ -89,10 +96,85 @@ function addCart( e ) {
 
 }
 
-function removeCart( ref ) {
+function removeCart( ref ){
 
     let newData = [ ]
     JSON.parse( cartLocal ).forEach( e => e.ref === ref ? null : newData.push( e ) )
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
+
+}
+
+function refreshCounter( ){
+
+    let cartCount = document.getElementById('cartProductNumber')
+
+    cartCount ? cartCount.innerHTML = document.querySelectorAll('.productLabel').length : null
+
+}
+
+function plusMinusProduct( e, type ) {
+
+    let refLabel = e.parentElement.querySelector('.refLabel' ).firstElementChild.innerHTML
+    let value = type === 'plus' ? parseInt( e.querySelector('.value' ).innerHTML ) + 1 : parseInt( e.querySelector('.value' ).innerHTML ) - 1
+
+    value === 0 ? value = 1 : null
+
+    e.querySelector('.value' ).innerHTML = value
+
+    cartLocal = JSON.parse( localStorage.getItem( 'cartLocal' ) )
+    cartLocal.forEach( e => e.ref === refLabel ? e.qty = value : null )
+    localStorage.setItem( 'cartLocal', JSON.stringify( cartLocal ) )
+    refreshCart( )
+
+}
+
+function saveCart( ){
+
+    let cartLocal = localStorage.getItem('cartLocal' ) ? localStorage.getItem('cartLocal' ) : 'null'
+    let userLocal = JSON.parse( localStorage.getItem('userLocal' ) )
+    console.log('save cart')
+    console.log( cartLocal )
+
+    fetch( `/api/cart?token=${userLocal.token}&email=${userLocal.email}&action=saveCart`, {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: cartLocal,
+    } )
+    //     .then( res => {
+    //         return res.json( )
+    //     }).then( data => {
+    //     console.log( data )
+    //     if ( data === false ){
+    //         showPushNotification( 'error', "Session expirée" )
+    //     } else {
+    //         console.log( data )
+    //     }
+    // })
+
+}
+
+function getCart( ){
+
+    let cartLocal = localStorage.getItem('cartLocal' )
+    let userLocal = JSON.parse( localStorage.getItem('userLocal' ) )
+
+    fetch( `/api/cart?token=${userLocal.token}&email=${userLocal.email}&action=getCart`, {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: cartLocal,
+    } )
+        .then( res => {
+            return res.json( )
+        }).then( data => {
+            if ( data === false ){
+                showPushNotification( 'error', "Session expirée" )
+            } else if( data != 'null' ) {
+                localStorage.setItem( 'cartLocal', data )
+            }
+        }).then( ( ) => refreshCart( ) )
 
 }

@@ -10,3 +10,8 @@
     pointer-events: none;
   }
 }
+
+.iconPointer {
+  cursor: pointer;
+  color: var(--nav-link-color);
+}

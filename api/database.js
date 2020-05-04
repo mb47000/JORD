@@ -224,10 +224,54 @@ async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) 
 
 }
 
+async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, dbElem ){
+
+    dbConnect( dbUser, dbPwd, dbName )
+
+    try {
+        await client.connect(  )
+        console.log( 'Connected successfully to mongodb server' )
+
+        const db = client.db( dbName )
+        if( action === 'saveCart' ){
+
+            let data = JSON.parse( dbElem )
+            data = JSON.parse(data[0])
+
+            let dataCart = {
+                'cart': data,
+            }
+            let document = await db.collection( dbCollection ).findOneAndUpdate(
+                { email: userEmail },
+                { $set: dataCart }
+            )
+
+        } else if( action === 'getCart' ){
+
+            let document = await db.collection( dbCollection ).find( { email: userEmail } ).toArray( )
+            if( document[0].cart != 'null' ) {
+                return JSON.stringify( document[0].cart )
+            } else {
+                return 'cart empty'
+            }
+        }
+
+        // return dataUser
+        console.log(`Get ${dbCollection} in ${dbName}`)
+    } catch ( e ) {
+        console.error( e )
+    } finally {
+        await client.close()
+        console.log( 'Disconnected successfully to mongodb server' )
+    }
+
+}
+
 module.exports = {
     dbLoad,
     dbLogin,
     dbRegister,
     dbUpdateUser,
     dbUpdatePassword,
+    dbCart,
 }

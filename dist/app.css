@@ -2096,6 +2096,11 @@ body .m-1 {
   pointer-events: none;
 }
 
+.iconPointer {
+  cursor: pointer;
+  color: var(--nav-link-color);
+}
+
 #accountUserPage .editProfil, #accountUserPage .cancelSave {
   cursor: pointer;
 }

@@ -243,6 +243,8 @@ document.addEventListener( 'initWebsite', function() {
 
 function userIsLog( ) {
 
+
+    localStorage.getItem('cartLocal' ) ? refreshCart( ) : getCart( )
     document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
     document.getElementById( 'logoutMenu' ).addEventListener( 'click', e => {
         e.preventDefault( )
@@ -257,7 +259,7 @@ function userIsNotLog( ) {
 
     document.dispatchEvent( dbReady )
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
-
+    localStorage.removeItem('cartLocal' )
 
 }
 

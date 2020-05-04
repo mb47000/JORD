@@ -121,6 +121,47 @@ http.createServer( function ( req, res ) {
                 }
             } )
 
+    } else if ( req.url.startsWith( '/api/cart' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+
+        token.verifyUser(queryObject.token)
+            .then( resp => {
+                if( resp === true ){
+                    if ( req.method == 'POST' ) {
+
+                        let body = ''
+
+                        req.on( 'data', function ( data ) {
+                            body += data
+                            if ( body.length > 1e6 )
+                                req.connection.destroy(  );
+                        } )
+
+                        req.on( 'end', ( ) => {
+                            let post = qs.parse( body )
+                            let postData = Object.keys( post )
+                            postData = JSON.stringify( postData )
+
+                            dbQuery.dbCart( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users',queryObject.action ,queryObject.email , postData )
+                                .then( resp => {
+                                    res.statusCode = 200
+                                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                                    res.end( JSON.stringify( resp ), 'utf-8' )
+                                } )
+                        } )
+                    } else {
+                        res.statusCode = 200
+                        res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                        res.end( false, 'utf-8' )
+                    }
+                } else {
+                    res.statusCode = 200
+                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                    res.end( false, 'utf-8' )
+                }
+            } )
+
     } else if ( req.url.startsWith( '/api/token' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
