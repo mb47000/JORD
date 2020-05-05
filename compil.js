@@ -12,6 +12,7 @@ const scripts = [
     'modal.js',
     'cart.js',
     'account.js',
+    'purchase.js',
 ]
 let destFile = process.argv.pop();
 

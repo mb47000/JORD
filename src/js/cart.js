@@ -23,40 +23,43 @@ function refreshCart( ) {
 
     cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
 
+
     const buttonCart = document.getElementById( 'buttonCart' )
-    const tbody = document.getElementById( 'cart' ).getElementsByTagName( 'tbody' )[0]
-    tbody.innerHTML = ''
-    let totalPrice = 0
-    buttonCart.classList.add( 'tooltip' )
-    buttonCart.classList.remove( 'buttonModal' )
-    buttonCart.removeAttribute('data-modaltarget')
+    const carts = document.querySelectorAll('.cart' )
 
-    if ( cartLocal != null ) {
+    carts.forEach( e => {
+        const tbody = e.getElementsByTagName( 'tbody' )[0]
+        tbody.innerHTML = ''
+        let totalPrice = 0
+        buttonCart.classList.add( 'tooltip' )
+        buttonCart.classList.remove( 'buttonModal' )
+        buttonCart.removeAttribute('data-modaltarget')
 
-        buttonCart.classList.remove( 'tooltip' )
-        buttonCart.classList.add( 'buttonModal' )
-        buttonCart.dataset.modaltarget = 'cart'
+        if ( cartLocal != null ) {
 
-        JSON.parse( cartLocal ).forEach( e => {
+            buttonCart.classList.remove( 'tooltip' )
+            buttonCart.classList.add( 'buttonModal' )
+            buttonCart.dataset.modaltarget = 'cart'
 
-            tbody.innerHTML += cartRowHTML
-            tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
-            tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
-            tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
-            tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
-            tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
-            totalPrice += e.price * e.qty
+            JSON.parse( cartLocal ).forEach( e => {
 
-        })
+                tbody.innerHTML += cartRowHTML
+                tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
+                tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
+                tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
+                tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
+                tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
+                totalPrice += e.price * e.qty
 
-        tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice
+            })
 
-
-    } else {
-
+            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice
 
 
-    };
+        } else {
+
+        }
+    });
 
     localStorage.getItem( 'userLocal' ) ? saveCart(  ) : null
     refreshCounter( )
@@ -132,8 +135,6 @@ function saveCart( ){
 
     let cartLocal = localStorage.getItem('cartLocal' ) ? localStorage.getItem('cartLocal' ) : 'null'
     let userLocal = JSON.parse( localStorage.getItem('userLocal' ) )
-    console.log('save cart')
-    console.log( cartLocal )
 
     fetch( `/api/cart?token=${userLocal.token}&email=${userLocal.email}&action=saveCart`, {
         method: "POST",
@@ -142,16 +143,6 @@ function saveCart( ){
         },
         body: cartLocal,
     } )
-    //     .then( res => {
-    //         return res.json( )
-    //     }).then( data => {
-    //     console.log( data )
-    //     if ( data === false ){
-    //         showPushNotification( 'error', "Session expirée" )
-    //     } else {
-    //         console.log( data )
-    //     }
-    // })
 
 }
 
