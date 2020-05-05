@@ -160,6 +160,7 @@ Add document in collection "orders".
 use databaseName
 db.orders.insertOne(
    { 
+   status: "inprogress",
    cart: Array[], 
    infos: Array[],
    userID: "thisisuseridindbusers", 
@@ -168,6 +169,7 @@ db.orders.insertOne(
    }
 )
 ```
+* Status : The status of the order
 * Cart : An array with the cart
 * Infos : An array with user informations (address, firstname, lastname)
 * UserID : The user ID in users collection
