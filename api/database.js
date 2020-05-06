@@ -2,6 +2,7 @@ const mongoClient   = require('mongodb').MongoClient
 const argon2        = require('argon2')
 const email         = require( './email.js' )
 const token         = require( './token.js' )
+const dateTime      = require( './dateTime.js' )
 
 let client
 
@@ -267,6 +268,72 @@ async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, d
 
 }
 
+async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ){
+
+    dbConnect( dbUser, dbPwd, dbName )
+
+    console.log( dbElem )
+
+    try {
+        await client.connect(  )
+        console.log( 'Connected successfully to mongodb server' )
+
+        const db = client.db( dbName )
+        if( action === 'createOrders' ){
+
+            let userInfo = await db.collection( 'users' ).find( { email: dbElem } ).toArray( )
+
+            let status = 'inProgress'
+            let cart = userInfo[0].cart
+            let infos = { }
+            for (let [ k, v ] of Object.entries( userInfo[0] ) ) {
+                if( k != 'password' && k != 'cart' ){
+                    console.log(`${k}: ${v}`);
+                    infos[k] = v
+
+                }
+            }
+            let dateCreate = await dateTime.get( )
+            let order = {
+                'status': status,
+                'cart': cart,
+                'infos': infos,
+                'dateCreate': dateCreate,
+                'datePurchase': ''
+            }
+            let document = await db.collection( dbCollection ).insertOne( order, ( err, res ) => {
+                if ( err ) {
+                    console.error(err)
+                }
+                console.log( `New order` )
+            })
+
+            email.send( {
+                email: dbElem.email,
+                subject: 'Votre commande sur notre site',
+                textFile: 'orderInProgress',
+            } )
+
+            return 'order created'
+
+
+        } else if( action === 'editOrders' ){
+
+
+
+        }
+
+        // return dataUser
+        console.log(`Get ${dbCollection} in ${dbName}`)
+    } catch ( e ) {
+        console.error( e )
+    } finally {
+        await client.close()
+        console.log( 'Disconnected successfully to mongodb server' )
+    }
+
+}
+
 module.exports = {
     dbLoad,
     dbLogin,
@@ -274,4 +341,5 @@ module.exports = {
     dbUpdateUser,
     dbUpdatePassword,
     dbCart,
+    dbOrders,
 }

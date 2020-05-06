@@ -1,7 +1,6 @@
 let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
 let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
 let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
-
 let routeList = [ ]
 let route
 let currentPage
@@ -774,18 +773,23 @@ function purchase( step ){
             labelSpanArray.push( elt.innerHTML.length )
         })
         labelSpanArray.every(isNotEmpty) ? createOrders( ) : showPushNotification( 'error', "Veuillez remplir tous les champs" )
+    } else if ( step === 'step4' ){
+
+        console.log( 'add payment api' )
+
     }
 
-    purchaseBtn.addEventListener('click', e => {
+    if( purchaseBtn ) {
+        purchaseBtn.addEventListener('click', e => {
 
-        e.preventDefault()
-        localStorage.getItem('userLocal' ) ? null : ( content.innerHTML = loginLogoutFormHTML, loginRegister( 'purchase' ) )
+            e.preventDefault()
+            localStorage.getItem('userLocal' ) ? null : ( content.innerHTML = loginLogoutFormHTML, loginRegister( 'purchase' ) )
 
-        e.target.closest('.purchaseButton').hash === '#commander?etape=2' ? purchase( 'step2' ) : null
-        e.target.closest('.purchaseButton').hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+            e.target.closest('.purchaseButton').hash === '#commander?etape=2' ? purchase( 'step2' ) : null
+            e.target.closest('.purchaseButton').hash === '#commander?etape=3' ? purchase( 'step3' ) : null
 
-
-    })
+        })
+    }
 
     // SINON AFFICHER LE PANIER VALIDE
 
@@ -804,6 +808,16 @@ function purchase( step ){
 
 function createOrders( ) {
 
-    console.log( 'need to fetch this' )
+    let userLocal = JSON.parse( localStorage.getItem('userLocal' ) )
+    let emailUser = userLocal.email
+    let tokenUser = userLocal.token
+
+    fetch( `/api/orders?token=${tokenUser}&email=${emailUser}&action=createOrders` )
+        .then( res => {
+            return res.json( )
+        }).then( data => {
+            console.log( data )
+            data === 'order created' ? purchase( 'step4' ) : showPushNotification('error', "Une erreur est survenue, merci de contacter l'adminitrateur")
+        })
 
 }

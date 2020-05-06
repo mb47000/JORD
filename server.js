@@ -162,6 +162,26 @@ http.createServer( function ( req, res ) {
                 }
             } )
 
+    } else if ( req.url.startsWith( '/api/orders' ) ) {
+
+        const queryObject = url.parse( req.url, true ).query
+        console.log(queryObject)
+        token.verifyUser(queryObject.token)
+            .then( resp => {
+                if( resp === true ){
+                    dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',queryObject.action , queryObject.email )
+                        .then( resp => {
+                            res.statusCode = 200
+                            res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                            res.end( JSON.stringify( resp ), 'utf-8' )
+                        } )
+                } else {
+                    res.statusCode = 200
+                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+                    res.end( false, 'utf-8' )
+                }
+            } )
+
     } else if ( req.url.startsWith( '/api/token' ) ) {
 
         const queryObject = url.parse( req.url, true ).query
