@@ -6,23 +6,24 @@ function send( data ) {
 
     console.log( 'Create transporter' )
     const transporter = nodemailer.createTransport( {
-        host: "in-v3.mailjet.com",
-        port: 465,
-        secure: true, // upgrade later with STARTTLS
+        host: "smtp.mailtrap.io",
+        port: 2525,
         auth: {
-            user: "611c3a2c35eb931d71055c8fa8846c46",
-            pass: "dd6e18ed9a3a53d5136427a71a89f433"
+            user: "9304b0fd880a2d",
+            pass: "928ca8573fb3c5"
         }
     } )
 
     console.log( 'Generate email' )
     let message = {
-        from: "ne-pas-repondre@coprometal.com",
+        from: "ne-pas-repondre@jord.com",
         to: data.email,
         subject: data.subject,
         text: ( { path: `./views/email/${data.textFile}.txt` } ),
         html: ( { path: `./views/email/${data.textFile}.html` } )
     }
+
+    console.log( message )
 
     console.log( 'Sending Email' )
 

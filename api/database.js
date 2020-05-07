@@ -305,7 +305,7 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
             } )
 
             email.send( {
-                email: dbElem.email,
+                email: dbElem,
                 subject: 'Votre commande sur notre site',
                 textFile: 'orderInProgress',
             } )
