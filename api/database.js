@@ -268,7 +268,7 @@ async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, d
 
 }
 
-async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ){
+async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
 
     dbConnect( dbUser, dbPwd, dbName )
 
@@ -286,13 +286,9 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ){
             let status = 'inProgress'
             let cart = userInfo[0].cart
             let infos = { }
-            for (let [ k, v ] of Object.entries( userInfo[0] ) ) {
-                if( k != 'password' && k != 'cart' ){
-                    console.log(`${k}: ${v}`);
-                    infos[k] = v
+            for ( let [ k, v ] of Object.entries( userInfo[0] ) )
+                k != 'password' && k != 'cart' ? infos[k] = v : null
 
-                }
-            }
             let dateCreate = await dateTime.get( )
             let order = {
                 'status': status,
@@ -303,10 +299,10 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ){
             }
             let document = await db.collection( dbCollection ).insertOne( order, ( err, res ) => {
                 if ( err ) {
-                    console.error(err)
+                    console.error( err )
                 }
                 console.log( `New order` )
-            })
+            } )
 
             email.send( {
                 email: dbElem.email,
@@ -323,7 +319,6 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ){
 
         }
 
-        // return dataUser
         console.log(`Get ${dbCollection} in ${dbName}`)
     } catch ( e ) {
         console.error( e )

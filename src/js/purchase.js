@@ -1,26 +1,23 @@
-
 document.addEventListener( 'initWebsite', ( ) => {
 
-    document.getElementById('purchase') ? purchase( 'step1' ) : null
+    document.getElementById('purchase' ) ? purchase( 'step1' ) : null
 
 } )
+
 function purchase( step ){
 
     let purchaseElem = document.getElementById('purchase' )
     let content = purchaseElem.querySelector('.content' )
     let purchaseBtn
 
-    //------------------------------------------------
-    /// ETAPE 1
-    // VÉRIFIER LE PANIER
-    if( step === 'step1' ){
+    if ( step === 'step1' ) {
         content.innerHTML = cartHTML
         purchaseBtn = content.querySelector('.purchaseButton' )
         purchaseBtn.firstElementChild.innerHTML = "Continuer ma commande"
         purchaseBtn.href = "#commander?etape=2"
         refreshCart( )
 
-    } else if ( step === 'step2' ){
+    } else if ( step === 'step2' ) {
         content.innerHTML = userProfilHTML
         purchaseBtn = content.querySelector('.purchaseButton' )
         purchaseBtn.hidden = false
@@ -29,15 +26,15 @@ function purchase( step ){
         content.querySelector('.editPassword' ).style.display = 'none'
         getUserProfilPage( content )
 
-    } else if ( step === 'step3' ){
+    } else if ( step === 'step3' ) {
         let allLabelSpan = document.querySelectorAll('.labelSpan' )
         purchaseBtn = content.querySelector('.purchaseButton' )
         const isNotEmpty = elem => elem > 0
-        let labelSpanArray = []
+        let labelSpanArray = [ ]
         allLabelSpan.forEach(elt => {
             labelSpanArray.push( elt.innerHTML.length )
-        })
-        labelSpanArray.every(isNotEmpty) ? createOrders( ) : showPushNotification( 'error', "Veuillez remplir tous les champs" )
+        } )
+        labelSpanArray.every( isNotEmpty ) ? createOrders( ) : showPushNotification( 'error', "Veuillez remplir tous les champs" )
     } else if ( step === 'step4' ){
 
         console.log( 'add payment api' )
@@ -46,29 +43,12 @@ function purchase( step ){
 
     if( purchaseBtn ) {
         purchaseBtn.addEventListener('click', e => {
-
-            e.preventDefault()
+            e.preventDefault( )
             localStorage.getItem('userLocal' ) ? null : ( content.innerHTML = loginLogoutFormHTML, loginRegister( 'purchase' ) )
-
-            e.target.closest('.purchaseButton').hash === '#commander?etape=2' ? purchase( 'step2' ) : null
-            e.target.closest('.purchaseButton').hash === '#commander?etape=3' ? purchase( 'step3' ) : null
-
-        })
+            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
+            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+        } )
     }
-
-    // SINON AFFICHER LE PANIER VALIDE
-
-    //------------------------------------------------
-    /// ETAPE 2
-    // AFFICHER NOM ET ADRESSES (COMME SUR LE PROFIL)
-
-    // FAIRE VALIDER
-
-    //------------------------------------------------
-    /// ETAPE 3
-    // PROCEDER AU PAIEMENT
-
-
 }
 
 function createOrders( ) {
@@ -80,9 +60,9 @@ function createOrders( ) {
     fetch( `/api/orders?token=${tokenUser}&email=${emailUser}&action=createOrders` )
         .then( res => {
             return res.json( )
-        }).then( data => {
+        } ).then( data => {
             console.log( data )
-            data === 'order created' ? purchase( 'step4' ) : showPushNotification('error', "Une erreur est survenue, merci de contacter l'adminitrateur")
-        })
+            data === 'order created' ? purchase( 'step4' ) : showPushNotification( 'error', "Une erreur est survenue, merci de contacter l'adminitrateur" )
+        } )
 
 }

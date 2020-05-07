@@ -188,7 +188,7 @@ http.createServer( function ( req, res ) {
 
         if( queryObject.action === 'verify' ){
 
-            token.verifyUser(queryObject.token)
+            token.verifyUser( queryObject.token )
                 .then( resp => {
                     res.statusCode = 200
                     res.writeHead( 200, { 'Content-Type' : 'application/json' } )
@@ -197,7 +197,7 @@ http.createServer( function ( req, res ) {
 
         } else if ( queryObject.action === 'remove' ){
 
-            token.delUser(queryObject.token)
+            token.delUser( queryObject.token )
 
         }
 
