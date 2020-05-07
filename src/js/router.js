@@ -1,9 +1,9 @@
 let routeList = [ ]
 let route
 let currentPage
-let routes = { };
+let routes = { }
 
-( ( ) => { fetch( '/api/get?name=pages' )
+;( ( ) => { fetch( '/api/get?name=pages' )
 
     .then( res => { return res.json( ) } )
 

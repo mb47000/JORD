@@ -19,7 +19,7 @@ document.addEventListener( 'initWebsite', function() {
 
         elt.innerHTML = userProfilHTML
 
-        getUserProfilPage( )
+        getUserProfilPage( document.getElementById('accountUserPage' ) )
 
     })
 
