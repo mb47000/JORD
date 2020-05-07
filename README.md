@@ -163,7 +163,6 @@ db.orders.insertOne(
    status: "inprogress",
    cart: Array[], 
    infos: Array[],
-   userID: "thisisuseridindbusers", 
    dateCreate: "01-01-2020-10:30",
    datePurchase: "01-01-2020-10:35",
    }
@@ -171,8 +170,7 @@ db.orders.insertOne(
 ```
 * Status : The status of the order
 * Cart : An array with the cart
-* Infos : An array with user informations (address, firstname, lastname)
-* UserID : The user ID in users collection
+* Infos : An array with user informations (address, firstname, lastname, email, id)
 * dateCreate : Date when the document was create
 * datePurchase : Date when payment was proceed
 
