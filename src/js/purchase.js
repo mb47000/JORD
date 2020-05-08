@@ -61,7 +61,6 @@ function createOrders( ) {
         .then( res => {
             return res.json( )
         } ).then( data => {
-            console.log( data )
             data === 'order created' ? purchase( 'step4' ) : showPushNotification( 'error', "Une erreur est survenue, merci de contacter l'adminitrateur" )
         } )
 

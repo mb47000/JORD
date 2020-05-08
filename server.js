@@ -16,7 +16,7 @@ const dbQuery       = require( './api/database.js' )
 const email         = require( './api/email.js' )
 const token         = require( './api/token.js' )
 
-http.createServer( function ( req, res ) {
+http.createServer( ( req, res ) => {
 
     let filePath = '.' + req.url
 
@@ -25,181 +25,174 @@ http.createServer( function ( req, res ) {
         filePath = './index.html'
         readFile( )
 
-    } else if ( req.url.startsWith( '/api/get' ) ) {
+    // } else if ( req.url.startsWith( '/api/get' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //
+    //     if ( queryObject.name === 'products' || queryObject.name === 'pages' ){
+    //
+    //         dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, queryObject )
+    //             .then( resp  => {
+    //                 res.statusCode = 200
+    //                 res.writeHead( 200, { 'Content-Type': 'application/json' } )
+    //                 res.end( JSON.stringify( resp ), 'utf-8')
+    //             } )
+    //
+    //     }
+    //
+    // } else if ( req.url.startsWith( '/api/login' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //     dbQuery.dbLogin( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'users', queryObject )
+    //         .then( resp => {
+    //             res.statusCode = 200
+    //             res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //             res.end( JSON.stringify( resp ), 'utf-8' )
+    //         })
 
-        const queryObject = url.parse( req.url, true ).query
+    // } else if ( req.url.startsWith( '/api/updatePwd' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //     dbQuery.dbUpdatePassword( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
+    //         .then( resp => {
+    //             res.statusCode = 200
+    //             res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //             res.end( JSON.stringify( resp ), 'utf-8' )
+    //         })
 
-        if ( queryObject.name === 'products' || queryObject.name === 'pages' ){
+    // } else if ( req.url.startsWith( '/api/register' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //     dbQuery.dbRegister( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
+    //         .then( resp => {
+    //             res.statusCode = 200
+    //             res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //             res.end( JSON.stringify( resp ), 'utf-8' )
+    //         } )
 
-            dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, queryObject )
-                .then( resp  => {
-                    res.statusCode = 200
-                    res.writeHead( 200, { 'Content-Type': 'application/json' } )
-                    res.end( JSON.stringify( resp ), 'utf-8')
-                } )
+    // } else if ( req.url.startsWith( '/api/updateUser' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //     console.log(queryObject)
+    //
+    //     token.verifyUser(queryObject.token)
+    //         .then( resp => {
+    //             console.log( resp )
+    //             if( resp === true ){
+    //                 if ( req.method == 'POST' ) {
+    //
+    //                     let body = ''
+    //
+    //                     req.on( 'data', function ( data ) {
+    //                         body += data
+    //                         if ( body.length > 1e6 )
+    //                             req.connection.destroy(  );
+    //                     } )
+    //
+    //                     req.on( 'end', ( ) => {
+    //                         let post = qs.parse( body )
+    //                         let postData = Object.keys( post )
+    //                         postData = JSON.parse( postData )
+    //
+    //                         dbQuery.dbUpdateUser( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', postData )
+    //                             .then( resp => {
+    //                                 resp.token = queryObject.token
+    //                                 res.statusCode = 200
+    //                                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                                 res.end( JSON.stringify( resp ), 'utf-8' )
+    //                             } )
+    //                     } )
+    //                 } else {
+    //                     res.statusCode = 200
+    //                     res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                     res.end( false, 'utf-8' )
+    //                 }
+    //             } else {
+    //                 res.statusCode = 200
+    //                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                 res.end( false, 'utf-8' )
+    //             }
+    //         } )
 
-        }
+    // } else if ( req.url.startsWith( '/api/cart' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //
+    //     token.verifyUser(queryObject.token)
+    //         .then( resp => {
+    //             if( resp === true ){
+    //                 if ( req.method == 'POST' ) {
+    //
+    //                     let body = ''
+    //
+    //                     req.on( 'data', function ( data ) {
+    //                         body += data
+    //                         if ( body.length > 1e6 )
+    //                             req.connection.destroy(  );
+    //                     } )
+    //
+    //                     req.on( 'end', ( ) => {
+    //                         let post = qs.parse( body )
+    //                         let postData = Object.keys( post )
+    //                         postData = JSON.stringify( postData )
+    //
+    //                         dbQuery.dbCart( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users',queryObject.action ,queryObject.email , postData )
+    //                             .then( resp => {
+    //                                 res.statusCode = 200
+    //                                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                                 res.end( JSON.stringify( resp ), 'utf-8' )
+    //                             } )
+    //                     } )
+    //                 } else {
+    //                     res.statusCode = 200
+    //                     res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                     res.end( false, 'utf-8' )
+    //                 }
+    //             } else {
+    //                 res.statusCode = 200
+    //                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                 res.end( false, 'utf-8' )
+    //             }
+    //         } )
 
+    // } else if ( req.url.startsWith( '/api/orders' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //     console.log(queryObject)
+    //     token.verifyUser(queryObject.token)
+    //         .then( resp => {
+    //             if( resp === true ){
+    //                 dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',queryObject.action , queryObject.email )
+    //                     .then( resp => {
+    //                         res.statusCode = 200
+    //                         res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                         res.end( JSON.stringify( resp ), 'utf-8' )
+    //                     } )
+    //             } else {
+    //                 res.statusCode = 200
+    //                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                 res.end( false, 'utf-8' )
+    //             }
+    //         } )
 
-    } else if ( req.url.startsWith( '/api/sendEmail' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        email.send( queryObject )
-
-
-    } else if ( req.url.startsWith( '/api/login' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        dbQuery.dbLogin( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'users', queryObject )
-            .then( resp => {
-                res.statusCode = 200
-                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                res.end( JSON.stringify( resp ), 'utf-8' )
-            })
-
-    } else if ( req.url.startsWith( '/api/updatePwd' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        dbQuery.dbUpdatePassword( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
-            .then( resp => {
-                res.statusCode = 200
-                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                res.end( JSON.stringify( resp ), 'utf-8' )
-            })
-
-    } else if ( req.url.startsWith( '/api/register' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        dbQuery.dbRegister( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', queryObject )
-            .then( resp => {
-                res.statusCode = 200
-                res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                res.end( JSON.stringify( resp ), 'utf-8' )
-            } )
-
-    } else if ( req.url.startsWith( '/api/updateUser' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        console.log(queryObject)
-
-        token.verifyUser(queryObject.token)
-            .then( resp => {
-                console.log( resp )
-                if( resp === true ){
-                    if ( req.method == 'POST' ) {
-
-                        let body = ''
-
-                        req.on( 'data', function ( data ) {
-                            body += data
-                            if ( body.length > 1e6 )
-                                req.connection.destroy(  );
-                        } )
-
-                        req.on( 'end', ( ) => {
-                            let post = qs.parse( body )
-                            let postData = Object.keys( post )
-                            postData = JSON.parse( postData )
-
-                            dbQuery.dbUpdateUser( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', postData )
-                                .then( resp => {
-                                    resp.token = queryObject.token
-                                    res.statusCode = 200
-                                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                                    res.end( JSON.stringify( resp ), 'utf-8' )
-                                } )
-                        } )
-                    } else {
-                        res.statusCode = 200
-                        res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                        res.end( false, 'utf-8' )
-                    }
-                } else {
-                    res.statusCode = 200
-                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                    res.end( false, 'utf-8' )
-                }
-            } )
-
-    } else if ( req.url.startsWith( '/api/cart' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-
-        token.verifyUser(queryObject.token)
-            .then( resp => {
-                if( resp === true ){
-                    if ( req.method == 'POST' ) {
-
-                        let body = ''
-
-                        req.on( 'data', function ( data ) {
-                            body += data
-                            if ( body.length > 1e6 )
-                                req.connection.destroy(  );
-                        } )
-
-                        req.on( 'end', ( ) => {
-                            let post = qs.parse( body )
-                            let postData = Object.keys( post )
-                            postData = JSON.stringify( postData )
-
-                            dbQuery.dbCart( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users',queryObject.action ,queryObject.email , postData )
-                                .then( resp => {
-                                    res.statusCode = 200
-                                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                                    res.end( JSON.stringify( resp ), 'utf-8' )
-                                } )
-                        } )
-                    } else {
-                        res.statusCode = 200
-                        res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                        res.end( false, 'utf-8' )
-                    }
-                } else {
-                    res.statusCode = 200
-                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                    res.end( false, 'utf-8' )
-                }
-            } )
-
-    } else if ( req.url.startsWith( '/api/orders' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-        console.log(queryObject)
-        token.verifyUser(queryObject.token)
-            .then( resp => {
-                if( resp === true ){
-                    dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',queryObject.action , queryObject.email )
-                        .then( resp => {
-                            res.statusCode = 200
-                            res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                            res.end( JSON.stringify( resp ), 'utf-8' )
-                        } )
-                } else {
-                    res.statusCode = 200
-                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                    res.end( false, 'utf-8' )
-                }
-            } )
-
-    } else if ( req.url.startsWith( '/api/token' ) ) {
-
-        const queryObject = url.parse( req.url, true ).query
-
-        if( queryObject.action === 'verify' ){
-
-            token.verifyUser( queryObject.token )
-                .then( resp => {
-                    res.statusCode = 200
-                    res.writeHead( 200, { 'Content-Type' : 'application/json' } )
-                    res.end( JSON.stringify( resp ), 'utf-8' )
-                } )
-
-        } else if ( queryObject.action === 'remove' ){
-
-            token.delUser( queryObject.token )
-
-        }
+    // } else if ( req.url.startsWith( '/api/token' ) ) {
+    //
+    //     const queryObject = url.parse( req.url, true ).query
+    //
+    //     if( queryObject.action === 'verify' ){
+    //
+    //         token.verifyUser( queryObject.token )
+    //             .then( resp => {
+    //                 res.statusCode = 200
+    //                 res.writeHead( 200, { 'Content-Type' : 'application/json' } )
+    //                 res.end( JSON.stringify( resp ), 'utf-8' )
+    //             } )
+    //
+    //     } else if ( queryObject.action === 'remove' ){
+    //
+    //         token.delUser( queryObject.token )
+    //
+    //     }
 
     } else if ( String( path.extname( req.url ) ) === '' ) {
 
@@ -246,5 +239,6 @@ http.createServer( function ( req, res ) {
 }).listen( serverPort )
 
 console.log( `Server running at http://127.0.0.1:${serverPort}/`)
+
 
 

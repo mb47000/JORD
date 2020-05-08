@@ -1,3 +1,7 @@
+const msgSys        = require( './msgSystem.js' )
+
+msgSys.send( 'Token Manage..............READY', 'success' )
+
 let tokenUserList = [ ]
 
 async function addUser(  ) {

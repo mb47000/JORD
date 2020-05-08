@@ -50,6 +50,9 @@ function loadProducts( ) { fetch( '/api/get?name=products' )
         Object.assign( routes, routeList )
 
         document.dispatchEvent( dbReady )
+
+        localStorage.setItem( 'products', JSON.stringify( data ) )
+
     } )
 
 };

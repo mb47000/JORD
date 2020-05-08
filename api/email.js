@@ -1,10 +1,10 @@
-const nodemailer = require( 'nodemailer' )
+const nodemailer    = require( 'nodemailer' )
+const msgSys        = require( './msgSystem.js' )
 
-console.log( 'Send Email API Load' )
+msgSys.send( 'Sending Email..............READY', 'success' )
 
 function send( data ) {
-
-    console.log( 'Create transporter' )
+    msgSys.send( 'EMAIL: Create transporter' )
     const transporter = nodemailer.createTransport( {
         host: "smtp.mailtrap.io",
         port: 2525,
@@ -14,7 +14,7 @@ function send( data ) {
         }
     } )
 
-    console.log( 'Generate email' )
+    msgSys.send( 'EMAIL: Generate email' )
     let message = {
         from: "ne-pas-repondre@jord.com",
         to: data.email,
@@ -23,15 +23,13 @@ function send( data ) {
         html: ( { path: `./views/email/${data.textFile}.html` } )
     }
 
-    console.log( message )
-
-    console.log( 'Sending Email' )
-
     transporter.sendMail(message, function( err, res ) {
         if ( err ) {
-            console.error( 'there was an error: ', err );
+            console.error( 'Error: ', err );
         } else {
-            console.log( 'here is the res: ', res )
+            msgSys.send( 'EMAIL: Email SEND', 'success' )
+            msgSys.send( `EMAIL: Response >> ${ res.response }`)
+            msgSys.send( `EMAIL: MessageID >> ${ res.messageId }` )
         }
     } )
 

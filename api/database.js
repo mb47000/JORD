@@ -3,6 +3,9 @@ const argon2        = require( 'argon2' )
 const email         = require( './email.js' )
 const token         = require( './token.js' )
 const dateTime      = require( './dateTime.js' )
+const msgSys        = require( './msgSystem.js' )
+
+msgSys.send( 'Database..............READY', 'success' )
 
 let client
 
@@ -23,10 +26,9 @@ async function dbLoad ( dbUser, dbPwd, dbName, dbCollection ) {
 
     try {
         await client.connect( )
-        console.log( 'Connected successfully to mongodb server' )
+        msgSys.send( `Open connection to Database "${ dbName }" and get "${ dbCollection.name }"` )
         const db = client.db( dbName )
         const collection = await db.collection( dbCollection.name ).find( ).toArray( )
-        console.log( `Get ${ dbCollection.name } in ${ dbName }` )
 
         return collection
 
@@ -34,7 +36,6 @@ async function dbLoad ( dbUser, dbPwd, dbName, dbCollection ) {
         console.error( e )
     } finally {
         await client.close()
-        console.log( 'Disconnected successfully to mongodb server' )
     }
 
 }
@@ -44,14 +45,16 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
     dbConnect( dbUser, dbPwd, dbName )
 
     try {
-        await client.connect();
-        console.log( 'Connected successfully to mongodb server' )
+        await client.connect()
         const db = client.db( dbName )
         const document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
 
         if ( document.length != 0 ){
+
             try {
                 if ( await argon2.verify( document[0].password, dbElem.password ) ) {
+
+                    msgSys.send( `User login "${ document[0]._id }"` )
 
                     let userData = token.addUser(  )
                         .then(e => {
@@ -75,18 +78,16 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
                     return 'incorrect password'
                 }
             } catch ( err ) {
-                console.log( err )
+                msgSys.send( err, 'error' )
             }
         } else {
             return 'user not found'
         }
-        console.log(`Get ${dbCollection} in ${dbName}`)
 
     } catch ( e ) {
-        console.error( e );
+        console.error( e )
     } finally {
-        await client.close();
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }
@@ -97,12 +98,9 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
 
     try {
         await client.connect(  )
-        console.log( 'Connected successfully to mongodb server' )
 
         const db = client.db( dbName )
         let document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
-
-        console.log(`Get ${dbCollection} in ${dbName}`)
 
         if ( document.length != 0 ){
 
@@ -123,11 +121,11 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
             sendData['shipping_postalCode'] = ''
             sendData['shipping_town'] = ''
 
-            db.collection( dbCollection ).insertOne( sendData, ( err, res ) => {
+            db.collection( dbCollection ).insertOne( sendData, err => {
                 if ( err ) {
-                    console.error(err)
+                    msgSys.send( err, "error" )
                 }
-                console.log( `${dbElem.username} add to users` )
+                msgSys.send( `New user register`, 'success' )
             })
 
             email.send( {
@@ -143,8 +141,7 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
     } catch ( e ) {
         console.error( e )
     } finally {
-        await client.close()
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }
@@ -155,7 +152,8 @@ async function dbUpdateUser( dbUser, dbPwd, dbName, dbCollection, dbElem ){
 
     try {
         await client.connect(  )
-        console.log( 'Connected successfully to mongodb server' )
+
+        dbElem = JSON.parse( dbElem )
 
         const db = client.db( dbName )
         let dataUser = {
@@ -173,13 +171,12 @@ async function dbUpdateUser( dbUser, dbPwd, dbName, dbCollection, dbElem ){
         { email: dbElem.email },
         { $set: dataUser }
         )
+        msgSys.send( `User edit profil "${document.value._id}"` )
         return dataUser
-        console.log(`Get ${dbCollection} in ${dbName}`)
     } catch ( e ) {
         console.error( e )
     } finally {
-        await client.close()
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }
@@ -190,7 +187,7 @@ async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) 
 
     try {
         await client.connect();
-        console.log( 'Connected successfully to mongodb server' )
+
         const db = client.db( dbName )
         const document = await db.collection( dbCollection ).find( { email: dbElem.email } ).toArray()
 
@@ -203,6 +200,7 @@ async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) 
                         { email: dbElem.email },
                         { $set: { 'password': passwordHash } }
                     )
+                    msgSys.send( `User edit password "${updateDocument.value._id}"` )
                     return 'password updated'
 
                 } else {
@@ -214,13 +212,11 @@ async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) 
         } else {
             return 'user not found'
         }
-        console.log(`Get ${dbCollection} in ${dbName}`)
 
     } catch ( e ) {
-        console.error( e );
+        console.error( e )
     } finally {
-        await client.close();
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }
@@ -231,13 +227,11 @@ async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, d
 
     try {
         await client.connect(  )
-        console.log( 'Connected successfully to mongodb server' )
 
         const db = client.db( dbName )
         if( action === 'saveCart' ){
 
             let data = JSON.parse( dbElem )
-            data = JSON.parse(data[0])
 
             let dataCart = {
                 'cart': data,
@@ -257,13 +251,10 @@ async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, d
             }
         }
 
-        // return dataUser
-        console.log(`Get ${dbCollection} in ${dbName}`)
     } catch ( e ) {
         console.error( e )
     } finally {
-        await client.close()
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }
@@ -272,11 +263,8 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
 
     dbConnect( dbUser, dbPwd, dbName )
 
-    console.log( dbElem )
-
     try {
         await client.connect(  )
-        console.log( 'Connected successfully to mongodb server' )
 
         const db = client.db( dbName )
         if( action === 'createOrders' ){
@@ -297,12 +285,15 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
                 'dateCreate': dateCreate,
                 'datePurchase': ''
             }
+
             let document = await db.collection( dbCollection ).insertOne( order, ( err, res ) => {
                 if ( err ) {
                     console.error( err )
                 }
-                console.log( `New order` )
+
+                msgSys.send( `User (${ userInfo[0]._id }) create an order "${ res.insertedId }"`, 'success' )
             } )
+
 
             email.send( {
                 email: dbElem,
@@ -318,12 +309,10 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
 
         }
 
-        console.log(`Get ${dbCollection} in ${dbName}`)
     } catch ( e ) {
         console.error( e )
     } finally {
-        await client.close()
-        console.log( 'Disconnected successfully to mongodb server' )
+        await client.close( )
     }
 
 }

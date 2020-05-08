@@ -1,4 +1,3 @@
-
 document.addEventListener( 'initWebsite', function() {
 
     let userLocal = localStorage.getItem( 'userLocal' )
@@ -81,43 +80,50 @@ function getUserProfilPage( content ){
                         writeData( )
                         cancelEdit( )
                     }
-            })
+            } )
         }
 
-        if( e.target.classList.contains('editPassword' ) ){
+        if ( e.target.classList.contains( 'editPassword' ) ) {
 
             let newPass         = document.getElementById('newPassword' ).value
             let confirmPass     = document.getElementById('confirmPassword' ).value
             let oldPass         = document.getElementById('oldPassword' ).value
             let email           = document.getElementById('emailField').innerHTML
 
-            if( newPass === confirmPass ){
+            const regexPatPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*()_+\-=]*.{8,25}$/
+            const pwdCheck = regexPatPwd.test( newPass )
 
-                fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
-                    .then( res => {
-                        return res.json( )
-                    })
-                    .then( data => {
-                        if ( data === 'user not found' ) {
-                            showPushNotification( 'error', "Email incorrect" )
-                        } else if ( data === 'incorrect password' ) {
-                            showPushNotification( 'error', "Mauvais mot de passe" )
-                        } else if ( data === 'password updated') {
-                            showPushNotification( 'success', "Modification du mot de passe réussi" )
-                            document.getElementById('newPassword' ).value = ''
-                            document.getElementById('confirmPassword' ).value = ''
-                            document.getElementById('oldPassword' ).value = ''
-                            cancelEdit( )
-                        }
-                    })
-            } else {
-                showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
+            pwdCheck ? editPassword( ) : showPushNotification( 'error', "Le mot de passe doit contenir 8 à 25 caractères et au moins 1 majuscule, 1 minuscule et 1 chiffre." )
+
+            function editPassword( ){
+                if ( newPass === confirmPass ) {
+
+                    fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
+                        .then( res => {
+                            return res.json( )
+                        })
+                        .then( data => {
+                            if ( data === 'user not found' ) {
+                                showPushNotification( 'error', "Email incorrect" )
+                            } else if ( data === 'incorrect password' ) {
+                                showPushNotification( 'error', "Mauvais mot de passe" )
+                            } else if ( data === 'password updated') {
+                                showPushNotification( 'success', "Modification du mot de passe réussi" )
+                                document.getElementById('newPassword' ).value = ''
+                                document.getElementById('confirmPassword' ).value = ''
+                                document.getElementById('oldPassword' ).value = ''
+                                cancelEdit( )
+                            }
+                        })
+                } else {
+                    showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
+                }
             }
 
 
         }
 
-        if( e.target.classList.contains('cancelSave' ) ){
+        if( e.target.classList.contains( 'cancelSave' ) ){
 
             cancelEdit( )
 

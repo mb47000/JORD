@@ -148,7 +148,7 @@ function saveCart( ){
 
 function getCart( ){
 
-    let cartLocal = localStorage.getItem('cartLocal' )
+    let cartLocal = localStorage.getItem('cartLocal' ) ? localStorage.getItem('cartLocal' ) : {}
     let userLocal = JSON.parse( localStorage.getItem('userLocal' ) )
 
     fetch( `/api/cart?token=${userLocal.token}&email=${userLocal.email}&action=getCart`, {
