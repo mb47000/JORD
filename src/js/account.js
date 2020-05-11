@@ -24,6 +24,18 @@ document.addEventListener( 'initWebsite', function() {
 
 })
 
+document.addEventListener( 'pageChange', () => {
+
+    document.querySelectorAll('.accountUserPage').forEach(elt => {
+
+        elt.innerHTML = userProfilHTML
+
+        getUserProfilPage( document.getElementById('accountUserPage' ) )
+
+    })
+
+})
+
 function getUserProfilPage( content ){
 
     writeData( )
@@ -176,15 +188,17 @@ function userIsLog( ) {
         localStorage.removeItem( 'userLocal' )
         userIsNotLog( )
         showPushNotification( 'success', "Déconnection réussi !" )
+
     })
 
 }
 
 function userIsNotLog( ) {
 
-    document.dispatchEvent( dbReady )
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
     localStorage.removeItem('cartLocal' )
+    refreshCart( )
+
 
 }
 

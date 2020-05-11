@@ -1999,7 +1999,7 @@ body .m-1 {
 
 .modal {
   position: absolute;
-  z-index: 9;
+  z-index: 9999;
   transition: max-height 0.3s ease-in-out;
   max-height: 600px;
 }

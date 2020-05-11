@@ -1,6 +1,11 @@
-window.addEventListener( 'pageReady', e => buildProduct( ) )
+window.addEventListener( 'pageReady', e => {
+    buildProduct( )
+    document.dispatchEvent( initWebsite )
+} )
+window.addEventListener( 'pageChange', e => buildProduct( ) )
 
 function buildProduct( ){
+
 
     let target = location.pathname.split( '/' ).pop( )
     let productList = localStorage.getItem( 'products' )
@@ -17,5 +22,4 @@ function buildProduct( ){
 
     })
 
-    document.dispatchEvent( initWebsite )
 }

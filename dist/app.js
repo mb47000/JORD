@@ -1,6 +1,8 @@
 let dbReady = new CustomEvent( 'dbReady', { bubbles: true } )
 let pageReady = new CustomEvent( 'pageReady', { bubbles: true } )
+let pageChange = new CustomEvent( 'pageChange', { bubbles: true } )
 let initWebsite = new CustomEvent( 'initWebsite', { bubbles: true } )
+
 let routeList = [ ]
 let route
 let currentPage
@@ -67,11 +69,11 @@ class Router {
         this.routes = routes
         this.cache = { }
 
-        window.addEventListener( 'hashchange', this.loadPage.bind( this ) )
-        document.addEventListener( 'dbReady', this.loadPage.bind( this ) )
+        window.addEventListener( 'hashchange', this.loadPage.bind( this, 'hashchange' ) )
+        document.addEventListener( 'dbReady', this.loadPage.bind( this, 'dbReady' ) )
     }
 
-    async loadPage( e ){
+    async loadPage( e, event ){
 
         route = location.hash || '#'
         currentPage = await Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
@@ -137,8 +139,8 @@ class Router {
 
             document.querySelector('title').innerHTML = currentPage.title
 
-            document.dispatchEvent( pageReady )
-
+            if( event.type === 'dbReady' )
+                document.dispatchEvent( pageReady )
 
         }
     }
@@ -150,12 +152,17 @@ let pagesRoutes = new Router( routes )
 window.onpopstate = e => {
 
     document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[ document.location.pathname.replace( '/', '#' ) ]
-    document.dispatchEvent( pageReady )
+    setTimeout(( ) => { document.dispatchEvent( pageChange ) }, 200)
 
 }
-window.addEventListener( 'pageReady', e => buildProduct( ) )
+window.addEventListener( 'pageReady', e => {
+    buildProduct( )
+    document.dispatchEvent( initWebsite )
+} )
+window.addEventListener( 'pageChange', e => buildProduct( ) )
 
 function buildProduct( ){
+
 
     let target = location.pathname.split( '/' ).pop( )
     let productList = localStorage.getItem( 'products' )
@@ -172,7 +179,6 @@ function buildProduct( ){
 
     })
 
-    document.dispatchEvent( initWebsite )
 }
 let userMenuHTML,
     loginLogoutFormHTML,
@@ -289,7 +295,6 @@ document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
     document.getElementById( 'cartModal' ).innerHTML = cartHTML
-    refreshCart( )
 
 } )
 
@@ -307,7 +312,6 @@ document.body.addEventListener( 'click', e => {
 function refreshCart( ) {
 
     cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
-
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const carts = document.querySelectorAll('.cart' )
@@ -338,7 +342,7 @@ function refreshCart( ) {
 
             })
 
-            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice
+            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2)
 
 
         } else {
@@ -395,8 +399,9 @@ function removeCart( ref ){
 function refreshCounter( ){
 
     let cartCount = document.getElementById('cartProductNumber')
+    let modalCart = document.getElementById( 'cartModal' )
 
-    cartCount ? cartCount.innerHTML = document.querySelectorAll('.productLabel').length : null
+    cartCount ? cartCount.innerHTML = modalCart.querySelectorAll('.productLabel').length : null
 
 }
 
@@ -454,6 +459,7 @@ function getCart( ){
         }).then( ( ) => refreshCart( ) )
 
 }
+
 document.addEventListener( 'initWebsite', function() {
 
     let userLocal = localStorage.getItem( 'userLocal' )
@@ -469,6 +475,18 @@ document.addEventListener( 'initWebsite', function() {
         loginRegister( 'modal' )
 
     }
+
+    document.querySelectorAll('.accountUserPage').forEach(elt => {
+
+        elt.innerHTML = userProfilHTML
+
+        getUserProfilPage( document.getElementById('accountUserPage' ) )
+
+    })
+
+})
+
+document.addEventListener( 'pageChange', () => {
 
     document.querySelectorAll('.accountUserPage').forEach(elt => {
 
@@ -632,15 +650,17 @@ function userIsLog( ) {
         localStorage.removeItem( 'userLocal' )
         userIsNotLog( )
         showPushNotification( 'success', "Déconnection réussi !" )
+
     })
 
 }
 
 function userIsNotLog( ) {
 
-    document.dispatchEvent( dbReady )
     document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
     localStorage.removeItem('cartLocal' )
+    refreshCart( )
+
 
 }
 
@@ -743,6 +763,11 @@ function loginRegister( location ){
 
 }
 document.addEventListener( 'initWebsite', ( ) => {
+
+    document.getElementById('purchase' ) ? purchase( 'step1' ) : null
+
+} )
+document.addEventListener( 'pageChange', ( ) => {
 
     document.getElementById('purchase' ) ? purchase( 'step1' ) : null
 

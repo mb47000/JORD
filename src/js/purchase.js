@@ -3,6 +3,11 @@ document.addEventListener( 'initWebsite', ( ) => {
     document.getElementById('purchase' ) ? purchase( 'step1' ) : null
 
 } )
+document.addEventListener( 'pageChange', ( ) => {
+
+    document.getElementById('purchase' ) ? purchase( 'step1' ) : null
+
+} )
 
 function purchase( step ){
 

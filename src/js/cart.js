@@ -4,7 +4,6 @@ document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
     document.getElementById( 'cartModal' ).innerHTML = cartHTML
-    refreshCart( )
 
 } )
 
@@ -22,7 +21,6 @@ document.body.addEventListener( 'click', e => {
 function refreshCart( ) {
 
     cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
-
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const carts = document.querySelectorAll('.cart' )
@@ -53,7 +51,7 @@ function refreshCart( ) {
 
             })
 
-            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice
+            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2)
 
 
         } else {
@@ -110,8 +108,9 @@ function removeCart( ref ){
 function refreshCounter( ){
 
     let cartCount = document.getElementById('cartProductNumber')
+    let modalCart = document.getElementById( 'cartModal' )
 
-    cartCount ? cartCount.innerHTML = document.querySelectorAll('.productLabel').length : null
+    cartCount ? cartCount.innerHTML = modalCart.querySelectorAll('.productLabel').length : null
 
 }
 

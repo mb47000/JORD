@@ -64,11 +64,11 @@ class Router {
         this.routes = routes
         this.cache = { }
 
-        window.addEventListener( 'hashchange', this.loadPage.bind( this ) )
-        document.addEventListener( 'dbReady', this.loadPage.bind( this ) )
+        window.addEventListener( 'hashchange', this.loadPage.bind( this, 'hashchange' ) )
+        document.addEventListener( 'dbReady', this.loadPage.bind( this, 'dbReady' ) )
     }
 
-    async loadPage( e ){
+    async loadPage( e, event ){
 
         route = location.hash || '#'
         currentPage = await Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
@@ -134,8 +134,8 @@ class Router {
 
             document.querySelector('title').innerHTML = currentPage.title
 
-            document.dispatchEvent( pageReady )
-
+            if( event.type === 'dbReady' )
+                document.dispatchEvent( pageReady )
 
         }
     }
@@ -147,6 +147,6 @@ let pagesRoutes = new Router( routes )
 window.onpopstate = e => {
 
     document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[ document.location.pathname.replace( '/', '#' ) ]
-    document.dispatchEvent( pageReady )
+    setTimeout(( ) => { document.dispatchEvent( pageChange ) }, 200)
 
 }
