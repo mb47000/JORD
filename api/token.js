@@ -12,7 +12,6 @@ async function addUser(  ) {
 
     return token
 
-
 }
 
 

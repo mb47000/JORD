@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const msgSys = require( './api/msgSystem.js' )
 
 const Terser = require('terser');
 const fs = require('fs');
@@ -18,8 +19,6 @@ let destFile = process.argv.pop();
 
 let compil = ( curr, prev ) => {
 
-    console.error( 'Compiling...' )
-
     try {
 
         let dist = scripts.map( script => fs.readFileSync( root + script, { encoding: 'utf8' } ) ).join( '\n' )
@@ -31,21 +30,31 @@ let compil = ( curr, prev ) => {
 
     } catch ( e ) {
 
-        console.error( e )
+        msgSys.send( e, 'error' )
+
+    } finally {
+
+        msgSys.send('Compiling Javascript Done with success !', 'success')
 
     }
 
-    console.error( 'Compil Done!' )
 }
 
 if ( process.argv.includes( '--watch' ) ){
 
-    console.error( 'JS is watching for Change' )
-    scripts.forEach( e => fs.watchFile( root + e, compil ) )
+    msgSys.send( `Ready to compil files : `, 'info' )
+    msgSys.send( `---------------`, 'info' )
+    scripts.forEach( e => {
+        fs.watchFile(root + e, compil)
+        msgSys.send( e, 'info')
+    } )
+    msgSys.send( `---------------`, 'info' )
+    msgSys.send( `Toward [${ destFile }]`, 'info' )
+    msgSys.send( 'JS is now watching for Change' )
 
 } else {
 
-    compil()
+    compil( )
 
 }
 

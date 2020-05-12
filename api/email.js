@@ -1,6 +1,8 @@
 const nodemailer    = require( 'nodemailer' )
 const msgSys        = require( './msgSystem.js' )
-
+msgSys.send('------------------------------------' )
+msgSys.send('---------- SERVER STARTUP ----------' )
+msgSys.send('------------------------------------' )
 msgSys.send( 'Sending Email..............READY', 'success' )
 
 function send( data ) {
@@ -25,7 +27,7 @@ function send( data ) {
 
     transporter.sendMail(message, function( err, res ) {
         if ( err ) {
-            console.error( 'Error: ', err );
+            msgSys.send( err, 'error' )
         } else {
             msgSys.send( 'EMAIL: Email SEND', 'success' )
             msgSys.send( `EMAIL: Response >> ${ res.response }`)

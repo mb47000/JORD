@@ -29,7 +29,3 @@ async function send( msg, type ) {
 module.exports = {
     send,
 }
-
-send('------------------------------------' )
-send('---------- SERVER STARTUP ----------' )
-send('------------------------------------' )

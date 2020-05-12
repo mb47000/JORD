@@ -32,8 +32,8 @@ async function dbLoad ( dbUser, dbPwd, dbName, dbCollection ) {
 
         return collection
 
-    } catch (e) {
-        console.error( e )
+    } catch ( e ) {
+        msgSys.send( e, 'error' )
     } finally {
         await client.close()
     }
@@ -85,7 +85,7 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
         }
 
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }
@@ -139,7 +139,7 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
         }
 
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }
@@ -174,7 +174,7 @@ async function dbUpdateUser( dbUser, dbPwd, dbName, dbCollection, dbElem ){
         msgSys.send( `User edit profil "${document.value._id}"` )
         return dataUser
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }
@@ -207,14 +207,14 @@ async function dbUpdatePassword ( dbUser, dbPwd, dbName, dbCollection, dbElem ) 
                     return 'incorrect password'
                 }
             } catch ( err ) {
-                console.log( err )
+                msgSys.send( err, 'error' )
             }
         } else {
             return 'user not found'
         }
 
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }
@@ -252,7 +252,7 @@ async function dbCart( dbUser, dbPwd, dbName, dbCollection, action, userEmail, d
         }
 
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }
@@ -288,7 +288,7 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
 
             let document = await db.collection( dbCollection ).insertOne( order, ( err, res ) => {
                 if ( err ) {
-                    console.error( err )
+                    msgSys.send( err, 'error' )
                 }
 
                 msgSys.send( `User (${ userInfo[0]._id }) create an order "${ res.insertedId }"`, 'success' )
@@ -310,7 +310,7 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
         }
 
     } catch ( e ) {
-        console.error( e )
+        msgSys.send( e, 'error' )
     } finally {
         await client.close( )
     }

@@ -159,6 +159,7 @@ window.addEventListener( 'pageReady', e => {
     buildProduct( )
     document.dispatchEvent( initWebsite )
 } )
+
 window.addEventListener( 'pageChange', e => buildProduct( ) )
 
 function buildProduct( ){

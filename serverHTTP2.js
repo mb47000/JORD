@@ -2,11 +2,11 @@ const msgSys        = require( './api/msgSystem.js' )
 const http2         = require( 'http2' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
-const url           = require( 'url' )
-const qs            = require( 'querystring' )
 const dbQuery       = require( './api/database.js' )
-const email         = require( './api/email.js' )
 const token         = require( './api/token.js' )
+// const url           = require( 'url' )
+// const qs            = require( 'querystring' )
+// const email         = require( './api/email.js' )
 
 const dbInfo = {
     dbName: 'jord',
@@ -47,8 +47,6 @@ async function parseRequest( stream, headers, req, res ) {
     req.body = ''
     for await ( const chunk of stream )
         req.body += chunk
-    // if( headers[ 'content-type' ] === 'application/json' )
-    //     Object.assign( req.param, JSON.parse( req.body ) )
 
 }
 
@@ -63,7 +61,6 @@ async function readFile( req, res ) {
     res.headers[ 'content-type' ] = ( ext in mimeTypes ) ? mimeTypes[ ext ] : 'text/plain'
 
     try {
-
         res.data = await fs.promises.readFile( filePath )
     } catch ( e ) {
         if ( e.code === 'ENOENT' )
@@ -72,7 +69,7 @@ async function readFile( req, res ) {
     }
 }
 
-async function handleRequest( req, res ) {
+async function handleRequest( req, res, headers ) {
 
     // GET COLLECTION
     if ( req.url.pathname.startsWith( '/api/get' ) ) {
@@ -159,23 +156,30 @@ async function handleRequest( req, res ) {
     } else if ( req.url.pathname.startsWith( '/api/orders' ) ) {
 
         const tokenResp = await token.verifyUser( req.param.token )
-                if( tokenResp === true ){
-                    const resp = await dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',req.param.action , req.param.email )
-                    res.headers[ 'content-type' ] = 'application/json'
-                    res.data = JSON.stringify( resp )
-                } else {
-                    res.headers[ 'content-type' ] = 'application/json'
-                    res.data = JSON.stringify( false )
-                }
+            if( tokenResp === true ){
+                const resp = await dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',req.param.action , req.param.email )
+                res.headers[ 'content-type' ] = 'application/json'
+                res.data = JSON.stringify( resp )
+            } else {
+                res.headers[ 'content-type' ] = 'application/json'
+                res.data = JSON.stringify( false )
+            }
+
+    } else if ( path.extname( String( req.url ) ) === '' && String( req.url.pathname ) !== '/' ) {
+
+        res.headers[ 'Location' ] = '/#' + String( req.url.pathname ).replace( '/', '' )
+        res.headers[ ':status' ] = 302
 
     } else {
+
         await readFile( req, res )
+
     }
 }
 
 async function executeRequest( stream, headers ) {
 
-    stream.on( 'error', err => this.logger.error( err ) )
+    stream.on( 'error', err => msgSys.send( err, 'error' ) )
 
     const req = {
         headers: headers
@@ -194,7 +198,7 @@ async function executeRequest( stream, headers ) {
         // Build request object
         await parseRequest( stream, headers, req, res )
 
-        await handleRequest( req, res )
+        await handleRequest( req, res, headers )
 
     } catch( err ) {
 
