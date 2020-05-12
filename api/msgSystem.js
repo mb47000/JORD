@@ -1,3 +1,5 @@
+// Find colors in https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+
 const dateTime = require( './dateTime.js' )
 
 async function send( msg, type ) {
@@ -16,13 +18,16 @@ async function send( msg, type ) {
         case 'info':
             style = '\x1b[34m'
             break
+        case 'debug':
+            style = '\x1b[46;30m'
+            break
         default:
-            style = '\x1b[30m'
+            style = '\x1b[0m'
     }
 
     type = type === undefined ? '' : `[${ type }]`
 
-    console.log(style, `[${ await dateTime.get() }]${ type } ${ msg }`)
+    console.log(style, `[${ await dateTime.get( ) }]${ type } ${ msg }`, '\x1b[0m')
 
 }
 
