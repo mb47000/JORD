@@ -141,10 +141,27 @@ Add document in collection "products", the field "slug" is required.
 use databaseName
 db.products.insertOne(
    { 
-   slug: "my-product-slug", 
-   access: "0",
-   name: "Product Name, 
-   price: "89.98",
+       "slug": "my-product-slug", 
+       "access": "0",
+       "name": "Product Name, 
+       "price": "89.98",
+       "category": "category-1",
+       "filters": {
+           "firstFilter": "value",
+           "secondFilter": "10"
+       },
+       "options": {
+           "optionsGrp1": {
+               "name": "First group",
+               "ref": "firstGroup",
+               "type": "checkbox",
+               "firstOption": {
+                   "ref": "opt-1",
+                   "price": "5.15",
+                   "name": "First Option"
+               }
+           }
+        }
    }
 )
 ```
@@ -152,6 +169,9 @@ db.products.insertOne(
 * Access : Access level (0: all | 1 : user login)
 * Name : Use for H1 and Title tag
 * Price : The product price
+* Category: ***Not ready yet***
+* Filters : ***Not ready yet***
+* Options : ***Not ready yet***
 
 ### New Order
 Add document in collection "orders".
