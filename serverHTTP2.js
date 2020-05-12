@@ -36,6 +36,15 @@ const mimeTypes = {
     'wasm' : 'application/wasm'
 }
 
+let globalRequestLimit = 500    // Request limit per second
+let reqNb = 0
+let triggerReqLimit = false
+
+setInterval( ( ) => {
+    reqNb = 0
+    triggerReqLimit = false
+}, 1000 )
+
 async function parseRequest( stream, headers, req, res ) {
 
     req.url = new URL( headers[ ':path' ], `https://localhost:${ port }` )
@@ -51,6 +60,7 @@ async function parseRequest( stream, headers, req, res ) {
 }
 
 async function readFile( req, res ) {
+
     const fileName = req.path.join( path.sep )
     let filePath = './' + ( fileName === '' ? 'index.html' : fileName )
 
@@ -69,7 +79,7 @@ async function readFile( req, res ) {
     }
 }
 
-async function handleRequest( req, res, headers ) {
+async function handleRequest( req, res ) {
 
     // GET COLLECTION
     if ( req.url.pathname.startsWith( '/api/get' ) ) {
@@ -149,7 +159,7 @@ async function handleRequest( req, res, headers ) {
 
         } else {
             res.headers[ 'content-type' ] = 'application/json'
-            res.data = false
+            res.data = JSON.stringify( false )
         }
 
     // ORDER
@@ -179,7 +189,8 @@ async function handleRequest( req, res, headers ) {
 
 async function executeRequest( stream, headers ) {
 
-    stream.on( 'error', err => msgSys.send( err, 'error' ) )
+
+    stream.on('error', err => msgSys.send( err, 'error' ) )
 
     const req = {
         headers: headers
@@ -195,17 +206,18 @@ async function executeRequest( stream, headers ) {
     }
 
     try {
+
         // Build request object
-        await parseRequest( stream, headers, req, res )
+        await parseRequest(stream, headers, req, res)
 
-        await handleRequest( req, res, headers )
+        await handleRequest(req, res, headers)
 
-    } catch( err ) {
+    } catch ( err ) {
 
-        let error = err.message.match(/^(\d{3}) (.+)$/)
+        let error = err.message.match( /^(\d{3}) (.+)$/ )
 
-        if( error )
-            error.shift()
+        if ( error )
+            error.shift( )
         else
             error = [ '500', 'Internal Server Error' ]
 
@@ -214,40 +226,45 @@ async function executeRequest( stream, headers ) {
         res.data = `<h1>${error[0]} ${error[1]}</h1><pre>${err.stack}</pre>\n<pre>Request : ${JSON.stringify(req, null, 2)}</pre>`
 
     } finally {
-       /* if(!res.cached) {
-            // Compress the response using Brotli
-            const paramCompress = this.conf.compression
-            if(paramCompress && paramCompress.enable && req.headers['accept-encoding'].includes('br')
-                && paramCompress.mimeType.includes(res.headers['content-type']) && (paramCompress.minSize < res.data.length)) {
+        /* if(!res.cached) {
+             // Compress the response using Brotli
+             const paramCompress = this.conf.compression
+             if(paramCompress && paramCompress.enable && req.headers['accept-encoding'].includes('br')
+                 && paramCompress.mimeType.includes(res.headers['content-type']) && (paramCompress.minSize < res.data.length)) {
 
-                res.headers['content-encoding'] = 'br'
-                res.data = await compress(res.data, {
-                    params: {
-                        [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-                        [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.Z_BEST_SPEED
-                    }
-                })
-            }
+                 res.headers['content-encoding'] = 'br'
+                 res.data = await compress(res.data, {
+                     params: {
+                         [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
+                         [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.Z_BEST_SPEED
+                     }
+                 })
+             }
 
-            if(this.conf.cache?.enable && (!this.conf.cache.maxSize || (this.conf.cache.maxSize && (this.conf.cache.maxSize > res.data.length)))) {
-                res.cached = true
-                this.cache[key] = {timestamp: Date.now(), res: res}
-            }
-        }
-*/
+             if(this.conf.cache?.enable && (!this.conf.cache.maxSize || (this.conf.cache.maxSize && (this.conf.cache.maxSize > res.data.length)))) {
+                 res.cached = true
+                 this.cache[key] = {timestamp: Date.now(), res: res}
+             }
+         }
+ */
         stream.respond( res.headers )
         stream.end( res.data )
 
     }
 }
 
+
+
 const server = http2.createSecureServer( {
     key: fs.readFileSync( './localhost-privkey.pem' ),
     cert: fs.readFileSync( './localhost-cert.pem' )
 } )
 
-server.on( 'error', err => console.error( err ) )
+
+
+server.on( 'error', err => msgSys.send( err, 'error' ) )
 server.on( 'stream', executeRequest )
+
 server.listen( port );
 
 msgSys.send( `Server is lounch at https://localhost:${port}`, 'success' )

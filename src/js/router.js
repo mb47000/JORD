@@ -71,12 +71,12 @@ class Router {
     async loadPage( e, event ){
 
         route = location.hash || '#'
-        currentPage = await Object.values( this.routes ).find( elt => route === `#${elt.slug}` )
+        currentPage = await Object.values( this.routes ).find( elt => route === `#${ elt.slug }` )
 
         if( currentPage === undefined ){
 
             route = '#404'
-            currentPage = Object.values( this.routes ).find( elt => `#${elt.slug}` === '#404' )
+            currentPage = Object.values( this.routes ).find( elt => `#${ elt.slug }` === '#404' )
             showPage.bind( this )( )
 
         } else {
