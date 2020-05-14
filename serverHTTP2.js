@@ -189,6 +189,7 @@ async function handleRequest( req, res ) {
 
 async function executeRequest( stream, headers ) {
 
+    // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
 
     stream.on('error', err => msgSys.send( err, 'error' ) )
 

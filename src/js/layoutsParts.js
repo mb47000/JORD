@@ -2,7 +2,8 @@ let userMenuHTML,
     loginLogoutFormHTML,
     cartHTML,
     cartRowHTML,
-    userProfilHTML
+    userProfilHTML,
+    productsOptionsHTML
 
 fetch( '../views/parts/navbar.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
@@ -42,4 +43,9 @@ fetch( '../views/parts/cartRow.html', { mode: 'no-cors' } )
 fetch( '../views/parts/userProfil.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
     .then( data => userProfilHTML = data )
+    .catch( error => console.error( error ) )
+
+fetch( '../views/parts/productsOptions.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => productsOptionsHTML = data )
     .catch( error => console.error( error ) )
