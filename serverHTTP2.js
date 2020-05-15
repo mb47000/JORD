@@ -4,9 +4,6 @@ const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
 const token         = require( './api/token.js' )
-// const url           = require( 'url' )
-// const qs            = require( 'querystring' )
-// const email         = require( './api/email.js' )
 
 const dbInfo = {
     dbName: 'jord',
@@ -36,14 +33,6 @@ const mimeTypes = {
     'wasm' : 'application/wasm'
 }
 
-let globalRequestLimit = 500    // Request limit per second
-let reqNb = 0
-let triggerReqLimit = false
-
-setInterval( ( ) => {
-    reqNb = 0
-    triggerReqLimit = false
-}, 1000 )
 
 async function parseRequest( stream, headers, req, res ) {
 

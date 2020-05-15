@@ -1,4 +1,4 @@
-const msgSys        = require( './msgSystem.js' )
+const msgSys = require( './msgSystem.js' )
 
 msgSys.send( 'Token Manage..............READY', 'success' )
 

@@ -7,14 +7,14 @@
 // }
 // const serverPort = '8125'
 //
-// const http          = require( 'http' )
-// const fs            = require( 'fs' )
-// const path          = require( 'path' )
-// const url           = require( 'url' )
-// const qs            = require( 'querystring' )
-// const dbQuery       = require( './api/database.js' )
-// const email         = require( './api/email.js' )
-// const token         = require( './api/token.js' )
+// const http          = import( 'http' )
+// const fs            = import( 'fs' )
+// const path          = import( 'path' )
+// const url           = import( 'url' )
+// const qs            = import( 'querystring' )
+// const dbQuery       = import( './api/database.js' )
+// const email         = import( './api/email.js' )
+// const token         = import( './api/token.js' )
 //
 // http.createServer( ( req, res ) => {
 //

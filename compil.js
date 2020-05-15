@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-const msgSys = require( './api/msgSystem.js' )
+const msgSys    = require( './api/msgSystem.js' )
+const Terser    = require('terser')
+const fs        = require('fs')
 
-const Terser = require('terser');
-const fs = require('fs');
-const root = 'src/js/';
+const root = 'src/js/'
 const scripts = [
     'import.js',
     'router.js',

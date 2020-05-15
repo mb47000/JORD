@@ -1991,6 +1991,30 @@ body .p-1 {
 body .m-1 {
   margin: 1rem !important;
 }
+body .pt-1 {
+  padding-top: 1rem !important;
+}
+body .pr-1 {
+  padding-right: 1rem !important;
+}
+body .pb-1 {
+  padding-bottom: 1rem !important;
+}
+body .pl-1 {
+  padding-left: 1rem !important;
+}
+body .mt-1 {
+  margin-top: 1rem !important;
+}
+body .mr-1 {
+  margin-right: 1rem !important;
+}
+body .mb-1 {
+  margin-bottom: 1rem !important;
+}
+body .ml-1 {
+  margin-left: 1rem !important;
+}
 
 .card.fluid {
   max-width: 100%;
