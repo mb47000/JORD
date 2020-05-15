@@ -9,14 +9,18 @@ document.addEventListener( 'initWebsite', ( ) => {
 
 document.body.addEventListener( 'click', e => {
 
-    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ) : null
+    if( e.target.closest( '.removeCart' ) ) {
+        let ref = e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML
+        let opt = e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .optionsList' ) ? e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .optionsList' ).innerHTML : ''
+        removeCart( ref, opt )
+    }
+
 
     e.target.closest( '.plusProduct' ) ? plusMinusProduct( e.target.closest( '.plusProduct' ).closest('.qtyLabel' ), 'plus' ) : null
 
     e.target.closest( '.minusProduct' ) ? plusMinusProduct( e.target.closest( '.minusProduct' ).closest('.qtyLabel' ), 'minus' ) : null
 
 } )
-
 
 function refreshCart( ) {
 
@@ -42,11 +46,22 @@ function refreshCart( ) {
             JSON.parse( cartLocal ).forEach( e => {
 
                 tbody.innerHTML += cartRowHTML
+
                 tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
                 tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
                 tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
                 tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
                 tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
+
+                if ( e.options.length > 0 ) {
+
+                    let optionDiv = document.createElement('div' )
+                    optionDiv.innerHTML = e.options
+                    optionDiv.classList.add( 'optionsList' )
+                    tbody.lastElementChild.querySelector( '.refLabel > .value' ).after( optionDiv )
+
+                }
+
                 totalPrice += e.price * e.qty
 
             })
@@ -69,12 +84,22 @@ function addCart( e ) {
     const productElem = e.closest( '.productElem' )
     let productAdd = { }
     let data = [ ]
+    let options = [ ]
+
+
+    productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
+        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' ) {
+            console.log( opt.id )
+            options.push( opt.id )
+        }
+    } )
 
     productAdd = {
-            "ref"   : productElem.children[ 'ref' ].innerHTML,
-            "name"  : productElem.children[ 'name' ].innerHTML,
-            "price" : parseFloat( productElem.children[ 'price' ].innerHTML ),
-            "qty"   : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value )
+            "ref"       : productElem.children[ 'ref' ].innerHTML,
+            "name"      : productElem.children[ 'name' ].innerHTML,
+            "price"     : parseFloat( productElem.children[ 'price' ].innerHTML ),
+            "qty"       : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value ),
+            "options"   : options
         }
 
 
@@ -89,7 +114,7 @@ function addCart( e ) {
         data = JSON.parse( localStorage.getItem( 'cartLocal' ) )
         let newItem = true
 
-        data.forEach( e => productAdd.ref === e.ref ? ( e.qty += productAdd.qty, newItem = false ) : null )
+        data.forEach( e => ( productAdd.ref === e.ref && productAdd === options ) ? ( e.qty += productAdd.qty, newItem = false ) : null )
         newItem ? ( data.push( productAdd ), localStorage.setItem( 'cartLocal', JSON.stringify( data ) ) ) : localStorage.setItem( 'cartLocal', JSON.stringify( data ) )
         refreshCart( )
 
@@ -97,10 +122,10 @@ function addCart( e ) {
 
 }
 
-function removeCart( ref ){
+function removeCart( ref, opt ){
 
     let newData = [ ]
-    JSON.parse( cartLocal ).forEach( e => e.ref === ref ? null : newData.push( e ) )
+    JSON.parse( cartLocal ).forEach( e => ( e.ref === ref && String( e.options ) === opt ) ? null : newData.push( e ) )
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 }

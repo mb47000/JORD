@@ -180,7 +180,6 @@ function writeData( ){
 
 function userIsLog( ) {
 
-
     localStorage.getItem('cartLocal' ) ? refreshCart( ) : getCart( )
     document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
     document.getElementById( 'logoutMenu' ).addEventListener( 'click', e => {

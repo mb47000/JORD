@@ -1,4 +1,4 @@
-window.addEventListener( 'pageReady', e => {
+document.addEventListener( 'pageReady', e => {
     buildProduct( )
     document.dispatchEvent( initWebsite )
 } )
@@ -6,6 +6,7 @@ window.addEventListener( 'pageReady', e => {
 window.addEventListener( 'pageChange', e => buildProduct( ) )
 
 let optionsList = { }
+let productPrice
 
 function buildProduct( ) {
 
@@ -19,13 +20,11 @@ function buildProduct( ) {
 
             document.querySelector( 'h1' ).innerHTML = elt.name
             document.getElementById( 'ref' ).innerHTML = elt.ref
-            document.getElementById( 'price' ).innerHTML = elt.price
+            document.getElementById( 'price' ).innerHTML = productPrice = elt.price
 
             if( elt.options ) {
 
                 Object.values( elt.options ).forEach( grp => {
-
-                    console.log(elt.options)
 
                     const groupValues = grp.values
 
@@ -43,7 +42,7 @@ function buildProduct( ) {
 
                         groupValues.forEach( e => {
 
-                            optionsList[e.ref] = e.price
+                            optionsList[ e.ref ] = e.price
 
                             let checkboxElem = document.createElement('div' )
                             checkboxElem.innerHTML = checkboxGrpHtml
@@ -64,6 +63,7 @@ function buildProduct( ) {
 
                     } else if( grp.type === 'select' ){
 
+
                         let selectGrp = document.createElement( 'div' )
 
                         selectGrp.innerHTML = productsOptionsHTML
@@ -75,6 +75,8 @@ function buildProduct( ) {
                         selectGrp.querySelector('.selectGroup' ).id = grp.ref
 
                         groupValues.forEach( e => {
+
+                            optionsList[ e.ref ] = e.price
 
                             let optSelect = document.createElement('div' )
                             optSelect.innerHTML = selectGrpHtml
@@ -91,12 +93,11 @@ function buildProduct( ) {
 
                 } )
 
-                console.log(optionsList)
-                document.getElementById('options' ).addEventListener( 'click', e => e.target.classList.contains( 'optProduct' ) ? calcProductPrice( e.target ) : null )
+                document.getElementById('options' ).addEventListener( 'click', e => e.target.classList.contains( 'optProduct' ) ? calcProductPrice( ) : null )
 
             } else {
 
-                document.getElementById('options' ).remove()
+                document.getElementById('options' ).remove( )
 
             }
 
@@ -106,12 +107,15 @@ function buildProduct( ) {
 
 }
 
-function calcProductPrice( e ) {
+function calcProductPrice( ) {
 
-    console.log( e.parentElement )
-    // console.log( optionsList[e.value] )
+    let totalPrice = parseFloat( productPrice )
 
-    // TODO : Add/Remove select option and calc Total
+    document.getElementById('options' ).querySelectorAll('.optProduct' ).forEach(opt => {
+        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' )
+            totalPrice += parseFloat( optionsList[ opt.id ] )
+    } )
 
+    document.getElementById('price' ).innerHTML = totalPrice.toFixed(2 )
 
 }

@@ -155,7 +155,7 @@ window.onpopstate = e => {
     setTimeout(( ) => { document.dispatchEvent( pageChange ) }, 200)
 
 }
-window.addEventListener( 'pageReady', e => {
+document.addEventListener( 'pageReady', e => {
     buildProduct( )
     document.dispatchEvent( initWebsite )
 } )
@@ -163,6 +163,7 @@ window.addEventListener( 'pageReady', e => {
 window.addEventListener( 'pageChange', e => buildProduct( ) )
 
 let optionsList = { }
+let productPrice
 
 function buildProduct( ) {
 
@@ -176,13 +177,11 @@ function buildProduct( ) {
 
             document.querySelector( 'h1' ).innerHTML = elt.name
             document.getElementById( 'ref' ).innerHTML = elt.ref
-            document.getElementById( 'price' ).innerHTML = elt.price
+            document.getElementById( 'price' ).innerHTML = productPrice = elt.price
 
             if( elt.options ) {
 
                 Object.values( elt.options ).forEach( grp => {
-
-                    console.log(elt.options)
 
                     const groupValues = grp.values
 
@@ -200,7 +199,7 @@ function buildProduct( ) {
 
                         groupValues.forEach( e => {
 
-                            optionsList[e.ref] = e.price
+                            optionsList[ e.ref ] = e.price
 
                             let checkboxElem = document.createElement('div' )
                             checkboxElem.innerHTML = checkboxGrpHtml
@@ -221,6 +220,7 @@ function buildProduct( ) {
 
                     } else if( grp.type === 'select' ){
 
+
                         let selectGrp = document.createElement( 'div' )
 
                         selectGrp.innerHTML = productsOptionsHTML
@@ -232,6 +232,8 @@ function buildProduct( ) {
                         selectGrp.querySelector('.selectGroup' ).id = grp.ref
 
                         groupValues.forEach( e => {
+
+                            optionsList[ e.ref ] = e.price
 
                             let optSelect = document.createElement('div' )
                             optSelect.innerHTML = selectGrpHtml
@@ -248,12 +250,11 @@ function buildProduct( ) {
 
                 } )
 
-                console.log(optionsList)
-                document.getElementById('options' ).addEventListener( 'click', e => e.target.classList.contains( 'optProduct' ) ? calcProductPrice( e.target ) : null )
+                document.getElementById('options' ).addEventListener( 'click', e => e.target.classList.contains( 'optProduct' ) ? calcProductPrice( ) : null )
 
             } else {
 
-                document.getElementById('options' ).remove()
+                document.getElementById('options' ).remove( )
 
             }
 
@@ -263,13 +264,16 @@ function buildProduct( ) {
 
 }
 
-function calcProductPrice( e ) {
+function calcProductPrice( ) {
 
-    console.log( e.parentElement )
-    // console.log( optionsList[e.value] )
+    let totalPrice = parseFloat( productPrice )
 
-    // TODO : Add/Remove select option and calc Total
+    document.getElementById('options' ).querySelectorAll('.optProduct' ).forEach(opt => {
+        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' )
+            totalPrice += parseFloat( optionsList[ opt.id ] )
+    } )
 
+    document.getElementById('price' ).innerHTML = totalPrice.toFixed(2 )
 
 }
 
@@ -399,14 +403,18 @@ document.addEventListener( 'initWebsite', ( ) => {
 
 document.body.addEventListener( 'click', e => {
 
-    e.target.closest( '.removeCart' ) ? removeCart( e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML ) : null
+    if( e.target.closest( '.removeCart' ) ) {
+        let ref = e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .value' ).innerHTML
+        let opt = e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .optionsList' ) ? e.target.closest( '.removeCart' ).parentElement.parentElement.parentElement.querySelector( '.refLabel > .optionsList' ).innerHTML : ''
+        removeCart( ref, opt )
+    }
+
 
     e.target.closest( '.plusProduct' ) ? plusMinusProduct( e.target.closest( '.plusProduct' ).closest('.qtyLabel' ), 'plus' ) : null
 
     e.target.closest( '.minusProduct' ) ? plusMinusProduct( e.target.closest( '.minusProduct' ).closest('.qtyLabel' ), 'minus' ) : null
 
 } )
-
 
 function refreshCart( ) {
 
@@ -432,11 +440,22 @@ function refreshCart( ) {
             JSON.parse( cartLocal ).forEach( e => {
 
                 tbody.innerHTML += cartRowHTML
+
                 tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
                 tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
                 tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
                 tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
                 tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
+
+                if ( e.options.length > 0 ) {
+
+                    let optionDiv = document.createElement('div' )
+                    optionDiv.innerHTML = e.options
+                    optionDiv.classList.add( 'optionsList' )
+                    tbody.lastElementChild.querySelector( '.refLabel > .value' ).after( optionDiv )
+
+                }
+
                 totalPrice += e.price * e.qty
 
             })
@@ -459,12 +478,22 @@ function addCart( e ) {
     const productElem = e.closest( '.productElem' )
     let productAdd = { }
     let data = [ ]
+    let options = [ ]
+
+
+    productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
+        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' ) {
+            console.log( opt.id )
+            options.push( opt.id )
+        }
+    } )
 
     productAdd = {
-            "ref"   : productElem.children[ 'ref' ].innerHTML,
-            "name"  : productElem.children[ 'name' ].innerHTML,
-            "price" : parseFloat( productElem.children[ 'price' ].innerHTML ),
-            "qty"   : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value )
+            "ref"       : productElem.children[ 'ref' ].innerHTML,
+            "name"      : productElem.children[ 'name' ].innerHTML,
+            "price"     : parseFloat( productElem.children[ 'price' ].innerHTML ),
+            "qty"       : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value ),
+            "options"   : options
         }
 
 
@@ -479,7 +508,7 @@ function addCart( e ) {
         data = JSON.parse( localStorage.getItem( 'cartLocal' ) )
         let newItem = true
 
-        data.forEach( e => productAdd.ref === e.ref ? ( e.qty += productAdd.qty, newItem = false ) : null )
+        data.forEach( e => ( productAdd.ref === e.ref && productAdd === options ) ? ( e.qty += productAdd.qty, newItem = false ) : null )
         newItem ? ( data.push( productAdd ), localStorage.setItem( 'cartLocal', JSON.stringify( data ) ) ) : localStorage.setItem( 'cartLocal', JSON.stringify( data ) )
         refreshCart( )
 
@@ -487,10 +516,10 @@ function addCart( e ) {
 
 }
 
-function removeCart( ref ){
+function removeCart( ref, opt ){
 
     let newData = [ ]
-    JSON.parse( cartLocal ).forEach( e => e.ref === ref ? null : newData.push( e ) )
+    JSON.parse( cartLocal ).forEach( e => ( e.ref === ref && String( e.options ) === opt ) ? null : newData.push( e ) )
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 }
@@ -740,7 +769,6 @@ function writeData( ){
 }
 
 function userIsLog( ) {
-
 
     localStorage.getItem('cartLocal' ) ? refreshCart( ) : getCart( )
     document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
