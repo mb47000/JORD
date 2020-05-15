@@ -47,11 +47,23 @@ function purchase( step ){
     }
 
     if( purchaseBtn ) {
+
         purchaseBtn.addEventListener('click', e => {
+
             e.preventDefault( )
-            localStorage.getItem('userLocal' ) ? null : ( content.innerHTML = loginLogoutFormHTML, loginRegister( 'purchase' ) )
-            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
-            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+
+            if ( localStorage.getItem('userLocal' ) ) {
+
+                e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
+                e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+
+            }  else {
+
+                content.innerHTML = loginLogoutFormHTML
+                loginRegister( 'purchase' )
+
+            }
+
         } )
     }
 }

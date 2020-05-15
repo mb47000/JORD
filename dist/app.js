@@ -148,7 +148,7 @@ class Router {
 
 let pagesRoutes = new Router( routes )
 
-
+let currentPageAccess
 window.onpopstate = e => {
 
     document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[ document.location.pathname.replace( '/', '#' ) ]
@@ -401,6 +401,12 @@ document.addEventListener( 'initWebsite', ( ) => {
 
 } )
 
+document.addEventListener( 'pageChange', ( ) => {
+
+    document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
+
+} )
+
 document.body.addEventListener( 'click', e => {
 
     if( e.target.closest( '.removeCart' ) ) {
@@ -445,7 +451,7 @@ function refreshCart( ) {
                 tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
                 tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
                 tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
-                tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
+                tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = (e.price * e.qty).toFixed(2 )
 
                 if ( e.options.length > 0 ) {
 
@@ -460,7 +466,7 @@ function refreshCart( ) {
 
             })
 
-            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2)
+            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2 )
 
 
         } else {
@@ -478,24 +484,22 @@ function addCart( e ) {
     const productElem = e.closest( '.productElem' )
     let productAdd = { }
     let data = [ ]
-    let options = [ ]
+    let optionsList = [ ]
 
-
-    productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
-        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' ) {
-            console.log( opt.id )
-            options.push( opt.id )
-        }
-    } )
+    if ( productElem.children[ 'options' ] ) {
+        productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
+            if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' )
+                await optionsList.push( opt.id )
+        } )
+    }
 
     productAdd = {
             "ref"       : productElem.children[ 'ref' ].innerHTML,
             "name"      : productElem.children[ 'name' ].innerHTML,
             "price"     : parseFloat( productElem.children[ 'price' ].innerHTML ),
             "qty"       : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value ),
-            "options"   : options
+            "options"   : optionsList
         }
-
 
     if ( !cartLocal ){
 
@@ -508,7 +512,9 @@ function addCart( e ) {
         data = JSON.parse( localStorage.getItem( 'cartLocal' ) )
         let newItem = true
 
-        data.forEach( e => ( productAdd.ref === e.ref && productAdd === options ) ? ( e.qty += productAdd.qty, newItem = false ) : null )
+        data.forEach( async e => {
+            ( productAdd.ref === e.ref && String( productAdd.options ) === String( e.options ) ) ? ( e.qty += productAdd.qty, newItem = false ) : null;
+        } )
         newItem ? ( data.push( productAdd ), localStorage.setItem( 'cartLocal', JSON.stringify( data ) ) ) : localStorage.setItem( 'cartLocal', JSON.stringify( data ) )
         refreshCart( )
 
@@ -588,7 +594,7 @@ function getCart( ){
 
 }
 
-document.addEventListener( 'initWebsite', function() {
+document.addEventListener( 'initWebsite', function( ) {
 
     let userLocal = localStorage.getItem( 'userLocal' )
 
@@ -602,31 +608,33 @@ document.addEventListener( 'initWebsite', function() {
 
         loginRegister( 'modal' )
 
+        localStorage.getItem('cartLocal' ) ? refreshCart( ) : null
+
     }
 
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
+    document.querySelectorAll('.accountUserPage' ).forEach(elt => {
 
         elt.innerHTML = userProfilHTML
 
         getUserProfilPage( document.getElementById('accountUserPage' ) )
 
-    })
+    } )
 
-})
+} )
 
-document.addEventListener( 'pageChange', () => {
+document.addEventListener( 'pageChange', ( ) => {
 
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
+    document.querySelectorAll('.accountUserPage' ).forEach(elt => {
 
         elt.innerHTML = userProfilHTML
 
         getUserProfilPage( document.getElementById('accountUserPage' ) )
 
-    })
+    } )
 
-})
+} )
 
-function getUserProfilPage( content ){
+function getUserProfilPage( content ) {
 
     writeData( )
 
@@ -688,7 +696,7 @@ function getUserProfilPage( content ){
         if ( e.target.classList.contains( 'editPassword' ) ) {
 
             let newPass         = document.getElementById('newPassword' ).value
-            let confirmPass     = document.getElementById('confirmPassword' ).value
+            let confirmPass      = document.getElementById('confirmPassword' ).value
             let oldPass         = document.getElementById('oldPassword' ).value
             let email           = document.getElementById('emailField').innerHTML
 
@@ -703,7 +711,7 @@ function getUserProfilPage( content ){
                     fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
                         .then( res => {
                             return res.json( )
-                        })
+                        } )
                         .then( data => {
                             if ( data === 'user not found' ) {
                                 showPushNotification( 'error', "Email incorrect" )
@@ -716,7 +724,7 @@ function getUserProfilPage( content ){
                                 document.getElementById('oldPassword' ).value = ''
                                 cancelEdit( )
                             }
-                        })
+                        } )
                 } else {
                     showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
                 }
@@ -725,39 +733,35 @@ function getUserProfilPage( content ){
 
         }
 
-        if( e.target.classList.contains( 'cancelSave' ) ){
-
+        if ( e.target.classList.contains( 'cancelSave' ) )
             cancelEdit( )
 
-        }
-
-
-    })
+    } )
 
 }
 
-function cancelEdit( ){
+function cancelEdit( ) {
     let inputs = document.querySelectorAll('input' )
     let labelsSpan = document.querySelectorAll('.labelSpan' )
     let button = document.querySelectorAll('.buttonSection' )
     inputs.forEach(elt => {
         elt.hidden = true
-    })
+    } )
     labelsSpan.forEach(elt => {
         elt.hidden = false
-    })
+    } )
     button.forEach(elt => {
         elt.hidden = true
-    })
+    } )
 }
 
-function writeData( ){
+function writeData( ) {
 
     let userLocal = localStorage.getItem( 'userLocal' )
     userLocal = JSON.parse( userLocal )
 
     document.getElementById('emailField' ).innerHTML                 = userLocal.email
-    document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
+    document.getElementById('firstnameField' ).innerHTML              = document.getElementById('firstnameField' ).nextElementSibling.value             = userLocal.firstname
     document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
     document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
     document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
@@ -777,7 +781,7 @@ function userIsLog( ) {
         localStorage.removeItem( 'userLocal' )
         userIsNotLog( )
         showPushNotification( 'success', "Déconnection réussi !" )
-
+        document.dispatchEvent( dbReady )
     })
 
 }
@@ -938,11 +942,23 @@ function purchase( step ){
     }
 
     if( purchaseBtn ) {
+
         purchaseBtn.addEventListener('click', e => {
+
             e.preventDefault( )
-            localStorage.getItem('userLocal' ) ? null : ( content.innerHTML = loginLogoutFormHTML, loginRegister( 'purchase' ) )
-            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
-            e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+
+            if ( localStorage.getItem('userLocal' ) ) {
+
+                e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
+                e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+
+            }  else {
+
+                content.innerHTML = loginLogoutFormHTML
+                loginRegister( 'purchase' )
+
+            }
+
         } )
     }
 }

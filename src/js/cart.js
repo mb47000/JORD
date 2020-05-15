@@ -7,6 +7,12 @@ document.addEventListener( 'initWebsite', ( ) => {
 
 } )
 
+document.addEventListener( 'pageChange', ( ) => {
+
+    document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
+
+} )
+
 document.body.addEventListener( 'click', e => {
 
     if( e.target.closest( '.removeCart' ) ) {
@@ -51,7 +57,7 @@ function refreshCart( ) {
                 tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
                 tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
                 tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
-                tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = e.price * e.qty
+                tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = (e.price * e.qty).toFixed(2 )
 
                 if ( e.options.length > 0 ) {
 
@@ -66,7 +72,7 @@ function refreshCart( ) {
 
             })
 
-            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2)
+            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2 )
 
 
         } else {
@@ -84,24 +90,22 @@ function addCart( e ) {
     const productElem = e.closest( '.productElem' )
     let productAdd = { }
     let data = [ ]
-    let options = [ ]
+    let optionsList = [ ]
 
-
-    productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
-        if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' ) {
-            console.log( opt.id )
-            options.push( opt.id )
-        }
-    } )
+    if ( productElem.children[ 'options' ] ) {
+        productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
+            if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' )
+                await optionsList.push( opt.id )
+        } )
+    }
 
     productAdd = {
             "ref"       : productElem.children[ 'ref' ].innerHTML,
             "name"      : productElem.children[ 'name' ].innerHTML,
             "price"     : parseFloat( productElem.children[ 'price' ].innerHTML ),
             "qty"       : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value ),
-            "options"   : options
+            "options"   : optionsList
         }
-
 
     if ( !cartLocal ){
 
@@ -114,7 +118,9 @@ function addCart( e ) {
         data = JSON.parse( localStorage.getItem( 'cartLocal' ) )
         let newItem = true
 
-        data.forEach( e => ( productAdd.ref === e.ref && productAdd === options ) ? ( e.qty += productAdd.qty, newItem = false ) : null )
+        data.forEach( async e => {
+            ( productAdd.ref === e.ref && String( productAdd.options ) === String( e.options ) ) ? ( e.qty += productAdd.qty, newItem = false ) : null;
+        } )
         newItem ? ( data.push( productAdd ), localStorage.setItem( 'cartLocal', JSON.stringify( data ) ) ) : localStorage.setItem( 'cartLocal', JSON.stringify( data ) )
         refreshCart( )
 

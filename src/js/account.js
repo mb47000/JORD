@@ -1,4 +1,4 @@
-document.addEventListener( 'initWebsite', function() {
+document.addEventListener( 'initWebsite', function( ) {
 
     let userLocal = localStorage.getItem( 'userLocal' )
 
@@ -12,31 +12,33 @@ document.addEventListener( 'initWebsite', function() {
 
         loginRegister( 'modal' )
 
+        localStorage.getItem('cartLocal' ) ? refreshCart( ) : null
+
     }
 
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
+    document.querySelectorAll('.accountUserPage' ).forEach(elt => {
 
         elt.innerHTML = userProfilHTML
 
         getUserProfilPage( document.getElementById('accountUserPage' ) )
 
-    })
+    } )
 
-})
+} )
 
-document.addEventListener( 'pageChange', () => {
+document.addEventListener( 'pageChange', ( ) => {
 
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
+    document.querySelectorAll('.accountUserPage' ).forEach(elt => {
 
         elt.innerHTML = userProfilHTML
 
         getUserProfilPage( document.getElementById('accountUserPage' ) )
 
-    })
+    } )
 
-})
+} )
 
-function getUserProfilPage( content ){
+function getUserProfilPage( content ) {
 
     writeData( )
 
@@ -98,7 +100,7 @@ function getUserProfilPage( content ){
         if ( e.target.classList.contains( 'editPassword' ) ) {
 
             let newPass         = document.getElementById('newPassword' ).value
-            let confirmPass     = document.getElementById('confirmPassword' ).value
+            let confirmPass      = document.getElementById('confirmPassword' ).value
             let oldPass         = document.getElementById('oldPassword' ).value
             let email           = document.getElementById('emailField').innerHTML
 
@@ -113,7 +115,7 @@ function getUserProfilPage( content ){
                     fetch( `/api/updatePwd?email=${email}&password=${oldPass}&newPassword=${newPass}` )
                         .then( res => {
                             return res.json( )
-                        })
+                        } )
                         .then( data => {
                             if ( data === 'user not found' ) {
                                 showPushNotification( 'error', "Email incorrect" )
@@ -126,7 +128,7 @@ function getUserProfilPage( content ){
                                 document.getElementById('oldPassword' ).value = ''
                                 cancelEdit( )
                             }
-                        })
+                        } )
                 } else {
                     showPushNotification( 'error', "Le nouveau mot de passe n'est pas identique à la confirmation" )
                 }
@@ -135,39 +137,35 @@ function getUserProfilPage( content ){
 
         }
 
-        if( e.target.classList.contains( 'cancelSave' ) ){
-
+        if ( e.target.classList.contains( 'cancelSave' ) )
             cancelEdit( )
 
-        }
-
-
-    })
+    } )
 
 }
 
-function cancelEdit( ){
+function cancelEdit( ) {
     let inputs = document.querySelectorAll('input' )
     let labelsSpan = document.querySelectorAll('.labelSpan' )
     let button = document.querySelectorAll('.buttonSection' )
     inputs.forEach(elt => {
         elt.hidden = true
-    })
+    } )
     labelsSpan.forEach(elt => {
         elt.hidden = false
-    })
+    } )
     button.forEach(elt => {
         elt.hidden = true
-    })
+    } )
 }
 
-function writeData( ){
+function writeData( ) {
 
     let userLocal = localStorage.getItem( 'userLocal' )
     userLocal = JSON.parse( userLocal )
 
     document.getElementById('emailField' ).innerHTML                 = userLocal.email
-    document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
+    document.getElementById('firstnameField' ).innerHTML              = document.getElementById('firstnameField' ).nextElementSibling.value             = userLocal.firstname
     document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
     document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
     document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
@@ -187,7 +185,7 @@ function userIsLog( ) {
         localStorage.removeItem( 'userLocal' )
         userIsNotLog( )
         showPushNotification( 'success', "Déconnection réussi !" )
-
+        document.dispatchEvent( dbReady )
     })
 
 }

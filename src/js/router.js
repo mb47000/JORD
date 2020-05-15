@@ -143,7 +143,7 @@ class Router {
 
 let pagesRoutes = new Router( routes )
 
-
+let currentPageAccess
 window.onpopstate = e => {
 
     document.getElementById( 'content' ).innerHTML = pagesRoutes.cache[ document.location.pathname.replace( '/', '#' ) ]
