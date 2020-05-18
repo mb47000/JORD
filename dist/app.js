@@ -157,10 +157,14 @@ window.onpopstate = e => {
 }
 document.addEventListener( 'pageReady', e => {
     buildProduct( )
+    productsPage( )
     document.dispatchEvent( initWebsite )
 } )
 
-window.addEventListener( 'pageChange', e => buildProduct( ) )
+window.addEventListener( 'pageChange', e => {
+    buildProduct( )
+    productsPage( )
+} )
 
 let optionsList = { }
 let productPrice
@@ -277,12 +281,43 @@ function calcProductPrice( ) {
 
 }
 
+function productsPage( cat = 'all', count = -1 ) {
+
+    let productsPage = document.getElementById( 'productsPage' )
+    if( productsPage ) {
+
+        let productsList = JSON.parse( localStorage.getItem( 'products' ) )
+
+        let counter = 1
+
+        productsList.forEach( prod => {
+
+            let thisProd
+
+            cat !== 'all' && prod.category === cat ?  thisProd = prod : cat === 'all' ? thisProd = prod : null
+
+            if ( thisProd && ( counter <= count || count === -1 ) ) {
+                counter++
+                let prodCardHTML = document.createElement( 'span' )
+                prodCardHTML.innerHTML = productCardHTML
+                prodCardHTML.querySelector('.productCard' ).href = `#${ thisProd.slug }`
+                prodCardHTML.querySelector('.productImg' ).src = thisProd.images[ 0 ]
+                prodCardHTML.querySelector('.productName' ).innerHTML = thisProd.name
+                prodCardHTML.querySelector('.productPrice' ).innerHTML = thisProd.price
+                productsPage.querySelector('.productsList' ).insertAdjacentHTML( 'beforeend', prodCardHTML.innerHTML )
+            }
+        } )
+
+    }
+
+}
 let userMenuHTML,
     loginLogoutFormHTML,
     cartHTML,
     cartRowHTML,
     userProfilHTML,
-    productsOptionsHTML
+    productsOptionsHTML,
+    productCardHTML
 
 fetch( '../views/parts/navbar.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
@@ -327,6 +362,11 @@ fetch( '../views/parts/userProfil.html', { mode: 'no-cors' } )
 fetch( '../views/parts/productsOptions.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
     .then( data => productsOptionsHTML = data )
+    .catch( error => console.error( error ) )
+
+fetch( '../views/parts/productCard.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => productCardHTML = data )
     .catch( error => console.error( error ) )
 
 document.addEventListener( 'initWebsite', function( ) {

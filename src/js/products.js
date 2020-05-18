@@ -1,9 +1,13 @@
 document.addEventListener( 'pageReady', e => {
     buildProduct( )
+    productsPage( )
     document.dispatchEvent( initWebsite )
 } )
 
-window.addEventListener( 'pageChange', e => buildProduct( ) )
+window.addEventListener( 'pageChange', e => {
+    buildProduct( )
+    productsPage( )
+} )
 
 let optionsList = { }
 let productPrice
@@ -117,5 +121,36 @@ function calcProductPrice( ) {
     } )
 
     document.getElementById('price' ).innerHTML = totalPrice.toFixed(2 )
+
+}
+
+function productsPage( cat = 'all', count = -1 ) {
+
+    let productsPage = document.getElementById( 'productsPage' )
+    if( productsPage ) {
+
+        let productsList = JSON.parse( localStorage.getItem( 'products' ) )
+
+        let counter = 1
+
+        productsList.forEach( prod => {
+
+            let thisProd
+
+            cat !== 'all' && prod.category === cat ?  thisProd = prod : cat === 'all' ? thisProd = prod : null
+
+            if ( thisProd && ( counter <= count || count === -1 ) ) {
+                counter++
+                let prodCardHTML = document.createElement( 'span' )
+                prodCardHTML.innerHTML = productCardHTML
+                prodCardHTML.querySelector('.productCard' ).href = `#${ thisProd.slug }`
+                prodCardHTML.querySelector('.productImg' ).src = thisProd.images[ 0 ]
+                prodCardHTML.querySelector('.productName' ).innerHTML = thisProd.name
+                prodCardHTML.querySelector('.productPrice' ).innerHTML = thisProd.price
+                productsPage.querySelector('.productsList' ).insertAdjacentHTML( 'beforeend', prodCardHTML.innerHTML )
+            }
+        } )
+
+    }
 
 }
