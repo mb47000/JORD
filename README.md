@@ -1,7 +1,7 @@
 # JORD
 Minimal website SPA system without framework
 
-## Commands
+## Server Commands
 * Launch server : `npm run server`
 * Launch watch : `npm run watch`
 * Launch compil : `npm run compil`
@@ -138,32 +138,32 @@ db.pages.insertOne(
 Add document in collection "products", the field "slug" is required.
 
 ```
-use databaseName
-db.products.insertOne(
-   { 
-       "slug": "my-product-slug", 
-       "access": "0",
-       "name": "Product Name, 
-       "price": "89.98",
-       "category": "category-1",
-       "filters": {
-           "firstFilter": "value",
-           "secondFilter": "10"
-       },
-       "options": {
-           "optionsGrp1": {
-               "name": "First group",
-               "ref": "firstGroup",
-               "type": "checkbox",
-               "firstOption": {
-                   "ref": "opt-1",
-                   "price": "5.15",
-                   "name": "First Option"
-               }
-           }
+{
+    "name": "My Product Name",
+    "slug": "my-product-slug",
+    "access": "0",
+    "ref": "prodref",
+    "price": "19.78",
+    "category": "category-1",
+    "filters": {
+        "firstFilter": "value",
+        "secondFilter": "10"
+    },
+    "options": {
+        "optionsGrp1": {
+            "name": "First group",
+            "ref": "firstGroup",
+            "type": "checkboxORselect",
+            "values": [
+                {
+                    "ref": "opt-1",
+                    "price": "5.15",
+                    "name": "First"
+                }
+            ]
         }
-   }
-)
+    }
+}
 ```
 * Slug : Link use to show product page
 * Access : Access level (0: all | 1 : user login)
@@ -171,7 +171,17 @@ db.products.insertOne(
 * Price : The product price
 * Category: ***Not ready yet***
 * Filters : ***Not ready yet***
-* Options : ***Not ready yet***
+* Options (1) : Product options ( can change price )
+    * Option Group
+        * Name : Name of group
+        * Ref : Reference of group
+        * Type : "checkbox" ( multiple choices ) or "select" ( only one choice )
+        * Values : One value by object
+            * Ref : Reference of option
+            * Price : Price of option
+            * Name : Name of option
+            
+(1) Every combinaison of product + options create a new product in cart.
 
 ### New Order
 Add document in collection "orders".
