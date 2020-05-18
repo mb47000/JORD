@@ -9,7 +9,8 @@
     "compil": "./compil.js --compress dist/app.js; sass src/sass:dist/ --style=compressed",
     "server": "node ./server.js",
     "serverHTTP2": "node --trace-warnings ./serverHTTP2.js",
-    "cloc": "cloc ./ --exclude-dir=.idea,node_modules"
+    "cloc": "cloc ./ --exclude-dir=.idea,node_modules",
+    "docs":  "docsify serve ./docs"
   },
   "author": "Andre LECLERCQ",
   "license": "ISC",
