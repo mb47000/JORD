@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "./compil.js --watch dist/app.js & sass --watch src/sass:dist/",
+    "watch": "./compil.js --watch dist/app.js & sass --watch src/sass:dist/ & sass --watch _customContent/sass:dist/",
     "compil": "./compil.js --compress dist/app.js; sass src/sass:dist/ --style=compressed",
     "server": "node ./server.js",
     "serverHTTP2": "node --trace-warnings ./serverHTTP2.js",

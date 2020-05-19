@@ -1,5 +1,6 @@
 const nodemailer    = require( 'nodemailer' )
 const msgSys        = require( './msgSystem.js' )
+const config         = require( '../jordConfig.json' )
 
 msgSys.send('------------------------------------' )
 msgSys.send('---------- SERVER STARTUP ----------' )
@@ -9,11 +10,11 @@ msgSys.send( 'Sending Email..............READY', 'success' )
 function send( data ) {
     msgSys.send( 'EMAIL: Create transporter' )
     const transporter = nodemailer.createTransport( {
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        host: config.mail.host,
+        port: config.mail.port,
         auth: {
-            user: "9304b0fd880a2d",
-            pass: "928ca8573fb3c5"
+            user: config.mail.user,
+            pass: config.mail.pass
         }
     } )
 
@@ -22,8 +23,8 @@ function send( data ) {
         from: "ne-pas-repondre@jord.com",
         to: data.email,
         subject: data.subject,
-        text: ( { path: `./views/email/${data.textFile}.txt` } ),
-        html: ( { path: `./views/email/${data.textFile}.html` } )
+        text: ( { path: `./views/email/${ data.textFile }.txt` } ),
+        html: ( { path: `./views/email/${ data.textFile }.html` } )
     }
 
     transporter.sendMail(message, function( err, res ) {

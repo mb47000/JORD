@@ -4,14 +4,7 @@ const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
 const token         = require( './api/token.js' )
-
-const dbInfo = {
-    dbName: 'jord',
-    userR: 'jordread',
-    pwdR: '3U4m0btlu4zBnLdm4hvm9L6bUZzSs3YAY1',
-    userRW: 'jordwrite',
-    pwdRW: 'Pf01vVZ6QeEt9UzayAWg3Fkt7VT6z2VrdP'
-}
+const config         = require( './jordConfig.json' )
 
 const port = '8443'
 
@@ -75,7 +68,7 @@ async function handleRequest( req, res ) {
 
         if ( req.param.name === 'products' || req.param.name === 'pages' ) {
 
-            const resp = await dbQuery.dbLoad( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, req.param )
+            const resp = await dbQuery.dbLoad( config.db.userR, config.db.pwdR, config.db.name, req.param )
             res.headers[ 'content-type' ] = 'application/json'
             res.data = JSON.stringify( resp )
 
@@ -100,14 +93,14 @@ async function handleRequest( req, res ) {
     // LOGIN
     } else if ( req.url.pathname.startsWith( '/api/login' ) ) {
 
-        const resp = await dbQuery.dbLogin( dbInfo.userR, dbInfo.pwdR, dbInfo.dbName, 'users', req.param )
+        const resp = await dbQuery.dbLogin( config.db.userR, config.db.pwdR, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
     // REGISTER
     } else if ( req.url.pathname.startsWith( '/api/register' ) ) {
 
-        const resp = await dbQuery.dbRegister( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', req.param )
+        const resp = await dbQuery.dbRegister( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
@@ -118,7 +111,7 @@ async function handleRequest( req, res ) {
 
             if( tokenResp === true ){
 
-                const resp = await dbQuery.dbUpdateUser( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', req.body )
+                const resp = await dbQuery.dbUpdateUser( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.body )
                 resp.token = req.param.token
                 res.headers[ 'content-type' ] = 'application/json'
                 res.data = JSON.stringify( resp )
@@ -131,7 +124,7 @@ async function handleRequest( req, res ) {
     // UPDATE PASSWORD
     } else if ( req.url.pathname.startsWith( '/api/updatePwd' ) ) {
 
-        const resp = await dbQuery.dbUpdatePassword( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users', req.param )
+        const resp = await dbQuery.dbUpdatePassword( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
@@ -142,7 +135,7 @@ async function handleRequest( req, res ) {
 
         if( tokenResp === true ){
 
-            const resp = await dbQuery.dbCart( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'users',req.param.action ,req.param.email , req.body )
+            const resp = await dbQuery.dbCart( config.db.userRW, config.db.pwdRW, config.db.name, 'users',req.param.action ,req.param.email , req.body )
             res.headers[ 'content-type' ] = 'application/json'
             res.data = JSON.stringify( resp )
 
@@ -156,7 +149,7 @@ async function handleRequest( req, res ) {
 
         const tokenResp = await token.verifyUser( req.param.token )
             if( tokenResp === true ){
-                const resp = await dbQuery.dbOrders( dbInfo.userRW, dbInfo.pwdRW, dbInfo.dbName, 'orders',req.param.action , req.param.email )
+                const resp = await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',req.param.action , req.param.email )
                 res.headers[ 'content-type' ] = 'application/json'
                 res.data = JSON.stringify( resp )
             } else {
