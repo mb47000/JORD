@@ -9,7 +9,7 @@ let routes = { }
 
     .then( data => {
 
-        let folder = '../views/pages/'
+        let folder = '_customContent/views/pages/'
 
         data.forEach( e => {
             let newPage = {
