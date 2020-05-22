@@ -4,9 +4,9 @@ const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
 const token         = require( './api/token.js' )
-const config         = require( './jordConfig.json' )
+const config        = require( './jordConfig.json' )
 
-const port = '8443'
+const port = '3001'
 
 const mimeTypes = {
     'html' : 'text/html',
@@ -25,7 +25,6 @@ const mimeTypes = {
     'otf'  : 'application/font-otf',
     'wasm' : 'application/wasm'
 }
-
 
 async function parseRequest( stream, headers, req, res ) {
 
@@ -242,8 +241,6 @@ const server = http2.createSecureServer( {
     key: fs.readFileSync( './localhost-privkey.pem' ),
     cert: fs.readFileSync( './localhost-cert.pem' )
 } )
-
-
 
 server.on( 'error', err => msgSys.send( err, 'error' ) )
 server.on( 'stream', executeRequest )
