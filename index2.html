@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JORD</title>
+    <script type="module">
+        import Application from './alpha/application.js'
+        window.addEventListener('DOMContentLoaded', () => {
+            const app = new Application({
+                container: document.getElementById('content')
+            })
+        })
+    </script>
+    <link rel="stylesheet" type ="text/css" href="/dist/app.css">
+</head>
+<body>
+    <div id="wrapper">
+        <div id="pushNotification"></div>
+
+        <div id="navbar"></div>
+
+        <div id="content"></div>
+
+        <div id="footer"></div>
+    </div>
+</body>
+</html>

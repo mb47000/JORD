@@ -1,0 +1,3 @@
+[submodule "JORD_assets"]
+	path = assets
+	url = https://github.com/AndreLeclercq/JORD_assets.git
