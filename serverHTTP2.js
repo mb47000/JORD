@@ -4,7 +4,7 @@ const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
 const token         = require( './api/token.js' )
-const config        = require( './jordConfig.json' )
+const config        = require( './assets/config.json' )
 
 const port = '3001'
 

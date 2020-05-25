@@ -2,7 +2,7 @@
 const msgSys    = require( './api/msgSystem.js' )
 const Terser    = require('terser')
 const fs        = require('fs')
-const config    = require( './jordConfig.json' )
+const config    = require( './assets/config.json' )
 
 const scripts = [
     'src/js/import.js',

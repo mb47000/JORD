@@ -1,6 +1,6 @@
 const nodemailer    = require( 'nodemailer' )
 const msgSys        = require( './msgSystem.js' )
-const config         = require( '../jordConfig.json' )
+const config         = require( '../assets/config.json' )
 
 msgSys.send('------------------------------------' )
 msgSys.send('---------- SERVER STARTUP ----------' )
