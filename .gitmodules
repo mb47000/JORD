@@ -1,3 +1,4 @@
-[submodule "JORD_assets"]
+[submodule "assets"]
 	path = assets
 	url = https://github.com/AndreLeclercq/JORD_assets.git
+	ignore = all
