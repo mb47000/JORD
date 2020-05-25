@@ -29,7 +29,7 @@ const mimeTypes = {
 async function parseRequest( stream, headers, req, res ) {
 
     req.url = new URL( headers[ ':path' ], `https://localhost:${ port }` )
-    req.param = Object.fromEntries( req.url.searchParams.entries( ) )
+    req.param = await Object.fromEntries( req.url.searchParams.entries() )
     req.path = req.url.pathname.split('/' )
     req.path.shift( )
 

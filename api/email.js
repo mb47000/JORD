@@ -23,8 +23,8 @@ function send( data ) {
         from: "ne-pas-repondre@jord.com",
         to: data.email,
         subject: data.subject,
-        text: ( { path: `./views/email/${ data.textFile }.txt` } ),
-        html: ( { path: `./views/email/${ data.textFile }.html` } )
+        text: ( { path: `./assets/views/email/${ data.textFile }.txt` } ),
+        html: ( { path: `./assets/views/email/${ data.textFile }.html` } )
     }
 
     transporter.sendMail(message, function( err, res ) {

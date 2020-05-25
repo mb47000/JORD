@@ -4,7 +4,6 @@ const Terser    = require('terser')
 const fs        = require('fs')
 const config    = require( './jordConfig.json' )
 
-const root = 'src/js/'
 const scripts = [
     'src/js/import.js',
     'src/js/router.js',
@@ -17,7 +16,7 @@ const scripts = [
     'src/js/purchase.js',
 ]
 
-config.customContent.enable === true ? scripts.push( '_customContent/script.js' ) : null
+config.customContent.enable === true ? scripts.push( 'assets/script.js' ) : null
 
 let destFile = process.argv.pop();
 

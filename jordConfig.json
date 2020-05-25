@@ -16,8 +16,5 @@
     "port" : 2525,
     "user" : "9304b0fd880a2d",
     "pass" : "928ca8573fb3c5"
-  },
-  "customContent" : {
-    "enable" : false
   }
 }

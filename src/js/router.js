@@ -9,7 +9,7 @@ let routes = { }
 
     .then( data => {
 
-        let folder = '_customContent/views/pages/'
+        let folder = 'assets/views/pages/'
 
         data.forEach( e => {
             let newPage = {
@@ -35,7 +35,7 @@ function loadProducts( ) { fetch( '/api/get?name=products' )
 
     .then( data => {
 
-        let folder = '../views/templates/'
+        let folder = 'assets/views/templates/'
 
         data.forEach( e => {
             let newPage = {
