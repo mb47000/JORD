@@ -158,7 +158,7 @@ async function handleRequest( req, res ) {
 
     } else if ( req.url.pathname === '/docs' ) {
 
-        res.headers['Location'] = '/docs/index.html'
+        res.headers['Location'] = 'https://localhost:3000'
         res.headers[':status'] = 302
 
     } else if ( path.extname( String( req.url ) ) === '' && String( req.url.pathname ) !== '/' ) {
