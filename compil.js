@@ -2,7 +2,6 @@
 const msgSys    = require( './api/msgSystem.js' )
 const Terser    = require('terser')
 const fs        = require('fs')
-const config    = require( './assets/config.json' )
 
 const scripts = [
     'src/js/import.js',
@@ -16,7 +15,7 @@ const scripts = [
     'src/js/purchase.js',
 ]
 
-config.customContent.enable === true ? scripts.push( 'assets/script.js' ) : null
+scripts.push( 'assets/script.js' )
 
 let destFile = process.argv.pop();
 

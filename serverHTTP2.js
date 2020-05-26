@@ -156,12 +156,17 @@ async function handleRequest( req, res ) {
                 res.data = JSON.stringify( false )
             }
 
+    } else if ( req.url.pathname === '/docs' ) {
+
+        res.headers['Location'] = '/docs/index.html'
+        res.headers[':status'] = 302
+
     } else if ( path.extname( String( req.url ) ) === '' && String( req.url.pathname ) !== '/' ) {
 
-        res.headers[ 'Location' ] = '/#' + String( req.url.pathname ).replace( '/', '' )
-        res.headers[ ':status' ] = 302
+        res.headers['Location'] = '/#' + String(req.url.pathname).replace('/', '')
+        res.headers[':status'] = 302
 
-    } else {
+    }  else {
 
         await readFile( req, res )
 
