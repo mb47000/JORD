@@ -148,6 +148,7 @@ function refreshCounter( ){
 function plusMinusProduct( e, type ) {
 
     let refLabel = e.parentElement.querySelector('.refLabel' ).firstElementChild.innerHTML
+    let refOptions = e.parentElement.querySelector('.optionsList' ) ? e.parentElement.querySelector('.optionsList' ).innerHTML : ''
     let value = type === 'plus' ? parseInt( e.querySelector('.value' ).innerHTML ) + 1 : parseInt( e.querySelector('.value' ).innerHTML ) - 1
 
     value === 0 ? value = 1 : null
@@ -155,7 +156,7 @@ function plusMinusProduct( e, type ) {
     e.querySelector('.value' ).innerHTML = value
 
     cartLocal = JSON.parse( localStorage.getItem( 'cartLocal' ) )
-    cartLocal.forEach( e => e.ref === refLabel ? e.qty = value : null )
+    cartLocal.forEach( e => e.ref === refLabel && String( e.options ) === refOptions ? e.qty = value : null )
     localStorage.setItem( 'cartLocal', JSON.stringify( cartLocal ) )
     refreshCart( )
 
