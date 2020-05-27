@@ -2,12 +2,12 @@
 document.addEventListener( 'initWebsite', function( ) {
     const pushNotif = document.getElementById( 'pushNotification' )
     const notice = pushNotif.firstElementChild
-    const clodeBtn = notice.lastElementChild
-
-    clodeBtn.addEventListener( 'click', e => {
-        notice.classList.toggle( 'show' )
-        notice.classList.toggle( 'hide' )
-    })
+    // const closeBtn = pushNotif.lastElementChild
+    //
+    // closeBtn.addEventListener( 'click', e => {
+    //     notice.classList.toggle( 'show' )
+    //     notice.classList.toggle( 'hide' )
+    // })
 
 })
 

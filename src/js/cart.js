@@ -3,7 +3,7 @@ let cartLocal
 document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
-    document.getElementById( 'cartModal' ).innerHTML = cartHTML
+    document.getElementById( 'cartModal' ).firstElementChild.innerHTML = cartHTML
 
 } )
 
@@ -138,10 +138,10 @@ function removeCart( ref, opt ){
 
 function refreshCounter( ){
 
-    let cartCount = document.getElementById('cartProductNumber')
+    let cartCount = document.getElementById('buttonCart')
     let modalCart = document.getElementById( 'cartModal' )
 
-    cartCount ? cartCount.innerHTML = modalCart.querySelectorAll('.productLabel').length : null
+    cartCount ? cartCount.dataset['badge'] = modalCart.querySelectorAll('.productLabel').length : null
 
 }
 

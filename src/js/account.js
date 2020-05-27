@@ -8,7 +8,7 @@ document.addEventListener( 'initWebsite', function( ) {
 
     } else {
 
-        document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+        document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = loginLogoutFormHTML
 
         loginRegister( 'modal' )
 
@@ -165,7 +165,7 @@ function writeData( ) {
     userLocal = JSON.parse( userLocal )
 
     document.getElementById('emailField' ).innerHTML                 = userLocal.email
-    document.getElementById('firstnameField' ).innerHTML              = document.getElementById('firstnameField' ).nextElementSibling.value             = userLocal.firstname
+    document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
     document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
     document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
     document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
@@ -179,7 +179,7 @@ function writeData( ) {
 function userIsLog( ) {
 
     localStorage.getItem('cartLocal' ) ? refreshCart( ) : getCart( )
-    document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
+    document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = userMenuHTML
     document.getElementById( 'logoutMenu' ).addEventListener( 'click', e => {
         e.preventDefault( )
         localStorage.removeItem( 'userLocal' )
@@ -192,7 +192,7 @@ function userIsLog( ) {
 
 function userIsNotLog( ) {
 
-    document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+    document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = loginLogoutFormHTML
     localStorage.removeItem('cartLocal' )
     refreshCart( )
 

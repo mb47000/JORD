@@ -372,12 +372,12 @@ fetch( '../assets/views/parts/productCard.html', { mode: 'no-cors' } )
 document.addEventListener( 'initWebsite', function( ) {
     const pushNotif = document.getElementById( 'pushNotification' )
     const notice = pushNotif.firstElementChild
-    const clodeBtn = notice.lastElementChild
-
-    clodeBtn.addEventListener( 'click', e => {
-        notice.classList.toggle( 'show' )
-        notice.classList.toggle( 'hide' )
-    })
+    // const closeBtn = pushNotif.lastElementChild
+    //
+    // closeBtn.addEventListener( 'click', e => {
+    //     notice.classList.toggle( 'show' )
+    //     notice.classList.toggle( 'hide' )
+    // })
 
 })
 
@@ -419,25 +419,26 @@ function showPushNotification( type, msg ){
 
 }
 document.body.addEventListener( 'click', e => {
-    e.target.dataset.modaltarget != null ? showModal( e.target.dataset.modaltarget ) : e.target.closest( '.modal' ) === null ? hideModal() : null
+    e.target.dataset.modaltarget != null ? showModal( e.target.dataset.modaltarget ) : e.target.classList.contains('modal') || e.target.classList.contains('btn') ? hideModal() : null
+
 } )
 
 window.addEventListener( 'hashchange', hideModal )
 
 function showModal( e ){
-    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.hidden = true )
-    document.querySelector( `[data-modal=${e}]` ).hidden = false
+    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.classList.remove('active' ) )
+    document.querySelector( `[data-modal=${e}]` ).classList.add('active' )
 }
 
 function hideModal( ){
-    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.hidden = true )
+    document.querySelectorAll( `[data-modal]` ).forEach( elt => elt.classList.remove('active') )
 }
 let cartLocal
 
 document.addEventListener( 'initWebsite', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
-    document.getElementById( 'cartModal' ).innerHTML = cartHTML
+    document.getElementById( 'cartModal' ).firstElementChild.innerHTML = cartHTML
 
 } )
 
@@ -572,10 +573,10 @@ function removeCart( ref, opt ){
 
 function refreshCounter( ){
 
-    let cartCount = document.getElementById('cartProductNumber')
+    let cartCount = document.getElementById('buttonCart')
     let modalCart = document.getElementById( 'cartModal' )
 
-    cartCount ? cartCount.innerHTML = modalCart.querySelectorAll('.productLabel').length : null
+    cartCount ? cartCount.dataset['badge'] = modalCart.querySelectorAll('.productLabel').length : null
 
 }
 
@@ -645,7 +646,7 @@ document.addEventListener( 'initWebsite', function( ) {
 
     } else {
 
-        document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+        document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = loginLogoutFormHTML
 
         loginRegister( 'modal' )
 
@@ -802,7 +803,7 @@ function writeData( ) {
     userLocal = JSON.parse( userLocal )
 
     document.getElementById('emailField' ).innerHTML                 = userLocal.email
-    document.getElementById('firstnameField' ).innerHTML              = document.getElementById('firstnameField' ).nextElementSibling.value             = userLocal.firstname
+    document.getElementById('firstnameField' ).innerHTML             = document.getElementById('firstnameField' ).nextElementSibling.value            = userLocal.firstname
     document.getElementById('lastnameField' ).innerHTML              = document.getElementById('lastnameField' ).nextElementSibling.value             = userLocal.lastname
     document.getElementById('addressField' ).innerHTML               = document.getElementById('addressField' ).nextElementSibling.value              = userLocal.address
     document.getElementById('postalcodeField' ).innerHTML            = document.getElementById('postalcodeField' ).nextElementSibling.value           = userLocal.postalCode
@@ -816,7 +817,7 @@ function writeData( ) {
 function userIsLog( ) {
 
     localStorage.getItem('cartLocal' ) ? refreshCart( ) : getCart( )
-    document.getElementById( 'loginRegister' ).innerHTML = userMenuHTML
+    document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = userMenuHTML
     document.getElementById( 'logoutMenu' ).addEventListener( 'click', e => {
         e.preventDefault( )
         localStorage.removeItem( 'userLocal' )
@@ -829,7 +830,7 @@ function userIsLog( ) {
 
 function userIsNotLog( ) {
 
-    document.getElementById( 'loginRegister' ).innerHTML = loginLogoutFormHTML
+    document.getElementById( 'loginRegister' ).firstElementChild.innerHTML = loginLogoutFormHTML
     localStorage.removeItem('cartLocal' )
     refreshCart( )
 

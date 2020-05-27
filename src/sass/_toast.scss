@@ -1,0 +1,29 @@
+#pushNotification {
+  .toast {
+    display:flex;
+    position: fixed;
+    //top: calc(var(--universal-margin) * 5);
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, -50%);
+    z-index: 1111;
+    max-width: 360px;
+
+    .msg {
+      display:inline-block;
+      transition:all .5s ease-in-out;
+      max-width: 300px;
+      margin: auto;
+    }
+  }
+
+  .hide {
+    opacity:0;
+    transition: all .5s ease-in-out;
+    pointer-events: none;
+  }
+  .show {
+    opacity:1;
+    transition: all .5s ease-in-out;
+  }
+}
