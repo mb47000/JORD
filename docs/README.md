@@ -30,8 +30,8 @@ Optionnal :
 
 
 ### Others
-* MiniCSS minimal, responsive, style-agnostic CSS framework (https://minicss.org/docs)
-* Feather Icons set v.4.24.1 (https://feathericons.com/)
+* Spectre minimal, responsive, CSS framework [Docs](https://picturepan2.github.io/spectre/getting-started.html)
+* Feather Icons set v.4.24.1 [Docs](https://feathericons.com/)
 
 ---
 ## Install
@@ -71,7 +71,7 @@ db.createUser(
 ```
 
 #### Collections
-Create 3 collections :
+Create 4 collections :
 * users
 * products
 * pages
