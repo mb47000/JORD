@@ -1,0 +1,10 @@
+.modal {
+
+  &.top{
+    align-items: start;
+    padding-top: 3rem;
+  }
+  &.right{
+    justify-content: end;
+  }
+}
