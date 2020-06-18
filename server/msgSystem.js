@@ -27,7 +27,7 @@ async function send( msg, type ) {
 
     type = type === undefined ? '' : `[${ type }]`
 
-    console.log( style, `[${ await dateTime.get( ) }]${ type } ${ msg }`, '\x1b[0m' )
+    await console.log( style, `[${ await dateTime.get( ) }]${ type } ${ msg }`, '\x1b[0m' )
 
 }
 

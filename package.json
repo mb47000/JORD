@@ -14,10 +14,10 @@
   "license": "ISC",
   "devDependencies": {
     "argon2": "^0.26.2",
-    "mongodb": "^3.5.7",
-    "nodemailer": "^6.4.6",
-    "sass": "^1.26.5",
-    "terser": "^4.7.0"
+    "mongodb": "^3.5.9",
+    "nodemailer": "^6.4.10",
+    "sass": "^1.26.8",
+    "terser": "^4.8.0"
   },
   "dependencies": {}
 }

@@ -1,7 +1,7 @@
 const mongoClient   = require( 'mongodb' ).MongoClient
 const argon2        = require( 'argon2' )
-const email         = require( './email.js' )
-const token         = require( './token.js' )
+const email         = require( '../server/email.js' )
+const token         = require( '../server/token.js' )
 const dateTime      = require( './dateTime.js' )
 const msgSys        = require( './msgSystem.js' )
 
@@ -56,7 +56,7 @@ async function dbLogin ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
 
                     msgSys.send( `User login "${ document[0]._id }"` )
 
-                    let userData = token.addUser(  )
+                    let userData = token.tokenList.add()
                         .then(e => {
                             let data = {
                                 'email': document[0].email,
@@ -128,7 +128,7 @@ async function dbRegister ( dbUser, dbPwd, dbName, dbCollection, dbElem ) {
                 msgSys.send( `New user register`, 'success' )
             })
 
-            email.send( {
+            email.email.send( {
                 email: dbElem.email,
                 subject: 'Votre inscription sur notre site',
                 textFile: 'confirmRegister',
@@ -295,7 +295,7 @@ async function dbOrders( dbUser, dbPwd, dbName, dbCollection, action, dbElem ) {
             } )
 
 
-            email.send( {
+            email.email.send( {
                 email: dbElem,
                 subject: 'Votre commande sur notre site',
                 textFile: 'orderInProgress',

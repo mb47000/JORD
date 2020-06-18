@@ -3,8 +3,10 @@ const http2         = require( 'http2' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
-const token         = require( './api/token.js' )
 const config        = require( './assets/config.json' )
+const token         = require( './server/token.js' )
+
+const db = require('./server/database.js')
 
 const port = '3001'
 
@@ -78,14 +80,14 @@ async function handleRequest( req, res ) {
 
         if( req.param.action === 'verify' ){
 
-            const resp = await token.verifyUser( req.param.token )
+            const resp = await token.tokenList.check( req.param.token )
             res.headers[ 'content-type' ] = 'application/json'
             res.data = JSON.stringify( resp )
 
 
         } else if ( req.param.action === 'remove' ){
 
-            token.delUser( req.param.token )
+            token.tokenList.del( req.param.token )
 
         }
 
@@ -106,7 +108,7 @@ async function handleRequest( req, res ) {
     // UPDATE USER
     } else if ( req.url.pathname.startsWith( '/api/updateUser' ) ) {
 
-        const tokenResp = await token.verifyUser(req.param.token)
+        const tokenResp = await token.tokenList.check( req.param.token )
 
             if( tokenResp === true ){
 
@@ -130,7 +132,7 @@ async function handleRequest( req, res ) {
     // CART
     } else if ( req.url.pathname.startsWith( '/api/cart' ) ) {
 
-        const tokenResp = await token.verifyUser( req.param.token )
+        const tokenResp = await token.tokenList.check( req.param.token )
 
         if( tokenResp === true ){
 
@@ -146,7 +148,7 @@ async function handleRequest( req, res ) {
     // ORDER
     } else if ( req.url.pathname.startsWith( '/api/orders' ) ) {
 
-        const tokenResp = await token.verifyUser( req.param.token )
+        const tokenResp = await token.tokenList.check( req.param.token )
             if( tokenResp === true ){
                 const resp = await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',req.param.action , req.param.email )
                 res.headers[ 'content-type' ] = 'application/json'

@@ -37,6 +37,8 @@ Optionnal :
 ## Install
 ### Get Files
 * Core repo : `git clone https://github.com/AndreLeclercq/JORD.git`
+* Init Submodule : `git submodule init`
+* Update Submodule : `git submodule update`
 * Assets submodule : `git submodule add --force https://github.com/AndreLeclercq/JORD_assets.git assets`
 
 ### Database
