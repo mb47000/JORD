@@ -6,7 +6,7 @@ const msgSys = require( './msgSystem.js' )
  */
 class Token {
 
-    constructor () {
+    constructor() {
         this.tokenUserList = [ ]
     }
 
@@ -15,7 +15,7 @@ class Token {
      * @method
      * @returns {string} [token] Return the new token
      */
-    add () {
+    add() {
         let randomString = () =>  Math.random().toString(36 ).substr(2 )
         let newToken = randomString() + randomString() + randomString()
         this.tokenUserList.push( newToken )
@@ -27,7 +27,7 @@ class Token {
      * @method
      * @param {string} [token] To delete
      */
-    del (token) {
+    del( token) {
         let tokenUser = this.tokenUserList.indexOf( token )
         if (tokenUser > -1)
             this.tokenUserList.splice( tokenUser, 1 )
@@ -40,7 +40,7 @@ class Token {
      * @returns {boolean} [true/false] True if in the list, false if not
      * TODO: Check the syntax of !! line 44
      */
-    check (token) {
+    check( token ) {
         return !!this.tokenUserList.find(e => e === token)
     }
 

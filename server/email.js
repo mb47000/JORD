@@ -1,11 +1,15 @@
-const nodemailer    = require( 'nodemailer' )
+const nodeMailer    = require( 'nodemailer' )
 const msgSys        = require( './msgSystem.js' )
 const config        = require( '../assets/config.json' )
 
+/**
+ * Manage email sending
+ * @class
+ */
 class Email {
 
     constructor() {
-        this.transporter = nodemailer.createTransport( {
+        this.transporter = nodeMailer.createTransport( {
             host: config.mail.host,
             port: config.mail.port,
             auth: {
@@ -15,8 +19,14 @@ class Email {
         } )
     }
 
-    send( data ){
-        msgSys.send( 'EMAIL: Generate email' )
+    /**
+     * Sending email
+     * @method
+     * @param {object} [data] to create and send email
+     * @returns {Promise<void>}
+     */
+    async send( data ){
+        await msgSys.send( 'EMAIL: Generate email' )
         this.message = {
             from: "ne-pas-repondre@jord.com",
             to: data.email,
@@ -25,7 +35,7 @@ class Email {
             html: ( { path: `./assets/views/email/${ data.textFile }.html` } )
         }
 
-        this.transporter.sendMail( this.message, function( err, res ) {
+        await this.transporter.sendMail( this.message, function( err, res ) {
             if ( err ) {
                 msgSys.send( err, 'error' )
             } else {

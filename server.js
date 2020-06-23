@@ -1,15 +1,13 @@
-const msgSys        = require( './api/msgSystem.js' )
-const http2         = require( 'http2' )
-const fs            = require( 'fs' )
-const path          = require( 'path' )
-const dbQuery       = require( './api/database.js' )
-const config        = require( './assets/config.json' )
-const token         = require( './server/token.js' )
-const db = require( './server/database.js' )
-const user = require( './server/user.js' )
+const msgSys    = require( './api/msgSystem.js' )
+const http2     = require( 'http2' )
+const fs        = require( 'fs' )
+const path      = require( 'path' )
+const db        = require( './server/database.js' )
+const config    = require( './assets/config.json' )
+const token     = require( './server/token.js' )
+const user      = require( './server/user.js' )
 
-const port = '3001'
-
+const port = '3030'
 const mimeTypes = {
     'html' : 'text/html',
     'js'   : 'text/javascript',
@@ -28,7 +26,7 @@ const mimeTypes = {
     'wasm' : 'application/wasm'
 }
 
-async function parseRequest( stream, headers, req, res ) {
+async function parseRequest( stream, headers, req ) {
 
     req.url = new URL( headers[ ':path' ], `https://localhost:${ port }` )
     req.param = await Object.fromEntries( req.url.searchParams.entries() )
@@ -69,13 +67,14 @@ async function handleRequest( req, res ) {
 
         if ( req.param.name === 'products' || req.param.name === 'pages' ) {
 
-            const resp = await dbQuery.dbLoad( config.db.userR, config.db.pwdR, config.db.name, req.param )
+            // const resp = await dbQuery.dbLoad( config.db.userR, config.db.pwdR, config.db.name, req.param )
+            const resp = await db.db.getCollection( req.param.name )
             res.headers[ 'content-type' ] = 'application/json'
             res.data = JSON.stringify( resp )
 
         }
 
-    // TOKEN
+        // TOKEN
     }  else if ( req.url.pathname.startsWith( '/api/token' ) ) {
 
         if( req.param.action === 'verify' ){
@@ -91,45 +90,45 @@ async function handleRequest( req, res ) {
 
         }
 
-    // LOGIN
+        // LOGIN
     } else if ( req.url.pathname.startsWith( '/api/login' ) ) {
 
         const resp = await dbQuery.dbLogin( config.db.userR, config.db.pwdR, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
-    // REGISTER
+        // REGISTER
     } else if ( req.url.pathname.startsWith( '/api/register' ) ) {
 
         const resp = await dbQuery.dbRegister( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
-    // UPDATE USER
+        // UPDATE USER
     } else if ( req.url.pathname.startsWith( '/api/updateUser' ) ) {
 
         const tokenResp = await token.tokenList.check( req.param.token )
 
-            if( tokenResp === true ){
+        if( tokenResp === true ){
 
-                const resp = await dbQuery.dbUpdateUser( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.body )
-                resp.token = req.param.token
-                res.headers[ 'content-type' ] = 'application/json'
-                res.data = JSON.stringify( resp )
+            const resp = await dbQuery.dbUpdateUser( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.body )
+            resp.token = req.param.token
+            res.headers[ 'content-type' ] = 'application/json'
+            res.data = JSON.stringify( resp )
 
-            } else {
-                res.headers[ 'content-type' ] = 'application/json'
-                res.data = JSON.stringify( false )
-            }
+        } else {
+            res.headers[ 'content-type' ] = 'application/json'
+            res.data = JSON.stringify( false )
+        }
 
-    // UPDATE PASSWORD
+        // UPDATE PASSWORD
     } else if ( req.url.pathname.startsWith( '/api/updatePwd' ) ) {
 
         const resp = await dbQuery.dbUpdatePassword( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
         res.headers[ 'content-type' ] = 'application/json'
         res.data = JSON.stringify( resp )
 
-    // CART
+        // CART
     } else if ( req.url.pathname.startsWith( '/api/cart' ) ) {
 
         const tokenResp = await token.tokenList.check( req.param.token )
@@ -145,18 +144,18 @@ async function handleRequest( req, res ) {
             res.data = JSON.stringify( false )
         }
 
-    // ORDER
+        // ORDER
     } else if ( req.url.pathname.startsWith( '/api/orders' ) ) {
 
         const tokenResp = await token.tokenList.check( req.param.token )
-            if( tokenResp === true ){
-                const resp = await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',req.param.action , req.param.email )
-                res.headers[ 'content-type' ] = 'application/json'
-                res.data = JSON.stringify( resp )
-            } else {
-                res.headers[ 'content-type' ] = 'application/json'
-                res.data = JSON.stringify( false )
-            }
+        if( tokenResp === true ){
+            const resp = await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',req.param.action , req.param.email )
+            res.headers[ 'content-type' ] = 'application/json'
+            res.data = JSON.stringify( resp )
+        } else {
+            res.headers[ 'content-type' ] = 'application/json'
+            res.data = JSON.stringify( false )
+        }
 
     } else if ( req.url.pathname === '/docs' ) {
 
@@ -215,30 +214,8 @@ async function executeRequest( stream, headers ) {
         res.data = `<h1>${error[0]} ${error[1]}</h1><pre>${err.stack}</pre>\n<pre>Request : ${JSON.stringify(req, null, 2)}</pre>`
 
     } finally {
-        /* if(!res.cached) {
-             // Compress the response using Brotli
-             const paramCompress = this.conf.compression
-             if(paramCompress && paramCompress.enable && req.headers['accept-encoding'].includes('br')
-                 && paramCompress.mimeType.includes(res.headers['content-type']) && (paramCompress.minSize < res.data.length)) {
-
-                 res.headers['content-encoding'] = 'br'
-                 res.data = await compress(res.data, {
-                     params: {
-                         [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-                         [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.Z_BEST_SPEED
-                     }
-                 })
-             }
-
-             if(this.conf.cache?.enable && (!this.conf.cache.maxSize || (this.conf.cache.maxSize && (this.conf.cache.maxSize > res.data.length)))) {
-                 res.cached = true
-                 this.cache[key] = {timestamp: Date.now(), res: res}
-             }
-         }
- */
         stream.respond( res.headers )
         stream.end( res.data )
-
     }
 }
 
