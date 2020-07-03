@@ -7,24 +7,89 @@ const config    = require( './assets/config.json' )
 const token     = require( './server/token.js' )
 const user      = require( './server/user.js' )
 
-const port = '3030'
-const mimeTypes = {
-    'html' : 'text/html',
-    'js'   : 'text/javascript',
-    'css'  : 'text/css',
-    'json' : 'application/json',
-    'png'  : 'image/png',
-    'jpg'  : 'image/jpg',
-    'gif'  : 'image/gif',
-    'svg'  : 'image/svg+xml',
-    'wav'  : 'audio/wav',
-    'mp4'  : 'video/mp4',
-    'woff' : 'application/font-woff',
-    'ttf'  : 'application/font-ttf',
-    'eot'  : 'application/vnd.ms-fontobject',
-    'otf'  : 'application/font-otf',
-    'wasm' : 'application/wasm'
+
+class Server {
+
+    constructor() {
+        this.port = '3030'
+        this.mimeTypes = {
+            'html' : 'text/html',
+            'js'   : 'text/javascript',
+            'css'  : 'text/css',
+            'json' : 'application/json',
+            'png'  : 'image/png',
+            'jpg'  : 'image/jpg',
+            'gif'  : 'image/gif',
+            'svg'  : 'image/svg+xml',
+            'wav'  : 'audio/wav',
+            'mp4'  : 'video/mp4',
+            'woff' : 'application/font-woff',
+            'ttf'  : 'application/font-ttf',
+            'eot'  : 'application/vnd.ms-fontobject',
+            'otf'  : 'application/font-otf',
+            'wasm' : 'application/wasm'
+        }
+        this.server = http2.createSecureServer( {
+            key: fs.readFileSync( './localhost-privkey.pem' ),
+            cert: fs.readFileSync( './localhost-cert.pem' )
+        } )
+
+    }
+
+    start() {
+        this.server.on( 'error', error => msgSys.send( error, 'error' ) )
+        this.server.on( 'stream', this.execRequest )
+        this.server.listen( this.port )
+
+        msgSys.send( `Server is launch at https://localhost:${port}`, 'success' )
+        msgSys.send( '------------------------------------' )
+    }
+
+    async execRequest( stream, headers ) {
+        // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
+        this.req = { headers: headers }
+        this.res = {
+            data: '',
+            compress: false,
+            headers: {
+                'server': 'Made with NodeJS Vanilla by a.leclercq',
+                ':status': 200
+            }
+        }
+        
+        try {
+            await this.parseRequest( stream, headers )
+            await this.handleRequest( headers )
+        } catch ( error ) {
+            this.error = error.message.match( /^(\d{3}) (.+)$/ )
+            this.error
+                ? this.error.shift()
+                : this.error = [ '500', 'Internal Server Error' ]
+            this.res.headers[ ':status' ] = error[0]
+            this.res.headers[ 'content-type' ] = 'text/html'
+            this.res.data = `<h1>${ this.error[0] } ${ this.error[1] }</h1><pre>${ error.stack }</pre>\n<pre>Request : ${ JSON.stringify( this.req, null, 2 ) }</pre>`
+        } finally {
+            stream.respond( this.res.headers )
+            stream.end( this.res.data )
+        }
+    }
+
+    async parseRequest( stream, headers, req ) {
+        this.req.url = new URL( headers[':path'], `https://localhost:${ port }` )
+        this.req.param = await Object.fromEntries( this.req.url.searchParams.entries() )
+        this.req.path = this.req.url.pathname.split('/' )
+        this.req.path.shift( )
+
+        stream.setEncoding('utf8' )
+        this.req.body = ''
+        for await ( const chunk of stream )
+            this.req.body += chunk
+    }
+
+    async handleRequest( headers )
+
 }
+
 
 async function parseRequest( stream, headers, req ) {
 
@@ -173,63 +238,51 @@ async function handleRequest( req, res ) {
 
     }
 }
+//
+// async function executeRequest( stream, headers ) {
+//
+//     // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
+//
+//     stream.on('error', err => msgSys.send( err, 'error' ) )
+//
+//     const req = {
+//         headers: headers
+//     }
+//
+//     let res = {
+//         data: '',
+//         compress: false,
+//         headers: {
+//             'server': 'Made with NodeJS by atrepp & aleclercq',
+//             ':status': 200
+//         }
+//     }
+//
+//     try {
+//
+//         // Build request object
+//         await parseRequest(stream, headers, req, res)
+//
+//         await handleRequest(req, res, headers)
+//
+//     } catch ( err ) {
+//
+//         let error = err.message.match( /^(\d{3}) (.+)$/ )
+//
+//         if ( error )
+//             error.shift( )
+//         else
+//             error = [ '500', 'Internal Server Error' ]
+//
+//         res.headers[ ':status' ] = error[ 0 ]
+//         res.headers[ 'content-type' ] = 'text/html'
+//         res.data = `<h1>${error[0]} ${error[1]}</h1><pre>${err.stack}</pre>\n<pre>Request : ${JSON.stringify(req, null, 2)}</pre>`
+//
+//     } finally {
+//         stream.respond( res.headers )
+//         stream.end( res.data )
+//     }
+// }
 
-async function executeRequest( stream, headers ) {
-
-    // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
-
-    stream.on('error', err => msgSys.send( err, 'error' ) )
-
-    const req = {
-        headers: headers
-    }
-
-    let res = {
-        data: '',
-        compress: false,
-        headers: {
-            'server': 'Made with NodeJS by atrepp & aleclercq',
-            ':status': 200
-        }
-    }
-
-    try {
-
-        // Build request object
-        await parseRequest(stream, headers, req, res)
-
-        await handleRequest(req, res, headers)
-
-    } catch ( err ) {
-
-        let error = err.message.match( /^(\d{3}) (.+)$/ )
-
-        if ( error )
-            error.shift( )
-        else
-            error = [ '500', 'Internal Server Error' ]
-
-        res.headers[ ':status' ] = error[ 0 ]
-        res.headers[ 'content-type' ] = 'text/html'
-        res.data = `<h1>${error[0]} ${error[1]}</h1><pre>${err.stack}</pre>\n<pre>Request : ${JSON.stringify(req, null, 2)}</pre>`
-
-    } finally {
-        stream.respond( res.headers )
-        stream.end( res.data )
-    }
-}
 
 
-
-const server = http2.createSecureServer( {
-    key: fs.readFileSync( './localhost-privkey.pem' ),
-    cert: fs.readFileSync( './localhost-cert.pem' )
-} )
-
-server.on( 'error', err => msgSys.send( err, 'error' ) )
-server.on( 'stream', executeRequest )
-
-server.listen( port );
-
-msgSys.send( `Server is lounch at https://localhost:${port}`, 'success' )
-msgSys.send( '------------------------------------' )
