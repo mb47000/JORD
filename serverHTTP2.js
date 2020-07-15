@@ -3,7 +3,7 @@ const http2         = require( 'http2' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
-const config        = require( './assets/config.json' )
+const config        = require( './public/assets/config.json' )
 const token         = require( './server/token.js' )
 const db = require( './server/database.js' )
 const user = require( './server/user.js' )
@@ -45,7 +45,7 @@ async function parseRequest( stream, headers, req, res ) {
 async function readFile( req, res ) {
 
     const fileName = req.path.join( path.sep )
-    let filePath = './' + ( fileName === '' ? 'index.html' : fileName )
+    let filePath = 'public/' + ( fileName === '' ? 'index.html' : fileName )
 
     const ext = path.extname( filePath ).substring( 1 )
 

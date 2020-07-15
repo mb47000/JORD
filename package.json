@@ -4,8 +4,8 @@
   "description": "Minimal eShop Single Page Application system without framework or useless dependencies.",
   "main": "index.js",
   "scripts": {
-    "watch": "./compil.js --watch dist/app.js & sass --watch src/sass:dist/ & sass --watch assets/sass:dist/",
-    "compil": "./compil.js --compress dist/app.js; sass src/sass:dist/ --style=compressed",
+    "watch": "./compil.js --watch public/script.js & sass --watch src/sass:public/ & sass --watch public/assets/sass:public/",
+    "compil": "./compil.js --compress public/script.js; sass src/sass:public/ --style=compressed",
     "serverWatch": "node --trace-warnings ./serverHTTP2.js",
     "cloc": "cloc ./ --exclude-dir=.idea,node_modules",
     "docs": "docsify serve ./docs"

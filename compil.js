@@ -15,7 +15,7 @@ const scripts = [
     'src/js/purchase.js',
 ]
 
-scripts.push( 'assets/script.js' )
+scripts.push( 'public/assets/script.js' )
 
 let destFile = process.argv.pop();
 

@@ -3,7 +3,7 @@ const http2     = require( 'http2' )
 const fs        = require( 'fs' )
 const path      = require( 'path' )
 const db        = require( './server/database.js' )
-const config    = require( './assets/config.json' )
+const config    = require( './public/assets/config.json' )
 const token     = require( './server/token.js' )
 const user      = require( './server/user.js' )
 

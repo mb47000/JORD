@@ -1,6 +1,6 @@
 const nodeMailer    = require( 'nodemailer' )
 const msgSys        = require( './msgSystem.js' )
-const config        = require( '../assets/config.json' )
+const config        = require( '../public/assets/config.json' )
 
 /**
  * Manage email sending
