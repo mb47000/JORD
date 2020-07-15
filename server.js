@@ -7,9 +7,15 @@ const config    = require( './assets/config.json' )
 const token     = require( './server/token.js' )
 const user      = require( './server/user.js' )
 
-
+/**
+ * Manage Server & Request
+ * @class
+ */
 class Server {
-
+    /**
+     * Prepare Server
+     * @constructor
+     */
     constructor() {
         this.port = '3030'
         this.mimeTypes = {
@@ -29,13 +35,17 @@ class Server {
             'otf'  : 'application/font-otf',
             'wasm' : 'application/wasm'
         }
+        this.enableCollection = ['products', 'pages']
         this.server = http2.createSecureServer( {
             key: fs.readFileSync( './localhost-privkey.pem' ),
             cert: fs.readFileSync( './localhost-cert.pem' )
         } )
 
     }
-
+    /**
+     * Start the server
+     * @method
+     */
     start() {
         this.server.on( 'error', error => msgSys.send( error, 'error' ) )
         this.server.on( 'stream', this.execRequest )
@@ -44,7 +54,13 @@ class Server {
         msgSys.send( `Server is launch at https://localhost:${port}`, 'success' )
         msgSys.send( '------------------------------------' )
     }
-
+    /**
+     * Execute the Request
+     * @method
+     * @param [stream]
+     * @param [headers]
+     * @returns {Promise<void>}
+     */
     async execRequest( stream, headers ) {
         // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
         this.req = { headers: headers }
@@ -56,7 +72,6 @@ class Server {
                 ':status': 200
             }
         }
-        
         try {
             await this.parseRequest( stream, headers )
             await this.handleRequest( headers )
@@ -74,7 +89,14 @@ class Server {
         }
     }
 
-    async parseRequest( stream, headers, req ) {
+    /**
+     * Parse the Request
+     * @method
+     * @param [stream]
+     * @param [headers]
+     * @returns {Promise<void>}
+     */
+    async parseRequest( stream, headers ) {
         this.req.url = new URL( headers[':path'], `https://localhost:${ port }` )
         this.req.param = await Object.fromEntries( this.req.url.searchParams.entries() )
         this.req.path = this.req.url.pathname.split('/' )
@@ -86,203 +108,92 @@ class Server {
             this.req.body += chunk
     }
 
-    async handleRequest( headers )
+    /**
+     * Handle the Request
+     * @method
+     * @param [headers]
+     * @returns {Promise<void>}
+     */
+    async handleRequest( headers ) {
 
-}
+        if( this.req.url.pathname.startsWith('/api') ){
 
+            if ( this.req.param.action === 'get' && this.enableCollection.some( this.req.param.name ) ) {
 
-async function parseRequest( stream, headers, req ) {
+                this.prepareRequest( await db.db.getCollection( this.req.param.name ) )
 
-    req.url = new URL( headers[ ':path' ], `https://localhost:${ port }` )
-    req.param = await Object.fromEntries( req.url.searchParams.entries() )
-    req.path = req.url.pathname.split('/' )
-    req.path.shift( )
+            } else if ( this.req.param.action === 'token' ) {
 
-    stream.setEncoding('utf8' )
-    req.body = ''
-    for await ( const chunk of stream )
-        req.body += chunk
+                if( this.req.param.state === 'verify' )
+                    this.prepareRequest( await token.tokenList.check( this.req.param.token ) )
+                else if ( this.req.param.state === 'remove' )
+                    token.tokenList.del( this.req.param.token )
 
-}
-
-async function readFile( req, res ) {
-
-    const fileName = req.path.join( path.sep )
-    let filePath = './' + ( fileName === '' ? 'index.html' : fileName )
-
-    const ext = path.extname( filePath ).substring( 1 )
-
-    //if (this.conf.typeAllowed instanceof Array && !this.conf.typeAllowed.includes(ext)) { throw new Error('403 Forbidden, file type not allowed') }
-
-    res.headers[ 'content-type' ] = ( ext in mimeTypes ) ? mimeTypes[ ext ] : 'text/plain'
-
-    try {
-        res.data = await fs.promises.readFile( filePath )
-    } catch ( e ) {
-        if ( e.code === 'ENOENT' )
-            throw new Error( '404 Not Found' )
-        throw e
-    }
-}
-
-async function handleRequest( req, res ) {
-
-    // GET COLLECTION
-    if ( req.url.pathname.startsWith( '/api/get' ) ) {
-
-        if ( req.param.name === 'products' || req.param.name === 'pages' ) {
-
-            // const resp = await dbQuery.dbLoad( config.db.userR, config.db.pwdR, config.db.name, req.param )
-            const resp = await db.db.getCollection( req.param.name )
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( resp )
-
+            } else if ( this.req.param.action === 'login' ) {
+                this.prepareRequest( await user.user.login( this.req.param ) )
+            } else if ( this.req.param.action === 'register' ) {
+                this.prepareRequest( await user.user.createUser( this.req.param ) )
+            } else if ( this.req.param.action === 'updateUser' ) {
+                if( await token.tokenList.check( this.req.param.token ) === true ){
+                    const resp = await user.user.editUser( this.req.body )
+                    resp.token = this.req.param.token
+                    this.prepareRequest( resp )
+                } else
+                    this.prepareRequest( false )
+            } else if ( this.req.param.action === 'updatePwd' ) {
+                this.prepareRequest( await user.user.editPwd( this.req.param ) )
+            } else if ( this.req.param.action === 'cart' ) {
+                if( await token.tokenList.check( this.req.param.token ) === true ){
+                    // TODO: Rewrite dbQuery
+                    this.prepareRequest( await dbQuery.dbCart( config.db.userRW, config.db.pwdRW, config.db.name, 'users',this.req.param.action ,this.req.param.email , this.req.body ) )
+                }
+            } else if ( this.req.param.action === 'orders' ) {
+                if( await token.tokenList.check( this.req.param.token ) === true ){
+                    // TODO: Rewrite dbQuery
+                    this.prepareRequest( await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',this.req.param.action , this.req.param.email ) )
+                } else {
+                    this.prepareRequest( false )
+                }
+            }
+        } else if ( path.extname( String( this.req.url ) ) === '' && String( this.req.url.pathname ) !== '/' ) {
+            this.res.headers['Location'] = '/#' + String( this.req.url.pathname ).replace('/', '')
+            this.res.headers[':status'] = 302
+        }  else {
+            await readFile( )
         }
-
-        // TOKEN
-    }  else if ( req.url.pathname.startsWith( '/api/token' ) ) {
-
-        if( req.param.action === 'verify' ){
-
-            const resp = await token.tokenList.check( req.param.token )
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( resp )
-
-
-        } else if ( req.param.action === 'remove' ){
-
-            token.tokenList.del( req.param.token )
-
-        }
-
-        // LOGIN
-    } else if ( req.url.pathname.startsWith( '/api/login' ) ) {
-
-        const resp = await dbQuery.dbLogin( config.db.userR, config.db.pwdR, config.db.name, 'users', req.param )
-        res.headers[ 'content-type' ] = 'application/json'
-        res.data = JSON.stringify( resp )
-
-        // REGISTER
-    } else if ( req.url.pathname.startsWith( '/api/register' ) ) {
-
-        const resp = await dbQuery.dbRegister( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
-        res.headers[ 'content-type' ] = 'application/json'
-        res.data = JSON.stringify( resp )
-
-        // UPDATE USER
-    } else if ( req.url.pathname.startsWith( '/api/updateUser' ) ) {
-
-        const tokenResp = await token.tokenList.check( req.param.token )
-
-        if( tokenResp === true ){
-
-            const resp = await dbQuery.dbUpdateUser( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.body )
-            resp.token = req.param.token
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( resp )
-
-        } else {
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( false )
-        }
-
-        // UPDATE PASSWORD
-    } else if ( req.url.pathname.startsWith( '/api/updatePwd' ) ) {
-
-        const resp = await dbQuery.dbUpdatePassword( config.db.userRW, config.db.pwdRW, config.db.name, 'users', req.param )
-        res.headers[ 'content-type' ] = 'application/json'
-        res.data = JSON.stringify( resp )
-
-        // CART
-    } else if ( req.url.pathname.startsWith( '/api/cart' ) ) {
-
-        const tokenResp = await token.tokenList.check( req.param.token )
-
-        if( tokenResp === true ){
-
-            const resp = await dbQuery.dbCart( config.db.userRW, config.db.pwdRW, config.db.name, 'users',req.param.action ,req.param.email , req.body )
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( resp )
-
-        } else {
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( false )
-        }
-
-        // ORDER
-    } else if ( req.url.pathname.startsWith( '/api/orders' ) ) {
-
-        const tokenResp = await token.tokenList.check( req.param.token )
-        if( tokenResp === true ){
-            const resp = await dbQuery.dbOrders( config.db.userRW, config.db.pwdRW, config.db.name, 'orders',req.param.action , req.param.email )
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( resp )
-        } else {
-            res.headers[ 'content-type' ] = 'application/json'
-            res.data = JSON.stringify( false )
-        }
-
-    } else if ( req.url.pathname === '/docs' ) {
-
-        res.headers['Location'] = 'https://localhost:3000'
-        res.headers[':status'] = 302
-
-    } else if ( path.extname( String( req.url ) ) === '' && String( req.url.pathname ) !== '/' ) {
-
-        res.headers['Location'] = '/#' + String(req.url.pathname).replace('/', '')
-        res.headers[':status'] = 302
-
-    }  else {
-
-        await readFile( req, res )
 
     }
+
+    /**
+     * Prepare response
+     * @method
+     * @param {object} [resp]
+     */
+    prepareRequest( resp ){
+
+        this.res.headers[ 'content-type' ] = 'application/json'
+        this.res.data = JSON.stringify( resp )
+
+    }
+
+    /**
+     * Read file
+     * @method
+     * @returns {Promise<void>}
+     */
+    async readFile( ) {
+
+        const fileName = this.req.path.join( path.sep )
+        let filePath = './' + ( fileName === '' ? 'index.html' : fileName )
+        const ext = path.extname( filePath ).substring( 1 )
+        //if (this.conf.typeAllowed instanceof Array && !this.conf.typeAllowed.includes(ext)) { throw new Error('403 Forbidden, file type not allowed') }
+        this.res.headers[ 'content-type' ] = ( ext in mimeTypes ) ? mimeTypes[ ext ] : 'text/plain'
+        try {
+            this.res.data = await fs.promises.readFile( filePath )
+        } catch ( error ) {
+            if ( error.code === 'ENOENT' )
+                throw new Error( '404 Not Found' )
+            throw error
+        }
+    }
 }
-//
-// async function executeRequest( stream, headers ) {
-//
-//     // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
-//
-//     stream.on('error', err => msgSys.send( err, 'error' ) )
-//
-//     const req = {
-//         headers: headers
-//     }
-//
-//     let res = {
-//         data: '',
-//         compress: false,
-//         headers: {
-//             'server': 'Made with NodeJS by atrepp & aleclercq',
-//             ':status': 200
-//         }
-//     }
-//
-//     try {
-//
-//         // Build request object
-//         await parseRequest(stream, headers, req, res)
-//
-//         await handleRequest(req, res, headers)
-//
-//     } catch ( err ) {
-//
-//         let error = err.message.match( /^(\d{3}) (.+)$/ )
-//
-//         if ( error )
-//             error.shift( )
-//         else
-//             error = [ '500', 'Internal Server Error' ]
-//
-//         res.headers[ ':status' ] = error[ 0 ]
-//         res.headers[ 'content-type' ] = 'text/html'
-//         res.data = `<h1>${error[0]} ${error[1]}</h1><pre>${err.stack}</pre>\n<pre>Request : ${JSON.stringify(req, null, 2)}</pre>`
-//
-//     } finally {
-//         stream.respond( res.headers )
-//         stream.end( res.data )
-//     }
-// }
-
-
-
