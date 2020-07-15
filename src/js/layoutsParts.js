@@ -4,7 +4,9 @@ let userMenuHTML,
     cartRowHTML,
     userProfilHTML,
     productsOptionsHTML,
-    productCardHTML
+    productCardHTML,
+    shippingHTML,
+    paymentHTML
 
 fetch( '../assets/views/parts/navbar.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
@@ -54,4 +56,14 @@ fetch( '../assets/views/parts/productsOptions.html', { mode: 'no-cors' } )
 fetch( '../assets/views/parts/productCard.html', { mode: 'no-cors' } )
     .then( response => response.text( ) )
     .then( data => productCardHTML = data )
+    .catch( error => console.error( error ) )
+
+fetch( '../assets/views/parts/shipping.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => shippingHTML = data )
+    .catch( error => console.error( error ) )
+
+fetch( '../assets/views/parts/payment.html', { mode: 'no-cors' } )
+    .then( response => response.text( ) )
+    .then( data => paymentHTML = data )
     .catch( error => console.error( error ) )

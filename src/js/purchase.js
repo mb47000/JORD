@@ -39,10 +39,18 @@ function purchase( step ){
         allLabelSpan.forEach(elt => {
             labelSpanArray.push( elt.innerHTML.length )
         } )
-        labelSpanArray.every( isNotEmpty ) ? createOrders( ) : showPushNotification( 'error', "Veuillez remplir tous les champs" )
+        labelSpanArray.every( isNotEmpty ) ? purchase( 'step4' ) : showPushNotification( 'error', "Veuillez remplir tous les champs" )
     } else if ( step === 'step4' ){
 
-        console.log( 'add payment api' )
+        content.innerHTML = shippingHTML
+        purchaseBtn = content.querySelector('.purchaseButton' )
+        purchaseBtn.firstElementChild.innerHTML = "Procéder au paiement"
+        purchaseBtn.href = "#commander?etape=5"
+        calcShipping( document.getElementById('cartModal').querySelector('.cartPrice').innerHTML )
+
+    } else if ( step === 'step5' ){
+
+        content.innerHTML = paymentHTML
 
     }
 
@@ -56,6 +64,7 @@ function purchase( step ){
 
                 e.target.closest( '.purchaseButton' ).hash === '#commander?etape=2' ? purchase( 'step2' ) : null
                 e.target.closest( '.purchaseButton' ).hash === '#commander?etape=3' ? purchase( 'step3' ) : null
+                e.target.closest( '.purchaseButton' ).hash === '#commander?etape=5' ? purchase( 'step5' ) : null
 
             }  else {
 
@@ -78,7 +87,7 @@ function createOrders( ) {
         .then( res => {
             return res.json( )
         } ).then( data => {
-            data === 'order created' ? purchase( 'step4' ) : showPushNotification( 'error', "Une erreur est survenue, merci de contacter l'adminitrateur" )
-        } )
+        data === 'order created' ? purchase( 'step4' ) : showPushNotification( 'error', "Une erreur est survenue, merci de contacter l'adminitrateur" )
+    } )
 
 }

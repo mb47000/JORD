@@ -11,21 +11,60 @@ window.addEventListener( 'pageChange', e => {
 
 let optionsList = { }
 let productPrice
+let productList
 
 function buildProduct( ) {
 
 
     let target = location.pathname.split( '/' ).pop( )
-    let productList = localStorage.getItem( 'products' )
+    productList = JSON.parse(localStorage.getItem( 'products' ) )
 
-    JSON.parse( productList ).forEach( elt => {
+
+    productList.forEach( elt => {
 
         if( elt.slug === target ) {
-
             document.querySelector( 'h1' ).innerHTML = elt.name
             document.getElementById( 'ref' ).innerHTML = elt.ref
-            document.getElementById( 'price' ).innerHTML = productPrice = elt.price
 
+            let prodImg
+            elt.images[ 0 ] ? prodImg = elt.images[ 0 ] : prodImg = '/assets/images/aucune-image.png'
+            document.getElementById('productImg' ).src = prodImg
+
+            // Calc price & write technical
+            let totalVarPrice = 0
+            let tableTech = document.getElementById( 'productTech' ).querySelector('tbody')
+            elt.tech != undefined ? tableTech.innerHTML = tableTech.innerHTML.concat( `<tr><td>${elt.tech}</td></tr>` ) : null
+
+            if( elt.variables ) {
+                for (const [key, value] of Object.entries( elt.variables ) ) {
+                    let varPrice
+                    productList.forEach( prod => {
+                        if( prod.ref === key ){
+                            varPrice = prod.price * value
+                            totalVarPrice = totalVarPrice + varPrice
+
+                            let rowHTML = `<tr><td>${prod.name} | ${prod.tech}</td></tr>`
+                            tableTech.innerHTML = tableTech.innerHTML.concat( rowHTML )
+                        }
+                    } )
+                }
+
+            }
+            let totalProdPrice = ( parseFloat( elt.price ) + totalVarPrice).toFixed(2)
+            document.getElementById( 'price' ).innerHTML = productPrice = totalProdPrice
+
+            // Write desc
+            let prodDesc = document.getElementById( 'productDesc' )
+            if( elt.desc ){
+                prodDesc.querySelector( '.desc' ).innerHTML = elt.desc
+                prodDesc.hidden = false
+            } else
+                prodDesc.hidden = true
+
+            //Show/Hide tech
+            tableTech.childElementCount === 0 ? document.getElementById( 'productTech' ).hidden = true : document.getElementById( 'productTech' ).hidden = false
+
+            // Define options
             if( elt.options ) {
 
                 Object.values( elt.options ).forEach( grp => {
@@ -46,7 +85,12 @@ function buildProduct( ) {
 
                         groupValues.forEach( e => {
 
-                            optionsList[ e.ref ] = e.price
+                            let optPrice = e.price
+                            productList.forEach( prod => {
+                                prod.ref === e.ref ? optPrice = prod.price : null
+                            } )
+
+                            optionsList[ e.ref ] = optPrice
 
                             let checkboxElem = document.createElement('div' )
                             checkboxElem.innerHTML = checkboxGrpHtml
@@ -55,6 +99,7 @@ function buildProduct( ) {
                             let label = checkboxElem.querySelector('label' )
 
                             input.id = input.value = e.ref
+                            input.dataset.name = e.name
                             label.setAttribute('for', e.ref )
                             label.innerHTML = e.name
 
@@ -66,7 +111,6 @@ function buildProduct( ) {
                         document.getElementById( 'options' ).innerHTML = document.getElementById( 'options' ).innerHTML.concat( checkboxGrp.innerHTML )
 
                     } else if( grp.type === 'select' ){
-
 
                         let selectGrp = document.createElement( 'div' )
 
@@ -92,6 +136,38 @@ function buildProduct( ) {
                         } )
 
                         document.getElementById( 'options' ).innerHTML = document.getElementById( 'options' ).innerHTML.concat( selectGrp.innerHTML )
+
+                    } else if ( grp.type === 'radio' ) {
+
+                        let radioGrp = document.createElement('div' )
+                        radioGrp.innerHTML = productsOptionsHTML
+                        radioGrp.innerHTML = radioGrp.querySelector( '#radio' ).innerHTML
+
+                        radioGrp.querySelector( '.title' ).innerHTML = grp.name
+
+                        let radioGrpHtml = radioGrp.querySelector('.radioGroup' ).innerHTML
+                        radioGrp.querySelector( '.radioGroup' ).id = grp.ref
+
+                        radioGrp.querySelector('.radioGroup' ).innerHTML = ''
+
+                        groupValues.forEach( e => {
+
+                            optionsList[ e.ref ] = e.price
+                            let optRadio = document.createElement( 'div' )
+                            optRadio.innerHTML = radioGrpHtml
+                            let label = optRadio.querySelector('label' )
+                            let input = label.querySelector( 'input' )
+                            input.value = e.ref
+                            input.name = grp.ref
+                            input.dataset.name = e.name
+                            label.querySelector( '.label-name' ).innerHTML = e.name
+
+                            radioGrp.querySelector('.radioGroup' ).innerHTML = radioGrp.querySelector('.radioGroup' ).innerHTML.concat( optRadio.innerHTML )
+
+                        } )
+
+                        radioGrp.querySelector('input').defaultChecked = true
+                        document.getElementById( 'options' ).innerHTML = document.getElementById( 'options' ).innerHTML.concat( radioGrp.innerHTML )
 
                     }
 

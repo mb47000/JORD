@@ -48,10 +48,10 @@ function getUserProfilPage( content ) {
 
         if( e.target.classList.contains( 'editProfil' ) ){
 
-            let section = e.target.closest( '.section' ).nextElementSibling
-            let inputs = section.querySelectorAll('input')
-            let labelsSpan = section.querySelectorAll('.labelSpan')
-            let button = section.querySelector('.buttonSection')
+            let panel = e.target.closest( '.panel' )
+            let inputs = panel.querySelectorAll('input')
+            let labelsSpan = panel.querySelectorAll('.labelSpan')
+            let button = panel.querySelector('.buttonSection')
 
             inputs.forEach(elt => {
                 elt.hidden = false
@@ -86,14 +86,14 @@ function getUserProfilPage( content ) {
                 .then( res => {
                     return res.json( )
                 }).then( data => {
-                    if ( data === false ){
-                        showPushNotification( 'error', "Session expirée" )
-                    } else {
-                        localStorage.setItem( 'userLocal', JSON.stringify( data ) )
-                        showPushNotification( 'success', "Informations sauvegardées" )
-                        writeData( )
-                        cancelEdit( )
-                    }
+                if ( data === false ){
+                    showPushNotification( 'error', "Session expirée" )
+                } else {
+                    localStorage.setItem( 'userLocal', JSON.stringify( data ) )
+                    showPushNotification( 'success', "Informations sauvegardées" )
+                    writeData( )
+                    cancelEdit( )
+                }
             } )
         }
 
@@ -206,6 +206,7 @@ function loginRegister( location ){
     loginForms.forEach( e => {
         let switchForm = e.querySelector( '.switchForm' )
         let buttonSubmit = e.querySelector( '.buttonSend' )
+        let disclaimer = e.querySelector( '.disclaimer' )
 
         switchForm.addEventListener( 'click',  elt => {
 
@@ -215,7 +216,7 @@ function loginRegister( location ){
             function switchToLogin( ) {
                 switchForm.innerHTML = "Pas encore enregistré"
                 e.querySelector( 'legend' ).innerHTML = "S'identifier"
-                e.confirmPassword.hidden = true
+                e.confirmPassword.hidden = disclaimer.hidden = true
                 buttonSubmit.value = "Connexion"
                 buttonSubmit.classList.toggle( 'loginSubmit' )
             }
@@ -223,7 +224,7 @@ function loginRegister( location ){
             function switchToRegister( ) {
                 switchForm.innerHTML = "J'ai déjà un compte"
                 e.querySelector( 'legend' ).innerHTML = "S'enregistrer"
-                e.confirmPassword.hidden = false
+                e.confirmPassword.hidden = disclaimer.hidden = false
                 buttonSubmit.value = "Inscription"
                 buttonSubmit.classList.toggle( 'loginSubmit' )
             }

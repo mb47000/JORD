@@ -1,15 +1,18 @@
-let cartLocal
-
-document.addEventListener( 'initWebsite', ( ) => {
-
-    document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
-    document.getElementById( 'cartModal' ).firstElementChild.innerHTML = cartHTML
-
-} )
+let cartLocal = null
 
 document.addEventListener( 'pageChange', ( ) => {
 
     document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
+    document.getElementById( 'cartModal' ).firstElementChild.innerHTML = cartHTML
+    refreshCart( )
+
+} )
+
+document.addEventListener( 'pageReady', ( ) => {
+
+    document.getElementById( 'addCart' ) ? document.getElementById( 'addCart' ).addEventListener( 'click', e => addCart( e.target ) ) : null
+    document.getElementById( 'cartModal' ).firstElementChild.innerHTML = cartHTML
+    refreshCart( )
 
 } )
 
@@ -30,7 +33,7 @@ document.body.addEventListener( 'click', e => {
 
 function refreshCart( ) {
 
-    cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : cartLocal = null
+    cartLocal = localStorage.getItem( 'cartLocal' ) ? localStorage.getItem( 'cartLocal' ) : null
 
     const buttonCart = document.getElementById( 'buttonCart' )
     const carts = document.querySelectorAll('.cart' )
@@ -53,8 +56,12 @@ function refreshCart( ) {
 
                 tbody.innerHTML += cartRowHTML
 
+                let optsName = ''
+                if ( e.optName != undefined )
+                    optsName = ` Options : ${e.optName}`
+
                 tbody.lastElementChild.querySelector( '.refLabel > .value' ).innerHTML = e.ref
-                tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = e.name
+                tbody.lastElementChild.querySelector( '.productLabel > .value' ).innerHTML = `${e.name}. ${optsName}`
                 tbody.lastElementChild.querySelector( '.priceLabel > .value' ).innerHTML = e.price
                 tbody.lastElementChild.querySelector( '.qtyLabel > .value' ).innerHTML = e.qty
                 tbody.lastElementChild.querySelector( '.totalLabel > .value' ).innerHTML = (e.price * e.qty).toFixed(2 )
@@ -72,10 +79,13 @@ function refreshCart( ) {
 
             })
 
-            tbody.nextElementSibling.lastElementChild.querySelector( '.value' ).innerHTML = totalPrice.toFixed(2 )
+            document.querySelector( '.cartPrice' ).innerHTML = totalPrice.toFixed(2 )
 
+            document.getElementById('buttonCart').querySelector('svg' ).setAttribute('data-modaltarget', 'cart')
 
         } else {
+
+            document.getElementById('buttonCart').querySelector('svg' ).removeAttribute('data-modaltarget')
 
         }
     });
@@ -85,31 +95,37 @@ function refreshCart( ) {
 
 }
 
-function addCart( e ) {
+async function addCart( e ) {
 
-    const productElem = e.closest( '.productElem' )
+    let productElem = e.closest( '.productElem' )
     let productAdd = { }
     let data = [ ]
     let optionsList = [ ]
-
-    if ( productElem.children[ 'options' ] ) {
-        productElem.children[ 'options' ].querySelectorAll('.optProduct' ).forEach(async opt => {
-            if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' )
-                await optionsList.push( opt.id )
-        } )
-    }
+    let optionsName = [ ]
+    let variables = { }
 
     productAdd = {
-            "ref"       : productElem.children[ 'ref' ].innerHTML,
-            "name"      : productElem.children[ 'name' ].innerHTML,
-            "price"     : parseFloat( productElem.children[ 'price' ].innerHTML ),
-            "qty"       : parseFloat( productElem.children[ 'qty' ].children[ 'qtyInput' ].value ),
-            "options"   : optionsList
-        }
+        "ref"           : productElem.querySelector('#ref' ).innerHTML,
+        "name"          : productElem.querySelector('#name' ).innerHTML,
+        "price"         : parseFloat( productElem.querySelector('#price' ).innerHTML ),
+        "qty"           : parseFloat( productElem.querySelector('#qty' ).children[ 'qtyInput' ].value )
+    }
+
+    if ( productElem.querySelector('#options' )  ) {
+        productElem.querySelectorAll('input' ).forEach(async opt => {
+            if( ( opt.selected === true || opt.checked === true ) && opt.value !== '' ) {
+                await optionsList.push( opt.value )
+                await optionsName.push( opt.dataset.name )
+            }
+        } )
+        productAdd.options = optionsList
+        productAdd.optName = optionsName
+    }
+
 
     if ( !cartLocal ){
 
-        data.push( productAdd )
+        await data.push( productAdd )
         localStorage.setItem( 'cartLocal', JSON.stringify( data ) )
         refreshCart( )
 
@@ -192,11 +208,11 @@ function getCart( ){
         .then( res => {
             return res.json( )
         }).then( data => {
-            if ( data === false ){
-                showPushNotification( 'error', "Session expirée" )
-            } else if( data != 'null' ) {
-                localStorage.setItem( 'cartLocal', data )
-            }
-        }).then( ( ) => refreshCart( ) )
+        if ( data === false ){
+            showPushNotification( 'error', "Session expirée" )
+        } else if( data != 'null' ) {
+            localStorage.setItem( 'cartLocal', data )
+        }
+    }).then( ( ) => refreshCart( ) )
 
 }
