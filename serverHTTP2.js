@@ -1,12 +1,12 @@
-const msgSys        = require( './api/msgSystem.js' )
+const msgSys        = require( './server/msgSystem.js' )
 const http2         = require( 'http2' )
 const fs            = require( 'fs' )
 const path          = require( 'path' )
 const dbQuery       = require( './api/database.js' )
 const config        = require( './public/assets/config.json' )
 const token         = require( './server/token.js' )
-const db = require( './server/database.js' )
-const user = require( './server/user.js' )
+const db            = require( './server/database.js' )
+const user          = require( './server/user.js' )
 
 const port = '3001'
 

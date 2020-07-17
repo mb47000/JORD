@@ -1,5 +1,4 @@
 // Find colors in https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-
 const dateTime = require( './dateTime.js' )
 
 async function send( msg, type ) {

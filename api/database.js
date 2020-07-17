@@ -2,8 +2,8 @@ const mongoClient   = require( 'mongodb' ).MongoClient
 const argon2        = require( 'argon2' )
 const email         = require( '../server/email.js' )
 const token         = require( '../server/token.js' )
-const dateTime      = require( './dateTime.js' )
-const msgSys        = require( './msgSystem.js' )
+const dateTime      = require( '../server/dateTime.js' )
+const msgSys        = require( '../server/msgSystem.js' )
 
 msgSys.send( 'Database..............READY', 'success' )
 
