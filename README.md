@@ -1,5 +1,11 @@
 ## **THIS VERSION IS NOT YET READY FOR USE**
 
+![](https://img.shields.io/github/languages/count/AndreLeclercq/JORD?style=for-the-badge)
+![](https://img.shields.io/github/repo-size/andreleclercq/jord?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues-raw/andreleclercq/jord?style=for-the-badge)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/andreleclercq/jord?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/andreleclercq/jord?style=for-the-badge)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/andreleclercq/jord?style=for-the-badge)
 # JORD 🌱
 JORD is a Single Page Application for eShop, with a minimal of dependencies. Better, Faster, Stronger with Javascript Vanilla.
 This is a personnal project, but if you want you can use it with love and respect.
