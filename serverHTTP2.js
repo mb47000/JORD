@@ -40,6 +40,7 @@ async function parseRequest( stream, headers, req, res ) {
     for await ( const chunk of stream )
         req.body += chunk
 
+
 }
 
 async function readFile( req, res ) {

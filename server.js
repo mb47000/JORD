@@ -17,7 +17,7 @@ class Server {
      * @constructor
      */
     constructor() {
-        this.port = '3030'
+        this.port = '3001'
         this.mimeTypes = {
             'html' : 'text/html',
             'js'   : 'text/javascript',
@@ -36,22 +36,22 @@ class Server {
             'wasm' : 'application/wasm'
         }
         this.enableCollection = ['products', 'pages']
-        this.server = http2.createSecureServer( {
-            key: fs.readFileSync( './localhost-privkey.pem' ),
-            cert: fs.readFileSync( './localhost-cert.pem' )
-        } )
 
     }
     /**
      * Start the server
      * @method
      */
-    start() {
+    async start() {
+        this.server = http2.createSecureServer( {
+            key: fs.readFileSync( './localhost-privkey.pem' ),
+            cert: fs.readFileSync( './localhost-cert.pem' )
+        } )
         this.server.on( 'error', error => msgSys.send( error, 'error' ) )
-        this.server.on( 'stream', this.execRequest )
+        this.server.on( 'stream', await this.execRequest )
         this.server.listen( this.port )
 
-        msgSys.send( `Server is launch at https://localhost:${port}`, 'success' )
+        msgSys.send( `Server is launch at https://localhost:${ this.port }`, 'success' )
         msgSys.send( '------------------------------------' )
     }
     /**
@@ -62,20 +62,23 @@ class Server {
      * @returns {Promise<void>}
      */
     async execRequest( stream, headers ) {
+        await msgSys.send('exec', 'debug')
         // msgSys.send( JSON.stringify(stream.session.socket.remoteAddress), 'debug' )
         this.req = { headers: headers }
         this.res = {
             data: '',
             compress: false,
             headers: {
-                'server': 'Made with NodeJS Vanilla by a.leclercq',
+                'server': 'FRIGG - Server made with NodeJS Vanilla by a.Leclercq',
                 ':status': 200
             }
         }
+
         try {
-            await this.parseRequest( stream, headers )
-            await this.handleRequest( headers )
+            await this.parseRequest
+            await this.handleRequest
         } catch ( error ) {
+            await msgSys.send( error, 'error' )
             this.error = error.message.match( /^(\d{3}) (.+)$/ )
             this.error
                 ? this.error.shift()
@@ -89,6 +92,7 @@ class Server {
         }
     }
 
+
     /**
      * Parse the Request
      * @method
@@ -96,8 +100,9 @@ class Server {
      * @param [headers]
      * @returns {Promise<void>}
      */
-    async parseRequest( stream, headers ) {
-        this.req.url = new URL( headers[':path'], `https://localhost:${ port }` )
+    async parseRequest( stream, headers ){
+        await msgSys.send('parse', 'debug')
+        this.req.url = new URL( headers[':path'], `https://localhost:${ this.port }` )
         this.req.param = await Object.fromEntries( this.req.url.searchParams.entries() )
         this.req.path = this.req.url.pathname.split('/' )
         this.req.path.shift( )
@@ -115,7 +120,7 @@ class Server {
      * @returns {Promise<void>}
      */
     async handleRequest( headers ) {
-
+        await msgSys.send('handle', 'debug')
         if( this.req.url.pathname.startsWith('/api') ){
 
             if ( this.req.param.action === 'get' && this.enableCollection.some( this.req.param.name ) ) {
@@ -159,7 +164,7 @@ class Server {
             this.res.headers['Location'] = '/#' + String( this.req.url.pathname ).replace('/', '')
             this.res.headers[':status'] = 302
         }  else {
-            await readFile( )
+            await readFile
         }
 
     }
@@ -182,14 +187,14 @@ class Server {
      * @returns {Promise<void>}
      */
     async readFile( ) {
-
-        const fileName = this.req.path.join( path.sep )
-        let filePath = './' + ( fileName === '' ? 'index.html' : fileName )
-        const ext = path.extname( filePath ).substring( 1 )
+        await msgSys.send('read', 'debug' )
+        this.fileName = this.req.path.join( path.sep )
+        this.filePath = 'public/' + ( this.fileName === '' ? 'index.html' : this.fileName )
+        this.ext = path.extname( this.filePath ).substring( 1 )
         //if (this.conf.typeAllowed instanceof Array && !this.conf.typeAllowed.includes(ext)) { throw new Error('403 Forbidden, file type not allowed') }
-        this.res.headers[ 'content-type' ] = ( ext in mimeTypes ) ? mimeTypes[ ext ] : 'text/plain'
+        this.res.headers[ 'content-type' ] = ( this.ext in this.mimeTypes ) ? this.mimeTypes[ this.ext ] : 'text/plain'
         try {
-            this.res.data = await fs.promises.readFile( filePath )
+            this.res.data = await fs.promises.readFile( this.filePath )
         } catch ( error ) {
             if ( error.code === 'ENOENT' )
                 throw new Error( '404 Not Found' )
@@ -197,3 +202,6 @@ class Server {
         }
     }
 }
+
+let frigg = new Server()
+frigg.start()
