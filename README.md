@@ -1,3 +1,5 @@
+## **THIS VERSION IS NOT YET READY FOR USE**
+
 # JORD 🌱
 JORD is a Single Page Application for eShop, with a minimal of dependencies. Better, Faster, Stronger with Javascript Vanilla.
 This is a personnal project, but if you want you can use it with love and respect.
