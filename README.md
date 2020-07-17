@@ -28,3 +28,4 @@ If you clone repo you can launch local docs with `npm run docs`
 ## License
 JORD is licensed under the GNU Public License, Version 3.
 [About GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
