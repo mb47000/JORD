@@ -24,7 +24,7 @@ This is a personnal project, but if you want you can use it with love and respec
 It's not available yet, but you can see the progress of project [here](https://github.com/AndreLeclercq/JORD/projects/2).
 
 ## How to use JORD ?
-I try to maintain docs [here](https://github.com/AndreLeclercq/JORD/blob/master/docs/README.md).
+I try to maintain docs [here](https://andreleclercq.github.io/JORD/).
 If you clone repo you can launch local docs with `npm run docs`
 
 ## License

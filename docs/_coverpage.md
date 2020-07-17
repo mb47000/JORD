@@ -6,8 +6,8 @@
 - Powerfull database MongoDB
 - Secure Server HTTP/2 without framework
 
-[GitHub (soon)]()
-[Online Example](https://jord.desinvo.lt)
+[GitHub](https://github.com/AndreLeclercq/JORD)
+[Online Example (soon)]()
 [Get Started](#introduction)
 
 <!-- background color -->
