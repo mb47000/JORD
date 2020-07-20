@@ -237,7 +237,7 @@ function loginRegister( location ){
                 elt.preventDefault( )
                 let param = '?'
 
-                if( elt.target.monprenom.value === '' & elt.target.monadresse.value === 'ceci est mon adresse' ) {
+                if( elt.target.monprenom.value === '' && elt.target.monadresse.value === 'ceci est mon adresse' ) {
                     let data = new FormData( elt.target )
 
                     if ( buttonSubmit.classList.contains( 'loginSubmit' ) ) {
