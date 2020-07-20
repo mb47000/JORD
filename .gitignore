@@ -2,3 +2,4 @@
 /.idea/
 /public/assets/
 /public/spectre/
+package-lock.json

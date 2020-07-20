@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const msgSys    = require( './api/msgSystem.js' )
+const msgSys    = require( './server/msgSystem.js' )
 const Terser    = require( 'terser' )
 const fs        = require( 'fs' )
 
