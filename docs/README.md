@@ -1,3 +1,5 @@
+> documentation for JORD v0.1.1 (last update : 20/07/2020)
+
 ## Introduction
 Minimal eShop Single Page Application system without framework or useless dependencies. 
 It's a personnal project, but if you want you can use it ;)
@@ -37,9 +39,9 @@ Optionnal :
 ## Install
 ### Get Files
 * Core repo : `git clone https://github.com/AndreLeclercq/JORD.git`
-* Init Submodule : `git submodule init`
-* Update Submodule : `git submodule update`
-* Assets submodule : `git submodule add --force https://github.com/AndreLeclercq/JORD_assets.git assets`
+
+#### Prepare Files
+Duplicate and rename folder `assets_sample` to `assets` and move to `/public`
 
 ### Database
 
@@ -88,7 +90,7 @@ db.createCollection('orders')
 ```
 
 ### ConfigFile
-Edit the Config File into */assets/config.json*
+Edit the Config File into `public/assets/config.json`
 #### general
 ```json
 "general" : {
@@ -124,21 +126,6 @@ Edit the Config File into */assets/config.json*
   }`
 ```
 
-### Disabled assets updates
-The */assets* folder is a git submodule, after install you need to disabled assets updates, edit the file *.gitmodules* 
-```
-[submodule "assets"]
-	path = assets
-	url = https://github.com/AndreLeclercq/JORD_assets.git
-```
-Add line `ignore = all` after `url = https://github.com/AndreLeclercq/JORD_assets.git`
-```
-[submodule "assets"]
-	path = assets
-	url = https://github.com/AndreLeclercq/JORD_assets.git
-    ignore = all
-```
-
 ---
 
 ## Getting Started
@@ -146,26 +133,24 @@ Add line `ignore = all` after `url = https://github.com/AndreLeclercq/JORD_asset
 Jord was split in two "parts", the *core* and the *assets*.
 
 #### The Core
-All files ( except */assets* folder ), these are all the features of JORD.
+All files ( except *public/assets* folder ), these are all the features of JORD.
 * Server
 * Router
 * Bundler
-* User Account
-* eShop
-...
 
 We recommend don't make any changes, to avoid conflict with updates. You can update the core with *git pull*
 
 #### Assets
-> **_IMPORTANT :_** All files and folders in the initial /assets folder are REQUIRED
+> **_IMPORTANT :_** All files and folders in the initial /assets_sample folder are REQUIRED
 
 You can find all assets editable as you need. 
 * HTML Views
 * CSS
 * Javascript
+* SVG
 
 
-You can add folder and other files, but be careful, some elements need to be specific. Read the next chapter.
+You can add folder and other files (fonts, images...), but be careful, some elements need to be specific. Read the next chapter.
 
 ### Edit HTML Views
 
@@ -221,7 +206,7 @@ The password need to be hashed with *argon2i*, you can use npm package *argon2-c
 
 ## Create Content
 ### New page
-1. Go into folder */assets/views/pages*
+1. Go into folder `/public/assets/views/pages`
 2. Create HTML file
 3. Add new document in "pages" collection
 
@@ -237,9 +222,9 @@ db.pages.insertOne(
 )
 ```
 * Slug : Link use to show page
-* File Name : File Name in */assets/views/pages* (without .html)
+* File Name : File Name in `/public/assets/views/pages` (without .html)
 * Title : Use for title tag
-* Access : Access level (0: all | 1 : user login)
+* Access : Access level (0: all | 1 : user login | 2 : for no one)
 
 ### New Product
 Add document in collection "products", the field "slug" is required.
@@ -257,6 +242,11 @@ db.orders.insertOne(
         "firstFilter": "value",
         "secondFilter": "10"
     },
+    "variables": {
+        "REFVAR1": "2",
+        "REFVAR2": "4",
+        "REFVAR3": "1",
+    },
     "options": {
         "optionsGrp1": {
             "name": "First group",
@@ -270,7 +260,10 @@ db.orders.insertOne(
                 }
             ]
         }
-    }
+    },
+    "images": ["assets/images/myImage1.png", "assets/images/myImage2.png"],
+    "desc": "Description of the product",
+    "tech": "Technical description of the product"
 }
 ```
 * Slug : Link use to show product page
@@ -278,7 +271,10 @@ db.orders.insertOne(
 * Name : Use for H1 and Title tag
 * Price : The product price
 * Category: Main category slug (only on)
-* Filters : ***Not ready yet***
+* Filters : Filters for classifications
+    * Filter Name : Value of filter
+* Variables : Mandatory options composed of other products
+    * Ref ( Reference of the product ) : Quantity
 * Options (1) : Product options ( can change price )
     * Option Group
         * Name : Name of group
@@ -288,7 +284,10 @@ db.orders.insertOne(
             * Ref : Reference of option
             * Price : Price of option
             * Name : Name of option
-            
+* Images : Array with url of the product's images
+* Desc : Simple description of the product
+* Tech : Technical description of the product
+
 > **_(1)_** Every combinaison of product + options create a new product in cart.
 
 ### New Order
@@ -321,6 +320,6 @@ Github docs : https://github.com/feathericons/feather#feather
 #### How to add icon
 ```html
 <svg class="feather">
-  <use xlink:href="/src/svg/feather-sprite.svg#iconName"/>
+  <use xlink:href="assets/svg/feather-sprite.svg#iconName"/>
 </svg>
 ```
