@@ -12,7 +12,7 @@
     "docs": "docsify serve ./docs"
   },
   "author": "Andre LECLERCQ",
-  "license": "ISC",
+  "license": "GNU GPLv3",
   "devDependencies": {
     "argon2": "^0.26.2",
     "mongodb": "^3.5.9",
