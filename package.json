@@ -1,6 +1,6 @@
 {
   "name": "jord",
-  "version": "alpha0.2.0",
+  "version": "0.0.1",
   "description": "Minimal eShop Single Page Application system without framework or useless dependencies.",
   "main": "server.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "argon2": "^0.26.2",
     "mongodb": "^3.5.9",
     "nodemailer": "^6.4.10",
-    "sass": "^1.26.8",
+    "sass": "^1.26.10",
     "terser": "^4.8.0"
   },
   "dependencies": {}
