@@ -3,15 +3,15 @@ Minimal eShop Single Page Application system without framework or useless depend
 It's a personnal project, but if you want you can use it ;)
 
 ### Dependencies
-* NodeJS ( ^12.16.2 ) [ latest version check : 14.2.0 ]
+* NodeJS ( ^12.16.2 ) [ latest version check : 14.5.0 ]
 * MongoDB server ( ^4.2.5 )  [ latest version check : 4.2.6 ]
 
 #### NodeJS dependencies
 * Argon2 - password-hashing function ( ^0.26.2 )
-* MongoDB - MongoDB driver for Node.js ( ^3.5.7 )
-* Nodemailer - Allow easy as cake email sending ( ^6.4.6 )
-* SASS - CSS extension and preprocessor ( ^1.26.5 )
-* Terser - JavaScript parser and mangler/compressor ( ^4.6.13 ) [ latest version check : 4.7.0 ]
+* MongoDB - MongoDB driver for Node.js ( ^3.5.7 ) [ latest version check : 3.5.9 ]
+* Nodemailer - Allow easy as cake email sending ( ^6.4.6 ) [ latest version check : 6.4.10 ]
+* SASS - CSS extension and preprocessor ( ^1.26.5 ) [ latest version check : 1.26.10 ]
+* Terser - JavaScript parser and mangler/compressor ( ^4.6.13 ) [ latest version check : 4.8.0 ]
 
 Optionnals deps ( need manual install ) :
 * Cloc : `npm i cloc -g`
@@ -20,7 +20,7 @@ Optionnals deps ( need manual install ) :
 
 ### NPM Commands
 Default :
-* Launch server ( watch mode ) : `npm run serverWatch`
+* Launch server ( watch mode ) : `npm run server`
 * Launch watch ( CSS & JS ) : `npm run watch`
 * Launch compil ( CSS & JS ) : `npm run compil`
 
