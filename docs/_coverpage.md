@@ -1,4 +1,4 @@
-# Jord 🌱 <small>alpha</small>
+# Jord 🌱 <small>alpha v0.1.1</small>
 
 > Minimal eShop SPA without useless framework...
 
