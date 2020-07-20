@@ -16,11 +16,15 @@ This is a personnal project, but if you want you can use it with love and respec
 * MongoDB
 
 ### NodeJS Dependencies
-* Argon2
-* MongoDB driver
-* Nodemailer
-* SASS
-* Terser
+![GitHub package.json dependency version (dev dep on branch)](https://img.shields.io/github/package-json/dependency-version/andreleclercq/jord/dev/argon2?style=for-the-badge)
+
+![GitHub package.json dependency version (dev dep on branch)](https://img.shields.io/github/package-json/dependency-version/andreleclercq/jord/dev/mongodb?style=for-the-badge)
+
+![GitHub package.json dependency version (dev dep on branch)](https://img.shields.io/github/package-json/dependency-version/andreleclercq/jord/dev/nodemailer?style=for-the-badge)
+
+![GitHub package.json dependency version (dev dep on branch)](https://img.shields.io/github/package-json/dependency-version/andreleclercq/jord/dev/sass?style=for-the-badge)
+
+![GitHub package.json dependency version (dev dep on branch)](https://img.shields.io/github/package-json/dependency-version/andreleclercq/jord/dev/terser?style=for-the-badge)
 
 ## Version
 * **Alpha (current)**
